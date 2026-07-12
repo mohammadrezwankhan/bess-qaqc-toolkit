@@ -42,6 +42,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [O And M Training Record](templates/o-and-m-training-record.md).
 
+- [Defect Aging Summary](templates/defect-aging-summary.md).
+
 ## Repository Topics
 
 ```text
@@ -73,3 +75,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the grid interconnection evidence pack.
 - Add project-specific examples to the energization readiness gate.
 - Add project-specific examples to the o and m training record.
+- Add project-specific examples to the defect aging summary.
