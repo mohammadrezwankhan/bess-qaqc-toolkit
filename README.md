@@ -64,6 +64,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Final Acceptance Signoff Pack](templates/final-acceptance-signoff-pack.md).
 
+- [Lessons Learned Capture Template](templates/lessons-learned-capture-template.md).
+
 ## Repository Topics
 
 ```text
@@ -106,3 +108,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the relay settings review checklist.
 - Add project-specific examples to the site walkdown photo log.
 - Add project-specific examples to the final acceptance signoff pack.
+- Add project-specific examples to the lessons learned capture template.
