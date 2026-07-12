@@ -40,6 +40,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Energization Readiness Gate](templates/energization-readiness-gate.md).
 
+- [O And M Training Record](templates/o-and-m-training-record.md).
+
 ## Repository Topics
 
 ```text
@@ -70,3 +72,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the site acceptance risk register.
 - Add project-specific examples to the grid interconnection evidence pack.
 - Add project-specific examples to the energization readiness gate.
+- Add project-specific examples to the o and m training record.
