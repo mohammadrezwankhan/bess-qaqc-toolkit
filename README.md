@@ -24,6 +24,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 - [Document readiness scoring guide](templates/document-readiness-scoring-guide.md).
 - [BESS closeout owner map](templates/closeout-owner-map.md).
 
+- [BESS Closeout Timeline Template](templates/closeout-timeline-template.md).
+
 ## Repository Topics
 
 ```text
@@ -46,3 +48,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add more accepted/rejected commissioning evidence examples.
 - Add project-specific document readiness scoring examples.
 - Add project-specific closeout owner map examples.
+- Add project-specific examples to the bess closeout timeline template.
