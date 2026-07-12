@@ -48,6 +48,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Cyber Asset Handover Checklist](templates/cyber-asset-handover-checklist.md).
 
+- [Metering Acceptance Checklist](templates/metering-acceptance-checklist.md).
+
 ## Repository Topics
 
 ```text
@@ -82,3 +84,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the defect aging summary.
 - Add project-specific examples to the supplier query log.
 - Add project-specific examples to the cyber asset handover checklist.
+- Add project-specific examples to the metering acceptance checklist.
