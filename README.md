@@ -36,6 +36,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Site Acceptance Risk Register](templates/site-acceptance-risk-register.md).
 
+- [Grid Interconnection Evidence Pack](templates/grid-interconnection-evidence-pack.md).
+
 ## Repository Topics
 
 ```text
@@ -64,3 +66,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the fire safety interface review.
 - Add project-specific examples to the spare parts readiness checklist.
 - Add project-specific examples to the site acceptance risk register.
+- Add project-specific examples to the grid interconnection evidence pack.
