@@ -1,5 +1,7 @@
 # BESS QA/QC Toolkit
 
+[![Markdown maintenance](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml/badge.svg)](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml)
+
 Templates and checklists for battery energy storage system QA/QC, FAT/SAT readiness, supplier evidence review, and commissioning handover.
 
 ## Why This Exists
@@ -24,3 +26,10 @@ bess battery-energy-storage qaqc commissioning fat sat renewable-energy utility-
 ## Status
 
 Draft toolkit. Use the templates as starting points and adapt them to project-specific requirements, standards, and contractual obligations.
+
+## Contribution Entry Points
+
+- Add a commissioning evidence matrix.
+- Add a punch-list and nonconformance tracker.
+- Add handover document index fields.
+- Improve acceptance evidence wording in existing templates.
