@@ -8,9 +8,9 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 ## Planned Contents
 
-- FAT readiness checklist.
-- SAT readiness checklist.
-- Supplier document review tracker.
+- [FAT readiness checklist](templates/fat-readiness-checklist.md).
+- [SAT readiness checklist](templates/sat-readiness-checklist.md).
+- [Supplier document review tracker](templates/supplier-document-review-tracker.md).
 - Commissioning evidence matrix.
 - Punch-list and nonconformance tracking template.
 - Handover document index.
