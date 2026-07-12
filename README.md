@@ -26,6 +26,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [BESS Closeout Timeline Template](templates/closeout-timeline-template.md).
 
+- [Commissioning Shift Handover Log](templates/commissioning-shift-handover-log.md).
+
 ## Repository Topics
 
 ```text
@@ -49,3 +51,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific document readiness scoring examples.
 - Add project-specific closeout owner map examples.
 - Add project-specific examples to the bess closeout timeline template.
+- Add project-specific examples to the commissioning shift handover log.
