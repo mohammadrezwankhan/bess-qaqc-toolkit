@@ -32,6 +32,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Fire Safety Interface Review](templates/fire-safety-interface-review.md).
 
+- [Spare Parts Readiness Checklist](templates/spare-parts-readiness-checklist.md).
+
 ## Repository Topics
 
 ```text
@@ -58,3 +60,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the commissioning shift handover log.
 - Add project-specific examples to the warranty evidence checklist.
 - Add project-specific examples to the fire safety interface review.
+- Add project-specific examples to the spare parts readiness checklist.
