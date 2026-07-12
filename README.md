@@ -15,7 +15,7 @@ BESS reliability depends on evidence that can be inspected before energization, 
 - [Supplier document review tracker](templates/supplier-document-review-tracker.md).
 - [Commissioning evidence matrix](templates/commissioning-evidence-matrix.md).
 - [Punch-list and nonconformance tracker](templates/punch-list-nonconformance-tracker.md).
-- Handover document index.
+- [Handover document index](templates/handover-document-index.md).
 
 ## Repository Topics
 
@@ -31,5 +31,5 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 
 - Add a commissioning evidence matrix.
 - Improve punch-list and nonconformance closeout wording.
-- Add handover document index fields.
+- Improve handover document index fields.
 - Improve acceptance evidence wording in existing templates.
