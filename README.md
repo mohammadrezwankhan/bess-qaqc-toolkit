@@ -56,6 +56,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Availability Test Evidence Template](templates/availability-test-evidence-template.md).
 
+- [Environmental Condition Log](templates/environmental-condition-log.md).
+
 ## Repository Topics
 
 ```text
@@ -94,3 +96,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the communication interface test log.
 - Add project-specific examples to the emergency response drill record.
 - Add project-specific examples to the availability test evidence template.
+- Add project-specific examples to the environmental condition log.
