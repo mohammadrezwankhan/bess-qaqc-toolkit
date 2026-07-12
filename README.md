@@ -30,6 +30,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Warranty Evidence Checklist](templates/warranty-evidence-checklist.md).
 
+- [Fire Safety Interface Review](templates/fire-safety-interface-review.md).
+
 ## Repository Topics
 
 ```text
@@ -55,3 +57,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the bess closeout timeline template.
 - Add project-specific examples to the commissioning shift handover log.
 - Add project-specific examples to the warranty evidence checklist.
+- Add project-specific examples to the fire safety interface review.
