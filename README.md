@@ -52,6 +52,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Communication Interface Test Log](templates/communication-interface-test-log.md).
 
+- [Emergency Response Drill Record](templates/emergency-response-drill-record.md).
+
 ## Repository Topics
 
 ```text
@@ -88,3 +90,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the cyber asset handover checklist.
 - Add project-specific examples to the metering acceptance checklist.
 - Add project-specific examples to the communication interface test log.
+- Add project-specific examples to the emergency response drill record.
