@@ -14,7 +14,7 @@ BESS reliability depends on evidence that can be inspected before energization, 
 - [SAT readiness checklist](templates/sat-readiness-checklist.md).
 - [Supplier document review tracker](templates/supplier-document-review-tracker.md).
 - [Commissioning evidence matrix](templates/commissioning-evidence-matrix.md).
-- Punch-list and nonconformance tracking template.
+- [Punch-list and nonconformance tracker](templates/punch-list-nonconformance-tracker.md).
 - Handover document index.
 
 ## Repository Topics
@@ -30,6 +30,6 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 ## Contribution Entry Points
 
 - Add a commissioning evidence matrix.
-- Add a punch-list and nonconformance tracker.
+- Improve punch-list and nonconformance closeout wording.
 - Add handover document index fields.
 - Improve acceptance evidence wording in existing templates.
