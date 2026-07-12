@@ -21,6 +21,7 @@ BESS reliability depends on evidence that can be inspected before energization, 
 - [BESS closeout review checklist](templates/closeout-review-checklist.md).
 - [Commissioning hold-point checklist](templates/commissioning-hold-point-checklist.md).
 - [Commissioning evidence review examples](templates/commissioning-evidence-review-examples.md).
+- [Document readiness scoring guide](templates/document-readiness-scoring-guide.md).
 
 ## Repository Topics
 
@@ -42,3 +43,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific closeout review checks.
 - Add project-specific commissioning hold points.
 - Add more accepted/rejected commissioning evidence examples.
+- Add project-specific document readiness scoring examples.
