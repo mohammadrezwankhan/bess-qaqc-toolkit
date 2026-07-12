@@ -62,6 +62,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Site Walkdown Photo Log](templates/site-walkdown-photo-log.md).
 
+- [Final Acceptance Signoff Pack](templates/final-acceptance-signoff-pack.md).
+
 ## Repository Topics
 
 ```text
@@ -103,3 +105,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the environmental condition log.
 - Add project-specific examples to the relay settings review checklist.
 - Add project-specific examples to the site walkdown photo log.
+- Add project-specific examples to the final acceptance signoff pack.
