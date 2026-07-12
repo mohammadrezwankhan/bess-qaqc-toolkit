@@ -44,6 +44,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Defect Aging Summary](templates/defect-aging-summary.md).
 
+- [Supplier Query Log](templates/supplier-query-log.md).
+
 ## Repository Topics
 
 ```text
@@ -76,3 +78,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the energization readiness gate.
 - Add project-specific examples to the o and m training record.
 - Add project-specific examples to the defect aging summary.
+- Add project-specific examples to the supplier query log.
