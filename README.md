@@ -18,6 +18,7 @@ BESS reliability depends on evidence that can be inspected before energization, 
 - [Handover document index](templates/handover-document-index.md).
 - [Acceptance evidence wording guide](templates/acceptance-evidence-wording-guide.md).
 - [Residual-risk acceptance template](templates/residual-risk-acceptance-template.md).
+- [BESS closeout review checklist](templates/closeout-review-checklist.md).
 
 ## Repository Topics
 
@@ -36,3 +37,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Improve handover document index fields.
 - Add project-specific examples to the acceptance evidence wording guide.
 - Add project-specific residual-risk acceptance examples.
+- Add project-specific closeout review checks.
