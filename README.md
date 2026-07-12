@@ -60,6 +60,8 @@ BESS reliability depends on evidence that can be inspected before energization, 
 
 - [Relay Settings Review Checklist](templates/relay-settings-review-checklist.md).
 
+- [Site Walkdown Photo Log](templates/site-walkdown-photo-log.md).
+
 ## Repository Topics
 
 ```text
@@ -100,3 +102,4 @@ Draft toolkit. Use the templates as starting points and adapt them to project-sp
 - Add project-specific examples to the availability test evidence template.
 - Add project-specific examples to the environmental condition log.
 - Add project-specific examples to the relay settings review checklist.
+- Add project-specific examples to the site walkdown photo log.
