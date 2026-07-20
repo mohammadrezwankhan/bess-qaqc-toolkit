@@ -94,6 +94,29 @@ python -m unittest discover -s tests -v
 python scripts/validate_templates.py
 ```
 
+## Readiness Status Roll-Up
+
+After copying and filling project templates, aggregate `Status`, `Review
+Status`, and `Approval Status` columns into a reviewable Markdown report:
+
+```powershell
+python scripts/summarize_status.py project-records `
+  --output project-records\readiness-summary.md
+```
+
+Use JSON for another reporting tool, or make a pipeline fail on one or more
+project-defined blocking states:
+
+```powershell
+python scripts/summarize_status.py project-records --format json
+python scripts/summarize_status.py project-records `
+  --fail-on Blocked --fail-on Failed
+```
+
+The gate compares status names case-insensitively and exits with code `2` when
+a configured state occurs. Status-definition tables are excluded from the
+roll-up. Running the command without a path summarizes the repository templates.
+
 ## Contribution Entry Points
 
 - Add a commissioning evidence matrix.
