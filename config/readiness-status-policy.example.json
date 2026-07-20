@@ -13,5 +13,24 @@
     "Failed"
   ],
   "blocking_statuses": ["Blocked", "Failed"],
-  "require_status": true
+  "require_status": true,
+  "column_rules": {
+    "Approval Status": {
+      "allowed_statuses": [
+        "Not started",
+        "Draft",
+        "Under review",
+        "Pending approval",
+        "Approved",
+        "Rejected"
+      ],
+      "blocking_statuses": ["Rejected"],
+      "require_status": true
+    },
+    "Review Status": {
+      "allowed_statuses": ["Not started", "Under review", "Approved", "Closed"],
+      "blocking_statuses": [],
+      "require_status": true
+    }
+  }
 }
