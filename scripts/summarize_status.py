@@ -28,10 +28,19 @@ class StatusRecord:
 
 
 @dataclass(frozen=True)
+class ColumnStatusPolicy:
+    column: str
+    allowed_statuses: tuple[str, ...]
+    blocking_statuses: tuple[str, ...]
+    require_status: bool
+
+
+@dataclass(frozen=True)
 class StatusPolicy:
     allowed_statuses: tuple[str, ...]
     blocking_statuses: tuple[str, ...]
     require_status: bool
+    column_rules: tuple[ColumnStatusPolicy, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -40,6 +49,7 @@ class PolicyViolation:
     line: int
     item: str
     status: str
+    column: str
     reason: str
 
 
@@ -135,35 +145,34 @@ def expand_paths(inputs: Sequence[Path]) -> list[Path]:
     return unique
 
 
-def _policy_statuses(document: dict[str, object], key: str) -> tuple[str, ...]:
+def _policy_statuses(
+    document: dict[str, object], key: str, context: str
+) -> tuple[str, ...]:
     raw_statuses = document.get(key, [])
     if not isinstance(raw_statuses, list) or any(
         not isinstance(status, str) or not status.strip() for status in raw_statuses
     ):
-        raise ValueError(f"policy {key} must be a list of nonempty strings")
+        raise ValueError(f"{context} {key} must be a list of nonempty strings")
     statuses = tuple(status.strip() for status in raw_statuses)
     normalized = [status.casefold() for status in statuses]
     if len(normalized) != len(set(normalized)):
-        raise ValueError(f"policy {key} contains case-insensitive duplicates")
+        raise ValueError(f"{context} {key} contains case-insensitive duplicates")
     return statuses
 
 
-def load_status_policy(path: Path) -> StatusPolicy:
-    """Load and validate a project-specific readiness status policy."""
-
-    document = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(document, dict):
-        raise ValueError("status policy root must be a JSON object")
+def _parse_status_rule(
+    document: dict[str, object], context: str
+) -> tuple[tuple[str, ...], tuple[str, ...], bool]:
     allowed_keys = {"allowed_statuses", "blocking_statuses", "require_status"}
     unknown_keys = sorted(set(document) - allowed_keys)
     if unknown_keys:
-        raise ValueError("status policy has unknown fields: " + ", ".join(unknown_keys))
+        raise ValueError(f"{context} has unknown fields: " + ", ".join(unknown_keys))
 
     require_status = document.get("require_status", False)
     if not isinstance(require_status, bool):
-        raise ValueError("policy require_status must be true or false")
-    allowed_statuses = _policy_statuses(document, "allowed_statuses")
-    blocking_statuses = _policy_statuses(document, "blocking_statuses")
+        raise ValueError(f"{context} require_status must be true or false")
+    allowed_statuses = _policy_statuses(document, "allowed_statuses", context)
+    blocking_statuses = _policy_statuses(document, "blocking_statuses", context)
     if allowed_statuses:
         allowed = {status.casefold() for status in allowed_statuses}
         outside_allowlist = [
@@ -171,13 +180,81 @@ def load_status_policy(path: Path) -> StatusPolicy:
         ]
         if outside_allowlist:
             raise ValueError(
-                "policy blocking_statuses must also be allowed: "
+                f"{context} blocking_statuses must also be allowed: "
                 + ", ".join(outside_allowlist)
             )
+    return allowed_statuses, blocking_statuses, require_status
+
+
+def load_status_policy(path: Path) -> StatusPolicy:
+    """Load global and column-specific readiness status rules."""
+
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(document, dict):
+        raise ValueError("status policy root must be a JSON object")
+    allowed_keys = {
+        "allowed_statuses",
+        "blocking_statuses",
+        "require_status",
+        "column_rules",
+    }
+    unknown_keys = sorted(set(document) - allowed_keys)
+    if unknown_keys:
+        raise ValueError("status policy has unknown fields: " + ", ".join(unknown_keys))
+
+    global_document = {
+        key: value for key, value in document.items() if key != "column_rules"
+    }
+    allowed_statuses, blocking_statuses, require_status = _parse_status_rule(
+        global_document,
+        "policy",
+    )
+
+    raw_column_rules = document.get("column_rules", {})
+    if not isinstance(raw_column_rules, dict):
+        raise ValueError("policy column_rules must be a JSON object")
+    column_rules: list[ColumnStatusPolicy] = []
+    normalized_columns: set[str] = set()
+    for raw_column, raw_rule in raw_column_rules.items():
+        if not isinstance(raw_column, str) or not raw_column.strip():
+            raise ValueError("policy column_rules keys must be nonempty strings")
+        column = raw_column.strip()
+        normalized_column = normalize_heading(column)
+        if normalized_column in normalized_columns:
+            raise ValueError(
+                "policy column_rules contains case-insensitive duplicate columns"
+            )
+        normalized_columns.add(normalized_column)
+        if not isinstance(raw_rule, dict):
+            raise ValueError(f"policy column rule {column!r} must be a JSON object")
+        required_rule_fields = {
+            "allowed_statuses",
+            "blocking_statuses",
+            "require_status",
+        }
+        missing_rule_fields = sorted(required_rule_fields - set(raw_rule))
+        if missing_rule_fields:
+            raise ValueError(
+                f"policy column rule {column!r} is missing fields: "
+                + ", ".join(missing_rule_fields)
+            )
+        rule_allowed, rule_blocking, rule_required = _parse_status_rule(
+            raw_rule,
+            f"policy column rule {column!r}",
+        )
+        column_rules.append(
+            ColumnStatusPolicy(
+                column=column,
+                allowed_statuses=rule_allowed,
+                blocking_statuses=rule_blocking,
+                require_status=rule_required,
+            )
+        )
     return StatusPolicy(
         allowed_statuses=allowed_statuses,
         blocking_statuses=blocking_statuses,
         require_status=require_status,
+        column_rules=tuple(column_rules),
     )
 
 
@@ -186,14 +263,18 @@ def evaluate_status_policy(
 ) -> list[PolicyViolation]:
     """Return line-level blank, unknown, and blocking status violations."""
 
-    allowed = {status.casefold() for status in policy.allowed_statuses}
-    blocking = {status.casefold() for status in policy.blocking_statuses}
+    column_rules = {
+        normalize_heading(rule.column): rule for rule in policy.column_rules
+    }
     violations: list[PolicyViolation] = []
     for record in records:
+        selected_rule = column_rules.get(normalize_heading(record.column), policy)
+        allowed = {status.casefold() for status in selected_rule.allowed_statuses}
+        blocking = {status.casefold() for status in selected_rule.blocking_statuses}
         normalized = record.status.casefold()
         reason = None
         if record.status == BLANK_STATUS:
-            if policy.require_status:
+            if selected_rule.require_status:
                 reason = "status is required"
         elif allowed and normalized not in allowed:
             reason = "status is not in allowed_statuses"
@@ -206,6 +287,7 @@ def evaluate_status_policy(
                     line=record.line,
                     item=record.item,
                     status=record.status,
+                    column=record.column,
                     reason=reason,
                 )
             )
@@ -268,12 +350,12 @@ def render_markdown(summary: dict[str, object]) -> str:
             lines.extend(
                 [
                     "",
-                    "| Source | Line | Item | Status | Reason |",
-                    "| --- | ---: | --- | --- | --- |",
+                    "| Source | Line | Item | Status | Column | Reason |",
+                    "| --- | ---: | --- | --- | --- | --- |",
                 ]
             )
             lines.extend(
-                "| {source} | {line} | {item} | {status} | {reason} |".format(
+                "| {source} | {line} | {item} | {status} | {column} | {reason} |".format(
                     **{key: _markdown_cell(value) for key, value in violation.items()}
                 )
                 for violation in violations
@@ -309,7 +391,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--policy",
         type=Path,
-        help="JSON status policy with allowed, blocking, and completeness rules",
+        help="JSON policy with global and column-specific status rules",
     )
     parser.add_argument(
         "--fail-on",
@@ -342,7 +424,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         policy_violations = evaluate_status_policy(records, policy)
         summary["status_policy"] = {
             "source": args.policy.as_posix(),
-            **asdict(policy),
+            "allowed_statuses": policy.allowed_statuses,
+            "blocking_statuses": policy.blocking_statuses,
+            "require_status": policy.require_status,
+            "column_rules": {
+                rule.column: {
+                    "allowed_statuses": rule.allowed_statuses,
+                    "blocking_statuses": rule.blocking_statuses,
+                    "require_status": rule.require_status,
+                }
+                for rule in policy.column_rules
+            },
         }
         summary["policy_violations"] = [
             asdict(violation) for violation in policy_violations
@@ -371,7 +463,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     for violation in policy_violations:
         print(
             f"{violation.source}:{violation.line}: {violation.item}: "
-            f"{violation.reason} ({violation.status})",
+            f"{violation.reason} ({violation.status}; column: {violation.column})",
             file=sys.stderr,
         )
     if policy_violations:
