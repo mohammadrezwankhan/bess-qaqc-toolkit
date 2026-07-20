@@ -27,6 +27,22 @@ class StatusRecord:
     column: str
 
 
+@dataclass(frozen=True)
+class StatusPolicy:
+    allowed_statuses: tuple[str, ...]
+    blocking_statuses: tuple[str, ...]
+    require_status: bool
+
+
+@dataclass(frozen=True)
+class PolicyViolation:
+    source: str
+    line: int
+    item: str
+    status: str
+    reason: str
+
+
 def normalize_heading(value: str) -> str:
     return " ".join(value.casefold().split())
 
@@ -119,6 +135,83 @@ def expand_paths(inputs: Sequence[Path]) -> list[Path]:
     return unique
 
 
+def _policy_statuses(document: dict[str, object], key: str) -> tuple[str, ...]:
+    raw_statuses = document.get(key, [])
+    if not isinstance(raw_statuses, list) or any(
+        not isinstance(status, str) or not status.strip() for status in raw_statuses
+    ):
+        raise ValueError(f"policy {key} must be a list of nonempty strings")
+    statuses = tuple(status.strip() for status in raw_statuses)
+    normalized = [status.casefold() for status in statuses]
+    if len(normalized) != len(set(normalized)):
+        raise ValueError(f"policy {key} contains case-insensitive duplicates")
+    return statuses
+
+
+def load_status_policy(path: Path) -> StatusPolicy:
+    """Load and validate a project-specific readiness status policy."""
+
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(document, dict):
+        raise ValueError("status policy root must be a JSON object")
+    allowed_keys = {"allowed_statuses", "blocking_statuses", "require_status"}
+    unknown_keys = sorted(set(document) - allowed_keys)
+    if unknown_keys:
+        raise ValueError("status policy has unknown fields: " + ", ".join(unknown_keys))
+
+    require_status = document.get("require_status", False)
+    if not isinstance(require_status, bool):
+        raise ValueError("policy require_status must be true or false")
+    allowed_statuses = _policy_statuses(document, "allowed_statuses")
+    blocking_statuses = _policy_statuses(document, "blocking_statuses")
+    if allowed_statuses:
+        allowed = {status.casefold() for status in allowed_statuses}
+        outside_allowlist = [
+            status for status in blocking_statuses if status.casefold() not in allowed
+        ]
+        if outside_allowlist:
+            raise ValueError(
+                "policy blocking_statuses must also be allowed: "
+                + ", ".join(outside_allowlist)
+            )
+    return StatusPolicy(
+        allowed_statuses=allowed_statuses,
+        blocking_statuses=blocking_statuses,
+        require_status=require_status,
+    )
+
+
+def evaluate_status_policy(
+    records: Sequence[StatusRecord], policy: StatusPolicy
+) -> list[PolicyViolation]:
+    """Return line-level blank, unknown, and blocking status violations."""
+
+    allowed = {status.casefold() for status in policy.allowed_statuses}
+    blocking = {status.casefold() for status in policy.blocking_statuses}
+    violations: list[PolicyViolation] = []
+    for record in records:
+        normalized = record.status.casefold()
+        reason = None
+        if record.status == BLANK_STATUS:
+            if policy.require_status:
+                reason = "status is required"
+        elif allowed and normalized not in allowed:
+            reason = "status is not in allowed_statuses"
+        elif normalized in blocking:
+            reason = "status is blocking"
+        if reason:
+            violations.append(
+                PolicyViolation(
+                    source=record.source,
+                    line=record.line,
+                    item=record.item,
+                    status=record.status,
+                    reason=reason,
+                )
+            )
+    return violations
+
+
 def summarize_records(records: Sequence[StatusRecord]) -> dict[str, object]:
     counts = Counter(record.status for record in records)
     ordered_counts = {
@@ -159,6 +252,32 @@ def render_markdown(summary: dict[str, object]) -> str:
         f"| {_markdown_cell(status)} | {count} |"
         for status, count in status_counts.items()
     )
+    if "status_policy" in summary:
+        policy = summary["status_policy"]
+        violations = summary["policy_violations"]
+        lines.extend(
+            [
+                "",
+                "## Policy Evaluation",
+                "",
+                f"Policy source: {_markdown_cell(policy['source'])}  ",
+                f"Violations: {len(violations)}",
+            ]
+        )
+        if violations:
+            lines.extend(
+                [
+                    "",
+                    "| Source | Line | Item | Status | Reason |",
+                    "| --- | ---: | --- | --- | --- |",
+                ]
+            )
+            lines.extend(
+                "| {source} | {line} | {item} | {status} | {reason} |".format(
+                    **{key: _markdown_cell(value) for key, value in violation.items()}
+                )
+                for violation in violations
+            )
     lines.extend(
         [
             "",
@@ -188,6 +307,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
     parser.add_argument("--output", type=Path)
     parser.add_argument(
+        "--policy",
+        type=Path,
+        help="JSON status policy with allowed, blocking, and completeness rules",
+    )
+    parser.add_argument(
         "--fail-on",
         action="append",
         default=[],
@@ -203,6 +327,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         inputs = args.paths or [Path("templates")]
         paths = expand_paths(inputs)
         records = [record for path in paths for record in extract_status_records(path)]
+        policy = load_status_policy(args.policy) if args.policy else None
     except (OSError, ValueError) as error:
         print(f"Status summary failed: {error}", file=sys.stderr)
         return 1
@@ -212,6 +337,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 1
 
     summary = summarize_records(records)
+    policy_violations: list[PolicyViolation] = []
+    if policy:
+        policy_violations = evaluate_status_policy(records, policy)
+        summary["status_policy"] = {
+            "source": args.policy.as_posix(),
+            **asdict(policy),
+        }
+        summary["policy_violations"] = [
+            asdict(violation) for violation in policy_violations
+        ]
     if args.format == "json":
         rendered = json.dumps(summary, indent=2) + "\n"
     else:
@@ -233,6 +368,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             "Status summary gate failed on: " + ", ".join(matched),
             file=sys.stderr,
         )
+    for violation in policy_violations:
+        print(
+            f"{violation.source}:{violation.line}: {violation.item}: "
+            f"{violation.reason} ({violation.status})",
+            file=sys.stderr,
+        )
+    if policy_violations:
+        print(
+            f"Status policy gate failed with {len(policy_violations)} violation(s).",
+            file=sys.stderr,
+        )
+    if matched or policy_violations:
         return 2
     return 0
 
