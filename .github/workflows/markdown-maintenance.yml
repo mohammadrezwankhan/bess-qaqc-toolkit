@@ -5,6 +5,17 @@ on:
   pull_request:
     paths:
       - "**.md"
+      - "scripts/**/*.py"
+      - "tests/**/*.py"
+      - ".github/workflows/markdown-maintenance.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "**.md"
+      - "scripts/**/*.py"
+      - "tests/**/*.py"
+      - ".github/workflows/markdown-maintenance.yml"
 
 permissions:
   contents: read
@@ -14,7 +25,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Test template validator
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate template structure
+        run: python scripts/validate_templates.py
 
       - name: Check Markdown links
         uses: lycheeverse/lychee-action@v2

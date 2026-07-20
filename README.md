@@ -2,11 +2,14 @@
 
 [![Markdown maintenance](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml/badge.svg)](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml)
 
-Templates and checklists for battery energy storage system QA/QC, FAT/SAT readiness, supplier evidence review, and commissioning handover.
+Templates and checklists for battery energy storage system QA/QC, FAT/SAT
+readiness, supplier evidence review, and commissioning handover.
 
 ## Why This Exists
 
-BESS reliability depends on evidence that can be inspected before energization, commissioning, and handover. This repository collects practical templates that help engineering teams make inspection logic easier to review and reuse.
+BESS reliability depends on evidence that can be inspected before energization,
+commissioning, and handover. This repository collects practical templates that
+help engineering teams make inspection logic easier to review and reuse.
 
 ## Planned Contents
 
@@ -69,12 +72,27 @@ BESS reliability depends on evidence that can be inspected before energization, 
 ## Repository Topics
 
 ```text
-bess battery-energy-storage qaqc commissioning fat sat renewable-energy utility-scale energy-storage
+bess battery-energy-storage qaqc commissioning fat sat
+renewable-energy utility-scale energy-storage
 ```
 
 ## Status
 
-Draft toolkit. Use the templates as starting points and adapt them to project-specific requirements, standards, and contractual obligations.
+Draft toolkit. Use the templates as starting points and adapt them to
+project-specific requirements, standards, and contractual obligations.
+
+## Template Quality Gate
+
+Every template must start with one title and an explanatory paragraph, then
+provide at least one structurally valid Markdown table. The repository workflow
+checks table separators and column counts in addition to testing links.
+
+Run the same checks locally with Python 3.12:
+
+```powershell
+python -m unittest discover -s tests -v
+python scripts/validate_templates.py
+```
 
 ## Contribution Entry Points
 
