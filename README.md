@@ -126,12 +126,18 @@ python scripts/summarize_status.py project-records `
   --output project-records\readiness-summary.md
 ```
 
-The JSON policy defines `allowed_statuses`, `blocking_statuses`, and the Boolean
-`require_status` rule. Matching is case-insensitive. Policy violations retain
-the source file, line, item, status, and reason in Markdown and JSON output; the
-command exits with code `2` when any violation is found. Copy and adapt the
-[example policy](config/readiness-status-policy.example.json) to the controlled
-vocabulary and release gates for each project.
+The JSON policy defines global `allowed_statuses`, `blocking_statuses`, and the
+Boolean `require_status` fallback. Optional `column_rules` can assign a complete
+replacement rule to headings such as `Approval Status` or `Review Status`, so a
+valid state cannot silently appear in the wrong workflow column. Column names
+match case-insensitively after whitespace normalization.
+
+Policy violations retain the source file, line, item, status, column, and reason
+in Markdown and JSON output; the command exits with code `2` when any violation
+is found. Copy and adapt the [example policy](config/readiness-status-policy.example.json)
+to the controlled vocabularies and release gates for each project. A matching
+column rule replaces rather than merges with the global fallback, keeping each
+column's accepted and blocking states explicit.
 
 ## Contribution Entry Points
 
