@@ -1,0 +1,17 @@
+{
+  "allowed_statuses": [
+    "Not started",
+    "In progress",
+    "Under review",
+    "Pending approval",
+    "Draft",
+    "Approved",
+    "Closed",
+    "Accepted for deferred closeout",
+    "Open",
+    "Blocked",
+    "Failed"
+  ],
+  "blocking_statuses": ["Blocked", "Failed"],
+  "require_status": true
+}
