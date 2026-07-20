@@ -117,6 +117,22 @@ The gate compares status names case-insensitively and exits with code `2` when
 a configured state occurs. Status-definition tables are excluded from the
 roll-up. Running the command without a path summarizes the repository templates.
 
+Use a version-controlled status policy to reject missing values, status typos,
+and project-defined blocking states in one reproducible gate:
+
+```powershell
+python scripts/summarize_status.py project-records `
+  --policy config/readiness-status-policy.example.json `
+  --output project-records\readiness-summary.md
+```
+
+The JSON policy defines `allowed_statuses`, `blocking_statuses`, and the Boolean
+`require_status` rule. Matching is case-insensitive. Policy violations retain
+the source file, line, item, status, and reason in Markdown and JSON output; the
+command exits with code `2` when any violation is found. Copy and adapt the
+[example policy](config/readiness-status-policy.example.json) to the controlled
+vocabulary and release gates for each project.
+
 ## Contribution Entry Points
 
 - Add a commissioning evidence matrix.
