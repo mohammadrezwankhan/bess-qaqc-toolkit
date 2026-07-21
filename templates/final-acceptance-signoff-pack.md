@@ -2,6 +2,16 @@
 
 Use this template for assembling the signatures, evidence links, and residual actions needed for final BESS acceptance. It is intended for BESS project teams that need a concise, reviewable artifact during commissioning, acceptance, or handover.
 
+## Acceptance Decision
+
+| Acceptance ID | Decision | Residual-Risk IDs | Approved By | Approval Date | Evidence Location |
+|---|---|---|---|---|---|
+| ACC-001 | Pending |  |  |  |  |
+
+Use `Accepted` only when no active residual risks remain. Use `Conditionally accepted` when every approved deferral is listed by residual-risk ID. Keep the decision `Pending` or `Rejected` while blocking defects remain.
+
+## Review Scope
+
 | Review Area | Prompt | Evidence Or Owner |
 |---|---|---|
 | Scope | Which site, enclosure, subsystem, or work package is covered? | State the boundary and owner before review. |

@@ -4,16 +4,16 @@ Use this template when a BESS punch-list item or nonconformance is deferred beyo
 
 ## Residual-Risk Register
 
-| ID | Risk Description | Affected System | Interim Control | Owner | Approval | Target Close Date | Status | Closeout Evidence |
-|---|---|---|---|---|---|---|---|---|
-| RR-001 | Auxiliary cabinet label set is incomplete for PCS-02 after final SAT walkdown. | PCS / auxiliary power | Temporary field labels installed; operator informed through handover note. | Electrical supervisor | Commissioning manager accepted on 2026-08-18 | 2026-09-05 | Accepted for deferred closeout | Updated photo log and revised label schedule required before closure. |
-|  |  |  |  |  |  |  |  |  |
+| ID | Source Item ID | Risk Description | Affected System | Interim Control | Owner | Approval | Target Close Date | Status | Closeout Evidence |
+|---|---|---|---|---|---|---|---|---|---|
+| RR-001 | PL-001 | Auxiliary cabinet label set is incomplete for PCS-02 after final SAT walkdown. | PCS / auxiliary power | Temporary field labels installed; operator informed through handover note. | Electrical supervisor | Commissioning manager accepted on 2026-08-18 | 2026-09-05 | Accepted for deferred closeout | Updated photo log and revised label schedule required before closure. |
+|  |  |  |  |  |  |  |  |  |  |
 
 ## Acceptance Rules
 
 - Use residual-risk acceptance only for items that have an identified owner and interim control.
 - Do not accept deferred work that blocks safety, protection, fire interface, or grid-code compliance unless the responsible authority formally approves the operating restriction.
-- Link the original punch-list or nonconformance ID so reviewers can trace the full decision.
+- Record the original punch-list or nonconformance ID in `Source Item ID` so reviewers can trace the full decision.
 - State whether the risk affects safety, reliability, performance, documentation, commercial closeout, or operations.
 - Confirm that operations staff know the interim control before handover.
 
