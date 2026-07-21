@@ -174,6 +174,36 @@ the corresponding default list for a project. Matching is case-insensitive
 after whitespace normalization. Tables with more than one recognized deadline
 column and rows with malformed dates fail instead of choosing silently.
 
+## Conditional Completeness Audit
+
+A valid status and deadline do not prove that a readiness row is controlled.
+Audit the fields required by each workflow state with a version-controlled JSON
+policy:
+
+```powershell
+python scripts/audit_completeness.py project-records `
+  --policy config/readiness-completeness-policy.example.json `
+  --output project-records\completeness-audit.md
+```
+
+Each rule selects rows through one-of matching column names and
+case-insensitive values, then requires one nonmissing value from every
+configured field group. This supports heading variants such as `Owner` or
+`Action Owner`, and `Evidence Link` or `Closeout Evidence`, without treating
+them as different controls.
+
+The example policy covers active closeout actions, accepted deferrals, and
+approved handover documents. It requires the applicable owner, deadline,
+approval, revision, and evidence fields while treating `TBD`, `TBC`, `N/A`,
+`NA`, and `-` as controlled missing values. Copy and adapt the rule values and
+column aliases for each project.
+
+Reports preserve the source file, line, item, matched rule and state, required
+field, candidate columns, observed values, and reason in Markdown or JSON. The
+command exits with code `2` when violations exist and code `1` for malformed or
+ambiguous policies, tables, or a policy that matches no rows. Generated reports
+are excluded from later scans.
+
 ## Contribution Entry Points
 
 - Add a commissioning evidence matrix.

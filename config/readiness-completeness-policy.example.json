@@ -1,0 +1,80 @@
+{
+  "missing_values": ["TBD", "TBC", "N/A", "NA", "-"],
+  "rules": [
+    {
+      "name": "Active closeout action control",
+      "match": {
+        "columns": ["Status"],
+        "values": ["Open", "In progress", "Ready for verification"]
+      },
+      "required_fields": [
+        {
+          "label": "accountable owner",
+          "columns": ["Owner", "Responsible Owner", "Action Owner"]
+        },
+        {
+          "label": "controlled deadline",
+          "columns": ["Target Close Date", "Due Date", "Required By"]
+        },
+        {
+          "label": "action evidence",
+          "columns": [
+            "Evidence Link",
+            "Closeout Evidence",
+            "Verification / Closeout Note"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Accepted deferral control",
+      "match": {
+        "columns": ["Status"],
+        "values": ["Deferred", "Accepted for deferred closeout"]
+      },
+      "required_fields": [
+        {
+          "label": "accountable owner",
+          "columns": ["Owner", "Responsible Owner"]
+        },
+        {
+          "label": "formal approval",
+          "columns": ["Approval", "Approver"]
+        },
+        {
+          "label": "controlled deadline",
+          "columns": ["Target Close Date", "Due Date", "Required By"]
+        },
+        {
+          "label": "closeout evidence",
+          "columns": [
+            "Closeout Evidence",
+            "Evidence Link",
+            "Verification / Closeout Note"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Approved handover document control",
+      "match": {
+        "columns": ["Approval Status"],
+        "values": ["Approved", "Accepted"]
+      },
+      "required_fields": [
+        {
+          "label": "document owner",
+          "columns": ["Owner", "Document Owner"]
+        },
+        {
+          "label": "controlled revision",
+          "columns": ["Revision", "Project Rev", "Document Revision"]
+        },
+        {
+          "label": "approval evidence",
+          "columns": ["Evidence Link", "Approval Evidence", "Closeout Notes"]
+        }
+      ]
+    }
+  ]
+}
