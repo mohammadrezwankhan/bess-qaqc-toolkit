@@ -258,7 +258,9 @@ supported so recalibration does not erase historical traceability.
 require exactly one calibration period per instrument to cover the test date,
 and that period must be `Approved`, `Valid`, or `Accepted`. Unknown instruments,
 duplicate references and IDs, malformed or reversed dates, coverage gaps, and
-overlapping periods are reported with source file and line number. Repeat
+overlapping periods are reported with source file and line number. Overlapping
+certificate periods are flagged even when no completed measurement uses their
+shared date range. Repeat
 `--completed-status`, `--accepted-calibration-status`, or `--missing-value` to
 replace the corresponding defaults for a project.
 When `--as-of` is supplied, a completed measurement dated after the audit date

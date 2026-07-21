@@ -116,6 +116,19 @@ class CalibrationTraceabilityTests(unittest.TestCase):
             self.kinds(calibrations=[*self.calibrations, overlap]),
         )
 
+    def test_overlapping_periods_are_rejected_without_a_completed_test(self):
+        overlap = replace(
+            self.calibrations[1],
+            calibration_id="CAL-005",
+            valid_from="2027-06-01",
+            valid_through="2028-06-01",
+        )
+
+        kinds = self.kinds(calibrations=[*self.calibrations, overlap])
+
+        self.assertIn("overlapping_calibration_period", kinds)
+        self.assertNotIn("overlapping_calibrations", kinds)
+
     def test_unknown_and_repeated_instrument_references_are_reported(self):
         measurements = [
             replace(
