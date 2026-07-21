@@ -234,6 +234,37 @@ or missing check/register records. The
 [passing example](examples/commissioning-evidence-traceability-passing.md) is
 exercised by the repository workflow.
 
+## Handover Acceptance Audit
+
+Cross-check punch-list items, residual-risk approvals, and the signed acceptance
+decision before releasing a BESS handover package:
+
+```powershell
+python scripts/audit_handover_acceptance.py project-records `
+  --policy config/handover-acceptance-policy.example.json `
+  --output project-records\handover-acceptance-audit.md
+```
+
+The audit requires each deferred punch-list item to resolve to exactly one
+active, approved residual-risk record through `Source Item ID`. Closed items
+must retain their evidence link and verification note. A conditional acceptance
+must enumerate every active residual-risk ID, while an unconditional acceptance
+cannot retain any active deferral.
+
+The example policy treats open Critical and Major items as release blockers and
+does not permit Critical items to be deferred. Its controlled punch-list and
+risk statuses, release decisions, blocker severities, non-deferrable severities,
+and missing-value markers are all project-configurable. Policy lists are
+validated for duplicates, overlaps, and complete punch-status classification so
+a malformed gate fails instead of silently weakening the decision.
+
+Markdown and JSON reports preserve source files, line numbers, all three
+registers, aggregate counts, and each cross-register finding. The command
+returns `0` for a clean release, `2` for controlled findings, and `1` for a
+malformed policy, table, or incomplete register set. The
+[passing handover example](examples/handover-acceptance-passing.md) is exercised
+by the repository workflow.
+
 ## Unified Readiness Gate
 
 Run all three controls as one reproducible release decision when a project
@@ -273,6 +304,7 @@ the scanned directory without being ingested on the next run.
 ## Contribution Entry Points
 
 - Add project-specific evidence-traceability examples.
+- Add project-specific handover acceptance policies and records.
 - Improve punch-list and nonconformance closeout wording.
 - Improve handover document index fields.
 - Add project-specific examples to the acceptance evidence wording guide.

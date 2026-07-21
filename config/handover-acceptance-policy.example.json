@@ -1,0 +1,25 @@
+{
+  "missing_values": ["TBD", "TBC", "N/A", "NA", "-"],
+  "severities": ["Critical", "Major", "Minor"],
+  "punch_statuses": [
+    "Open",
+    "In progress",
+    "Ready for verification",
+    "Closed",
+    "Deferred"
+  ],
+  "open_punch_statuses": [
+    "Open",
+    "In progress",
+    "Ready for verification"
+  ],
+  "deferred_punch_statuses": ["Deferred"],
+  "closed_punch_statuses": ["Closed"],
+  "accepted_risk_statuses": ["Accepted for deferred closeout"],
+  "closed_risk_statuses": ["Closed"],
+  "release_decisions": ["Accepted", "Conditionally accepted"],
+  "conditional_decisions": ["Conditionally accepted"],
+  "pending_decisions": ["Pending", "Rejected"],
+  "blocking_severities": ["Critical", "Major"],
+  "non_deferrable_severities": ["Critical"]
+}

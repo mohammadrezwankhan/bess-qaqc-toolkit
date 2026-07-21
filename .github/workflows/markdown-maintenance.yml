@@ -60,6 +60,13 @@ jobs:
           examples/commissioning-evidence-traceability-passing.md
           --output "$RUNNER_TEMP/evidence-traceability.md"
 
+      - name: Audit handover acceptance
+        run: >-
+          python scripts/audit_handover_acceptance.py
+          examples/handover-acceptance-passing.md
+          --policy config/handover-acceptance-policy.example.json
+          --output "$RUNNER_TEMP/handover-acceptance.md"
+
       - name: Check Markdown links
         uses: lycheeverse/lychee-action@v2
         with:
