@@ -60,6 +60,12 @@ jobs:
           examples/commissioning-evidence-traceability-passing.md
           --output "$RUNNER_TEMP/evidence-traceability.md"
 
+      - name: Audit instrument calibration traceability
+        run: >-
+          python scripts/audit_calibration_traceability.py
+          examples/calibration-traceability-passing.md
+          --output "$RUNNER_TEMP/calibration-traceability.md"
+
       - name: Audit handover acceptance
         run: >-
           python scripts/audit_handover_acceptance.py
