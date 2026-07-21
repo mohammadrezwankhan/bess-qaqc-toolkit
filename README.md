@@ -139,6 +139,41 @@ to the controlled vocabularies and release gates for each project. A matching
 column rule replaces rather than merges with the global fallback, keeping each
 column's accepted and blocking states explicit.
 
+## Readiness Deadline Audit
+
+Audit dated owner actions separately from status vocabulary. Supply an explicit
+`--as-of` date so the same project snapshot produces the same deadline states
+in a local review and in CI:
+
+```powershell
+python scripts/audit_deadlines.py project-records `
+  --as-of 2026-07-21 `
+  --output project-records\deadline-audit.md
+```
+
+The report classifies each nonblank row as `overdue`, `due_today`, `upcoming`,
+`missing`, or `closed`, and preserves its source file, line, item, status,
+deadline heading, deadline value, and days to deadline. Use JSON for another
+reporting tool, or fail a pipeline on selected states:
+
+```powershell
+python scripts/audit_deadlines.py project-records `
+  --as-of 2026-07-21 --format json
+python scripts/audit_deadlines.py project-records `
+  --as-of 2026-07-21 `
+  --fail-on overdue --fail-on missing
+```
+
+By default, the audit recognizes `Due Date`, `Target Close Date`, and `Required
+By` columns. `Accepted`, `Approved`, `Closed`, `Complete`, and `Completed` are
+terminal statuses. `TBD`, `TBC`, `N/A`, `NA`, and `-` are controlled missing-date
+markers; other nonblank dates must use `YYYY-MM-DD`.
+
+Repeat `--date-column`, `--terminal-status`, or `--missing-date-value` to replace
+the corresponding default list for a project. Matching is case-insensitive
+after whitespace normalization. Tables with more than one recognized deadline
+column and rows with malformed dates fail instead of choosing silently.
+
 ## Contribution Entry Points
 
 - Add a commissioning evidence matrix.
