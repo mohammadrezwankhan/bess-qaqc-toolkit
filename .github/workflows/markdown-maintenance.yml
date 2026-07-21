@@ -52,6 +52,7 @@ jobs:
           --status-policy config/readiness-status-policy.example.json
           --completeness-policy config/readiness-completeness-policy.example.json
           --as-of 2026-07-21
+          --require-source-coverage
           --output "$RUNNER_TEMP/readiness-gate.md"
 
       - name: Audit commissioning evidence traceability
