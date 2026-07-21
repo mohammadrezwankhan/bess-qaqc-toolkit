@@ -298,6 +298,34 @@ input or a missing tracker. The
 [passing punch-list example](examples/punch-list-closeout-passing.md) is
 exercised by the repository workflow.
 
+## Handover Document-Control Audit
+
+Audit the controlled revision history behind a handover package so an approved
+document cannot silently replace an earlier issue without a traceable
+supersession chain:
+
+```powershell
+python scripts/audit_document_control.py project-records `
+  --as-of 2026-07-21 `
+  --output project-records\document-control-audit.md
+```
+
+The register retains one row per document revision. Revisions use either
+alphabetic (`Rev A`) or numeric (`Rev 2`) ordering consistently for each
+document. Every later issue must name the immediately preceding revision in
+`Supersedes Revision`, and its ISO issue date must increase. Historical rows
+must be `Superseded` or `Withdrawn`; the latest row must be `Approved`,
+`Accepted`, or `Released` and link to its controlled location.
+
+Unknown statuses, duplicate document/revision pairs, inconsistent document
+metadata, mixed revision schemes, future issue dates, and broken supersession
+chains are reported with source file and line number. Repeat
+`--accepted-status`, `--working-status`, `--obsolete-status`, or
+`--missing-value` to replace the corresponding defaults. The command returns
+`0` for a clean audit, `2` for controlled findings, and `1` for malformed input
+or a missing register. The
+[passing example](examples/document-control-passing.md) is exercised in CI.
+
 ## Handover Acceptance Audit
 
 Cross-check punch-list items, residual-risk approvals, and the signed acceptance
