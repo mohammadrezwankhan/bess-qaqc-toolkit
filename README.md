@@ -204,6 +204,36 @@ command exits with code `2` when violations exist and code `1` for malformed or
 ambiguous policies, tables, or a policy that matches no rows. Generated reports
 are excluded from later scans.
 
+## Commissioning Evidence Traceability Audit
+
+Cross-check commissioning rows against their controlled evidence register so a
+valid status cannot hide an unknown, orphaned, duplicated, or unapproved
+evidence record:
+
+```powershell
+python scripts/audit_evidence_traceability.py project-records `
+  --output project-records\evidence-traceability-audit.md
+```
+
+The check table requires a unique `Check ID`, the check or test, one or more
+`Evidence IDs`, an acceptance reference, an owner, and a status. The evidence
+register requires a unique `Evidence ID`, controlled location, revision, and
+approval status. IDs use uppercase hyphenated values ending in digits, such as
+`CHK-001` and `EVD-001`; one evidence record may support multiple checks.
+
+`Ready for verification`, `Closed`, and `Accepted` checks require every linked
+evidence record to be `Approved` or `Accepted`. Repeat `--completed-status` or
+`--accepted-evidence-status` to replace those defaults for a project. Repeat
+`--missing-value` to replace the default `TBD`, `TBC`, `N/A`, `NA`, and `-`
+placeholders. Matching is case-insensitive, while identifiers remain strict.
+
+Markdown and JSON reports preserve source files, line numbers, check coverage,
+register metadata, reverse references, and every finding. The command returns
+`0` for a clean audit, `2` for controlled findings, and `1` for malformed input
+or missing check/register records. The
+[passing example](examples/commissioning-evidence-traceability-passing.md) is
+exercised by the repository workflow.
+
 ## Unified Readiness Gate
 
 Run all three controls as one reproducible release decision when a project
@@ -242,7 +272,7 @@ the scanned directory without being ingested on the next run.
 
 ## Contribution Entry Points
 
-- Add a commissioning evidence matrix.
+- Add project-specific evidence-traceability examples.
 - Improve punch-list and nonconformance closeout wording.
 - Improve handover document index fields.
 - Add project-specific examples to the acceptance evidence wording guide.

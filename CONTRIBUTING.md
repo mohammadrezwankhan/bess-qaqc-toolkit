@@ -17,3 +17,4 @@ Contributions should improve practical BESS QA/QC clarity.
 - [ ] Markdown tables render cleanly.
 - [ ] `python scripts/validate_templates.py` passes.
 - [ ] `python -m unittest discover -s tests -v` passes for script changes.
+- [ ] Evidence IDs resolve to the controlled register when an evidence matrix changes.

@@ -54,6 +54,12 @@ jobs:
           --as-of 2026-07-21
           --output "$RUNNER_TEMP/readiness-gate.md"
 
+      - name: Audit commissioning evidence traceability
+        run: >-
+          python scripts/audit_evidence_traceability.py
+          examples/commissioning-evidence-traceability-passing.md
+          --output "$RUNNER_TEMP/evidence-traceability.md"
+
       - name: Check Markdown links
         uses: lycheeverse/lychee-action@v2
         with:
