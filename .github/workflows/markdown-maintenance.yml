@@ -45,8 +45,19 @@ jobs:
           python scripts/audit_completeness.py templates
           --policy config/readiness-completeness-policy.example.json
 
+      - name: Run unified readiness gate
+        run: >-
+          python scripts/audit_readiness.py
+          examples/readiness-gate-passing-record.md
+          --status-policy config/readiness-status-policy.example.json
+          --completeness-policy config/readiness-completeness-policy.example.json
+          --as-of 2026-07-21
+          --output "$RUNNER_TEMP/readiness-gate.md"
+
       - name: Check Markdown links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --verbose --no-progress README.md CONTRIBUTING.md templates/*.md
+          args: >-
+            --verbose --no-progress README.md CONTRIBUTING.md
+            examples/*.md templates/*.md
           fail: true
