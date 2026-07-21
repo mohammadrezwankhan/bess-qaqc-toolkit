@@ -40,6 +40,11 @@ jobs:
       - name: Validate template structure
         run: python scripts/validate_templates.py
 
+      - name: Audit conditional completeness
+        run: >-
+          python scripts/audit_completeness.py templates
+          --policy config/readiness-completeness-policy.example.json
+
       - name: Check Markdown links
         uses: lycheeverse/lychee-action@v2
         with:
