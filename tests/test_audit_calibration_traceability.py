@@ -6,6 +6,7 @@ import json
 import tempfile
 import unittest
 from dataclasses import replace
+from datetime import date
 from pathlib import Path
 
 from scripts.audit_calibration_traceability import (
@@ -58,6 +59,21 @@ class CalibrationTraceabilityTests(unittest.TestCase):
         self.assertEqual(self.measurements[2].status, "Planned")
         self.assertEqual(self.measurements[2].test_date, "2028-02-10")
         self.assertNotIn("no_calibration_at_test_date", self.kinds())
+
+    def test_audit_date_rejects_only_future_completed_measurements(self):
+        measurements = [
+            replace(self.measurements[0], test_date="2026-07-22"),
+            *self.measurements[1:],
+        ]
+        kinds = self.kinds(measurements=measurements, as_of=date(2026, 7, 21))
+
+        self.assertIn("future_completed_measurement", kinds)
+        self.assertEqual(
+            self.kinds(as_of=date(2026, 7, 21)).count(
+                "future_completed_measurement"
+            ),
+            0,
+        )
 
     def test_completed_measurement_requires_covering_calibration(self):
         measurements = [
@@ -207,7 +223,9 @@ class CalibrationTraceabilityTests(unittest.TestCase):
             self.measurements,
             self.calibrations,
             [],
+            as_of=date(2026, 7, 21),
         )
+        self.assertEqual(summary["as_of"], "2026-07-21")
         self.assertEqual(summary["instrument_count"], 3)
         self.assertEqual(
             summary["measurements"][0]["covering_calibration_ids"],
@@ -219,6 +237,7 @@ class CalibrationTraceabilityTests(unittest.TestCase):
         )
         rendered = render_markdown(summary)
         self.assertIn("# Instrument Calibration Traceability Audit", rendered)
+        self.assertIn("As of: 2026-07-21", rendered)
         self.assertIn("## Measurement Coverage", rendered)
         self.assertIn("## Calibration History", rendered)
 
@@ -265,9 +284,18 @@ class CalibrationTraceabilityTests(unittest.TestCase):
     def test_cli_emits_json_for_passing_record(self):
         standard_output = io.StringIO()
         with contextlib.redirect_stdout(standard_output):
-            exit_code = main([str(EXAMPLE_PATH), "--format", "json"])
+            exit_code = main(
+                [
+                    str(EXAMPLE_PATH),
+                    "--as-of",
+                    "2026-07-21",
+                    "--format",
+                    "json",
+                ]
+            )
         self.assertEqual(exit_code, 0)
         report = json.loads(standard_output.getvalue())
+        self.assertEqual(report["as_of"], "2026-07-21")
         self.assertEqual(report["issue_count"], 0)
         self.assertEqual(report["completed_measurement_count"], 2)
 
