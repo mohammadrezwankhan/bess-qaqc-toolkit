@@ -204,6 +204,42 @@ command exits with code `2` when violations exist and code `1` for malformed or
 ambiguous policies, tables, or a policy that matches no rows. Generated reports
 are excluded from later scans.
 
+## Unified Readiness Gate
+
+Run all three controls as one reproducible release decision when a project
+snapshot is ready for review:
+
+```powershell
+python scripts/audit_readiness.py project-records `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-07-21 `
+  --output project-records\readiness-gate.md
+```
+
+The combined Markdown or JSON report records each policy source, the explicit
+as-of date, selected deadline failure states, source files, per-check result,
+counts, and line-level findings. It returns `0` only when status policy,
+deadlines, and conditional completeness all pass; controlled findings return
+`2`, while malformed inputs or a check with no evaluable rows return `1`.
+
+By default, `overdue` and `missing` deadlines fail the combined gate. Repeat
+`--deadline-fail-on` to replace that pair for a project, for example:
+
+```powershell
+python scripts/audit_readiness.py project-records `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-07-21 `
+  --deadline-fail-on overdue --deadline-fail-on due_today `
+  --format json
+```
+
+The [passing example](examples/readiness-gate-passing-record.md) is exercised by
+the repository workflow and shows the minimum owner, deadline, and evidence
+fields needed by the example policies. Combined reports can be written inside
+the scanned directory without being ingested on the next run.
+
 ## Contribution Entry Points
 
 - Add a commissioning evidence matrix.
