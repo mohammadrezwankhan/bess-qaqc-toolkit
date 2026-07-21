@@ -237,6 +237,7 @@ def audit_calibration_traceability(
     measurements: Sequence[MeasurementRecord],
     calibrations: Sequence[CalibrationRecord],
     *,
+    as_of: date | None = None,
     completed_statuses: Sequence[str] = DEFAULT_COMPLETED_STATUSES,
     accepted_calibration_statuses: Sequence[
         str
@@ -360,6 +361,19 @@ def audit_calibration_traceability(
                 )
             else:
                 measurement_dates[measurement] = parsed_test_date
+                if (
+                    as_of is not None
+                    and normalize_heading(measurement.status) in completed
+                    and parsed_test_date > as_of
+                ):
+                    add_issue(
+                        measurement.source,
+                        measurement.line,
+                        measurement.measurement_id,
+                        "future_completed_measurement",
+                        "completed measurement test date is after the audit date "
+                        f"{as_of.isoformat()}",
+                    )
 
     calibration_ids: dict[str, CalibrationRecord] = {}
     calibration_periods: dict[CalibrationRecord, tuple[date, date]] = {}
@@ -535,6 +549,7 @@ def summarize_calibration_traceability(
     calibrations: Sequence[CalibrationRecord],
     issues: Sequence[CalibrationIssue],
     completed_statuses: Sequence[str] = DEFAULT_COMPLETED_STATUSES,
+    as_of: date | None = None,
 ) -> dict[str, object]:
     completed = {normalize_heading(value) for value in completed_statuses}
     references: dict[str, list[str]] = defaultdict(list)
@@ -556,6 +571,7 @@ def summarize_calibration_traceability(
         )
         calibration_items.append(item)
     return {
+        "as_of": None if as_of is None else as_of.isoformat(),
         "source_files": sorted(
             {record.source for record in [*measurements, *calibrations]}
         ),
@@ -593,6 +609,8 @@ def render_markdown(summary: dict[str, object]) -> str:
         f"Instruments: {summary['instrument_count']}  ",
         f"Issues: {summary['issue_count']}",
     ]
+    if summary["as_of"]:
+        lines[5:5] = [f"As of: {summary['as_of']}  ", ""]
     issues = summary["issues"]
     if issues:
         lines.extend(
@@ -689,6 +707,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
     parser.add_argument("--output", type=Path)
     parser.add_argument(
+        "--as-of",
+        metavar="YYYY-MM-DD",
+        help="flag completed measurements dated after this audit date",
+    )
+    parser.add_argument(
         "--completed-status",
         action="append",
         help=(
@@ -712,6 +735,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        as_of = None if args.as_of is None else _iso_date(args.as_of)
+        if args.as_of is not None and as_of is None:
+            raise ValueError("--as-of must use YYYY-MM-DD")
         completed_statuses = _option_values(
             args.completed_status,
             DEFAULT_COMPLETED_STATUSES,
@@ -742,6 +768,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         issues = audit_calibration_traceability(
             measurements,
             calibrations,
+            as_of=as_of,
             completed_statuses=completed_statuses,
             accepted_calibration_statuses=accepted_statuses,
             missing_values=missing_values,
@@ -755,6 +782,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         calibrations,
         issues,
         completed_statuses,
+        as_of,
     )
     rendered = (
         json.dumps(summary, indent=2) + "\n"

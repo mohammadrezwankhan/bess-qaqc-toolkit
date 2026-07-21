@@ -243,6 +243,7 @@ was expired, not yet effective, unapproved, or ambiguous on the test date:
 
 ```powershell
 python scripts/audit_calibration_traceability.py project-records `
+  --as-of 2026-07-21 `
   --output project-records\calibration-traceability-audit.md
 ```
 
@@ -260,6 +261,8 @@ duplicate references and IDs, malformed or reversed dates, coverage gaps, and
 overlapping periods are reported with source file and line number. Repeat
 `--completed-status`, `--accepted-calibration-status`, or `--missing-value` to
 replace the corresponding defaults for a project.
+When `--as-of` is supplied, a completed measurement dated after the audit date
+is also reported; planned work may still carry a future date.
 
 Markdown and JSON reports preserve measurement coverage, complete calibration
 history, reverse instrument references, and every finding. The command returns
