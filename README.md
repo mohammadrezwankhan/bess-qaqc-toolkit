@@ -268,6 +268,36 @@ or a missing register. The
 [passing calibration example](examples/calibration-traceability-passing.md) is
 exercised by the repository workflow.
 
+## Punch-List Closeout Audit
+
+Gate a punch-list or nonconformance tracker before verification, deferral, or
+handover review:
+
+```powershell
+python scripts/audit_punch_list.py project-records `
+  --as-of 2026-07-21 `
+  --output project-records\punch-list-closeout-audit.md
+```
+
+The audit recognizes the tracker fields for unique ID, severity, finding,
+system area, owner, evidence link, target close date, status, and verification
+or closeout note. It enforces the documented `Critical`, `Major`, and `Minor`
+severity vocabulary and the `Open`, `In progress`, `Ready for verification`,
+`Closed`, and `Deferred` status lifecycle.
+
+Active rows fail when their ISO target date is overdue. Critical rows must be
+terminal and cannot pass as deferred. Verification-ready, closed, and deferred
+rows require controlled evidence; terminal rows also require a closeout note.
+Malformed dates and identifiers, duplicate IDs, missing controlled values, and
+unknown severity or status values remain separate line-level findings.
+
+Markdown and JSON reports preserve source files, row numbers, aggregate status
+and severity counts, days to target, overdue state, and every issue. The command
+returns `0` for a clean audit, `2` for controlled findings, and `1` for malformed
+input or a missing tracker. The
+[passing punch-list example](examples/punch-list-closeout-passing.md) is
+exercised by the repository workflow.
+
 ## Handover Acceptance Audit
 
 Cross-check punch-list items, residual-risk approvals, and the signed acceptance
