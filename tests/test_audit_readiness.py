@@ -43,6 +43,15 @@ COMPLETENESS_POLICY = {
     ],
 }
 
+STATUS_ONLY_DOCUMENT = """# Status-Only Record
+
+This controlled record intentionally has no deadline or completeness match.
+
+| Item | Status |
+| --- | --- |
+| Archived drawing review | Closed |
+"""
+
 
 class ReadinessGateTests(unittest.TestCase):
     def write_file(self, name: str, content: str) -> Path:
@@ -63,20 +72,28 @@ class ReadinessGateTests(unittest.TestCase):
         content: str = READINESS_DOCUMENT,
         status_document: object = STATUS_POLICY,
         deadline_fail_states: tuple[str, ...] = ("overdue", "missing"),
+        additional_documents: tuple[str, ...] = (),
+        require_source_coverage: bool = False,
     ) -> dict[str, object]:
         status_path = self.write_policy("status.json", status_document)
         completeness_path = self.write_policy(
             "completeness.json",
             COMPLETENESS_POLICY,
         )
+        paths = [self.write_document(content)]
+        paths.extend(
+            self.write_file(f"additional-{index}.md", document)
+            for index, document in enumerate(additional_documents, start=1)
+        )
         return evaluate_readiness(
-            [self.write_document(content)],
+            paths,
             status_policy=load_status_policy(status_path),
             status_policy_source=status_path.as_posix(),
             completeness_policy=load_completeness_policy(completeness_path),
             completeness_policy_source=completeness_path.as_posix(),
             as_of=date(2026, 7, 21),
             deadline_fail_states=deadline_fail_states,
+            require_source_coverage=require_source_coverage,
         )
 
     def test_combined_gate_passes_all_three_controls(self):
@@ -89,6 +106,7 @@ class ReadinessGateTests(unittest.TestCase):
                 "status_policy": "pass",
                 "deadlines": "pass",
                 "conditional_completeness": "pass",
+                "source_coverage": "pass",
             },
         )
         self.assertEqual(report["checks"]["deadlines"]["row_count"], 1)
@@ -143,8 +161,54 @@ class ReadinessGateTests(unittest.TestCase):
         self.assertIn("required field value is missing", rendered)
 
     def test_generated_combined_report_is_not_reingested(self):
-        generated = self.write_document(render_markdown(self.evaluate()))
+        generated_content = render_markdown(self.evaluate())
+        generated = self.write_document(generated_content)
         self.assertEqual(extract_status_records(generated), [])
+        strict_report = self.evaluate(
+            additional_documents=(generated_content,),
+            require_source_coverage=True,
+        )
+        self.assertEqual(strict_report["checks"]["source_coverage"]["source_count"], 1)
+        self.assertEqual(strict_report["checks"]["source_coverage"]["gap_count"], 0)
+
+    def test_source_coverage_reports_partial_file_without_failing_by_default(self):
+        report = self.evaluate(additional_documents=(STATUS_ONLY_DOCUMENT,))
+
+        self.assertEqual(report["gate"]["result"], "pass")
+        coverage = report["checks"]["source_coverage"]
+        self.assertFalse(coverage["required"])
+        self.assertEqual(coverage["gap_count"], 2)
+        self.assertEqual(coverage["finding_count"], 0)
+        partial = next(
+            row
+            for row in coverage["coverage"]
+            if row["source"].endswith("additional-1.md")
+        )
+        self.assertTrue(partial["status_policy"])
+        self.assertFalse(partial["deadlines"])
+        self.assertFalse(partial["conditional_completeness"])
+        self.assertEqual(
+            partial["missing_checks"],
+            ["deadlines", "conditional_completeness"],
+        )
+
+    def test_required_source_coverage_fails_for_each_missing_control(self):
+        report = self.evaluate(
+            additional_documents=(STATUS_ONLY_DOCUMENT,),
+            require_source_coverage=True,
+        )
+
+        self.assertEqual(report["gate"]["failed_checks"], ["source_coverage"])
+        self.assertEqual(report["gate"]["finding_count"], 2)
+        coverage = report["checks"]["source_coverage"]
+        self.assertEqual(coverage["result"], "fail")
+        rendered = render_markdown(report)
+        self.assertIn("Enforcement: required", rendered)
+        self.assertIn("| Source coverage | FAIL | 2 | 2 |", rendered)
+        self.assertIn(
+            "| yes | no | no | deadlines, conditional_completeness |",
+            rendered,
+        )
 
     def test_cli_json_pass_uses_recommended_deadline_failures(self):
         document_path = self.write_document()
@@ -205,6 +269,40 @@ class ReadinessGateTests(unittest.TestCase):
         self.assertEqual(exit_code, 2)
         self.assertTrue(output_path.is_file())
         self.assertIn("conditional_completeness (1)", standard_error.getvalue())
+
+    def test_cli_strict_source_coverage_returns_two_and_reports_gaps(self):
+        document_path = self.write_document()
+        partial_path = self.write_file("partial.md", STATUS_ONLY_DOCUMENT)
+        status_path = self.write_policy("status.json", STATUS_POLICY)
+        completeness_path = self.write_policy(
+            "completeness.json",
+            COMPLETENESS_POLICY,
+        )
+        standard_output = io.StringIO()
+        standard_error = io.StringIO()
+        with contextlib.redirect_stdout(standard_output), contextlib.redirect_stderr(
+            standard_error
+        ):
+            exit_code = main(
+                [
+                    str(document_path),
+                    str(partial_path),
+                    "--status-policy",
+                    str(status_path),
+                    "--completeness-policy",
+                    str(completeness_path),
+                    "--as-of",
+                    "2026-07-21",
+                    "--require-source-coverage",
+                    "--format",
+                    "json",
+                ]
+            )
+        self.assertEqual(exit_code, 2)
+        report = json.loads(standard_output.getvalue())
+        self.assertTrue(report["configuration"]["require_source_coverage"])
+        self.assertEqual(report["checks"]["source_coverage"]["gap_count"], 2)
+        self.assertIn("source_coverage (2)", standard_error.getvalue())
 
     def test_cli_returns_one_for_incomplete_input(self):
         no_deadline = READINESS_DOCUMENT.replace("Target Close Date | ", "").replace(
