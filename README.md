@@ -17,6 +17,7 @@ help engineering teams make inspection logic easier to review and reuse.
 - [SAT readiness checklist](templates/sat-readiness-checklist.md).
 - [Supplier document review tracker](templates/supplier-document-review-tracker.md).
 - [Commissioning evidence matrix](templates/commissioning-evidence-matrix.md).
+- [Instrument calibration traceability register](templates/instrument-calibration-traceability-register.md).
 - [Punch-list and nonconformance tracker](templates/punch-list-nonconformance-tracker.md).
 - [Handover document index](templates/handover-document-index.md).
 - [Acceptance evidence wording guide](templates/acceptance-evidence-wording-guide.md).
@@ -234,6 +235,39 @@ or missing check/register records. The
 [passing example](examples/commissioning-evidence-traceability-passing.md) is
 exercised by the repository workflow.
 
+## Instrument Calibration Traceability Audit
+
+Cross-check completed commissioning measurements against dated instrument
+calibration history so an evidence package cannot rely on a certificate that
+was expired, not yet effective, unapproved, or ambiguous on the test date:
+
+```powershell
+python scripts/audit_calibration_traceability.py project-records `
+  --output project-records\calibration-traceability-audit.md
+```
+
+The measurement-use table links a unique `Measurement ID` and `Check ID` to one
+or more `Instrument IDs`, an ISO `Test Date`, owner, and status. The calibration
+history retains one row per certificate period with a unique `Calibration ID`,
+instrument, `Valid From`, `Valid Through`, approval status, and controlled
+certificate location. Multiple nonoverlapping periods for one instrument are
+supported so recalibration does not erase historical traceability.
+
+`Complete`, `Completed`, `Accepted`, and `Ready for verification` measurements
+require exactly one calibration period per instrument to cover the test date,
+and that period must be `Approved`, `Valid`, or `Accepted`. Unknown instruments,
+duplicate references and IDs, malformed or reversed dates, coverage gaps, and
+overlapping periods are reported with source file and line number. Repeat
+`--completed-status`, `--accepted-calibration-status`, or `--missing-value` to
+replace the corresponding defaults for a project.
+
+Markdown and JSON reports preserve measurement coverage, complete calibration
+history, reverse instrument references, and every finding. The command returns
+`0` for a clean audit, `2` for controlled findings, and `1` for malformed input
+or a missing register. The
+[passing calibration example](examples/calibration-traceability-passing.md) is
+exercised by the repository workflow.
+
 ## Handover Acceptance Audit
 
 Cross-check punch-list items, residual-risk approvals, and the signed acceptance
@@ -304,6 +338,7 @@ the scanned directory without being ingested on the next run.
 ## Contribution Entry Points
 
 - Add project-specific evidence-traceability examples.
+- Add project-specific calibration-history and measurement-use examples.
 - Add project-specific handover acceptance policies and records.
 - Improve punch-list and nonconformance closeout wording.
 - Improve handover document index fields.
