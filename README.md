@@ -372,9 +372,28 @@ python scripts/audit_readiness.py project-records `
 
 The combined Markdown or JSON report records each policy source, the explicit
 as-of date, selected deadline failure states, source files, per-check result,
-counts, and line-level findings. It returns `0` only when status policy,
-deadlines, and conditional completeness all pass; controlled findings return
-`2`, while malformed inputs or a check with no evaluable rows return `1`.
+counts, line-level findings, and a matrix showing which source files contributed
+to each control. It returns `0` only when status policy, deadlines, and
+conditional completeness all pass; controlled findings return `2`, while
+malformed inputs or a check with no evaluable rows return `1`.
+
+Source coverage is report-only by default because a mixed project folder may
+intentionally contain specialized records. When every contributing file is
+expected to expose status, deadline, and conditional-completeness rows, enforce
+that contract explicitly:
+
+```powershell
+python scripts/audit_readiness.py project-records `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-07-21 `
+  --require-source-coverage `
+  --format json
+```
+
+Strict coverage creates one finding for every missing source/control pair and
+returns `2`. Generated audit reports are excluded from the matrix, so writing a
+report inside the scanned directory remains safe for repeat runs.
 
 By default, `overdue` and `missing` deadlines fail the combined gate. Repeat
 `--deadline-fail-on` to replace that pair for a project, for example:
@@ -388,10 +407,11 @@ python scripts/audit_readiness.py project-records `
   --format json
 ```
 
-The [passing example](examples/readiness-gate-passing-record.md) is exercised by
-the repository workflow and shows the minimum owner, deadline, and evidence
-fields needed by the example policies. Combined reports can be written inside
-the scanned directory without being ingested on the next run.
+The [passing example](examples/readiness-gate-passing-record.md) is exercised in
+strict coverage mode by the repository workflow and shows the minimum owner,
+deadline, and evidence fields needed by the example policies. Combined reports
+can be written inside the scanned directory without being ingested on the next
+run.
 
 ## Contribution Entry Points
 
