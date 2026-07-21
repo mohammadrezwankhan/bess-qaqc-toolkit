@@ -466,6 +466,34 @@ def audit_calibration_traceability(
             calibration
         )
 
+    for instrument_id, history in calibrations_by_instrument.items():
+        valid_history = sorted(
+            (
+                calibration
+                for calibration in history
+                if calibration in calibration_periods
+            ),
+            key=lambda calibration: (
+                calibration_periods[calibration][0],
+                calibration_periods[calibration][1],
+                calibration.calibration_id,
+            ),
+        )
+        for index, calibration in enumerate(valid_history):
+            start, _ = calibration_periods[calibration]
+            for earlier in valid_history[:index]:
+                _, earlier_end = calibration_periods[earlier]
+                if earlier_end < start:
+                    continue
+                add_issue(
+                    calibration.source,
+                    calibration.line,
+                    calibration.calibration_id,
+                    "overlapping_calibration_period",
+                    f"{instrument_id} overlaps {earlier.calibration_id} from "
+                    f"{start.isoformat()} through {earlier_end.isoformat()}",
+                )
+
     for measurement in measurements:
         is_completed = normalize_heading(measurement.status) in completed
         test_date = measurement_dates.get(measurement)
