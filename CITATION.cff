@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this toolkit in research, teaching, or project documentation, please cite this repository."
+type: software
+title: "BESS QA/QC Toolkit"
+authors:
+  - family-names: Khan
+    given-names: Mohammad Rezwan
+    orcid: "https://orcid.org/0000-0002-1532-0598"
+repository-code: "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit"
+url: "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit"
+license: MIT
+keywords:
+  - battery energy storage
+  - quality assurance
+  - quality control
+  - commissioning
