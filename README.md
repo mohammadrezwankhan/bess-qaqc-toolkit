@@ -1,6 +1,7 @@
 # BESS QA/QC Toolkit
 
 [![Markdown maintenance](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml/badge.svg)](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml)
+[![License: MIT](https://img.shields.io/github/license/mohammadrezwankhan/bess-qaqc-toolkit?style=flat-square)](LICENSE)
 
 Templates and checklists for battery energy storage system QA/QC, FAT/SAT
 readiness, supplier evidence review, and commissioning handover.
@@ -10,6 +11,14 @@ readiness, supplier evidence review, and commissioning handover.
 BESS reliability depends on evidence that can be inspected before energization,
 commissioning, and handover. This repository collects practical templates that
 help engineering teams make inspection logic easier to review and reuse.
+
+## Documentation Map
+
+- [Planned contents](#planned-contents) is the template catalog.
+- [Template quality gate](#template-quality-gate) is the shortest local validation path.
+- [Readiness audits](#readiness-status-roll-up) explain the executable review controls.
+- [Scope and limitations](#scope-and-limitations) defines how to adapt the toolkit.
+- [Contributing](#contribution-entry-points), [citation metadata](CITATION.cff), and [license](LICENSE) support sharing.
 
 ## Planned Contents
 
@@ -81,6 +90,14 @@ renewable-energy utility-scale energy-storage
 
 Draft toolkit. Use the templates as starting points and adapt them to
 project-specific requirements, standards, and contractual obligations.
+
+## Scope and Limitations
+
+The templates and audit scripts are project-neutral starting points. They do not
+replace the governing contract, applicable standards, authority requirements,
+manufacturer instructions, legal review, or a competent engineer's acceptance
+decision. Do not treat a passing example or a clean local audit as evidence that
+a real BESS project is safe, compliant, or ready for energization.
 
 ## Template Quality Gate
 
@@ -453,3 +470,13 @@ run.
 - Add project-specific examples to the site walkdown photo log.
 - Add project-specific examples to the final acceptance signoff pack.
 - Add project-specific examples to the lessons learned capture template.
+
+## Citation
+
+If this toolkit supports research, teaching, or a project review, cite the
+machine-readable [CITATION.cff](CITATION.cff) metadata and identify the adapted
+templates, policies, and project context used.
+
+## License
+
+Released under the [MIT License](LICENSE).
