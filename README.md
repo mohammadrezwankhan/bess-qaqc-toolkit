@@ -14,76 +14,98 @@ help engineering teams make inspection logic easier to review and reuse.
 
 ## Documentation Map
 
-- [Planned contents](#planned-contents) is the template catalog.
+- [Toolkit contents](#toolkit-contents) is the lifecycle-organized template catalog.
 - [Template quality gate](#template-quality-gate) is the shortest local validation path.
 - [Readiness audits](#readiness-status-roll-up) explain the executable review controls.
+- [Fictional worked example](examples/lifecycle-worked-example.md) shows the existing readiness fields with executable audit inputs.
 - [Scope and limitations](#scope-and-limitations) defines how to adapt the toolkit.
 - [Contributing](#contribution-entry-points), [citation metadata](CITATION.cff), and [license](LICENSE) support sharing.
 
-## Planned Contents
+## Toolkit Contents
+
+The catalogue follows a typical BESS delivery lifecycle. A template may be
+adapted for another gate when the project plan or contract assigns it there;
+the grouping below is a navigation aid, not a required sequence.
+
+### Design / Supplier Review
+
+- [Supplier document review tracker](templates/supplier-document-review-tracker.md).
+- [Supplier query log](templates/supplier-query-log.md).
+- [Document readiness scoring guide](templates/document-readiness-scoring-guide.md).
+- [Fire safety interface review](templates/fire-safety-interface-review.md).
+- [Grid interconnection evidence pack](templates/grid-interconnection-evidence-pack.md).
+- [Relay settings review checklist](templates/relay-settings-review-checklist.md).
+
+### FAT
 
 - [FAT readiness checklist](templates/fat-readiness-checklist.md).
-- [SAT readiness checklist](templates/sat-readiness-checklist.md).
-- [Supplier document review tracker](templates/supplier-document-review-tracker.md).
-- [Commissioning evidence matrix](templates/commissioning-evidence-matrix.md).
-- [Instrument calibration traceability register](templates/instrument-calibration-traceability-register.md).
-- [Punch-list and nonconformance tracker](templates/punch-list-nonconformance-tracker.md).
-- [Handover document index](templates/handover-document-index.md).
 - [Acceptance evidence wording guide](templates/acceptance-evidence-wording-guide.md).
+- [Instrument calibration traceability register](templates/instrument-calibration-traceability-register.md).
+
+### Site / SAT
+
+- [SAT readiness checklist](templates/sat-readiness-checklist.md).
+- [Site acceptance risk register](templates/site-acceptance-risk-register.md).
+- [Site walkdown photo log](templates/site-walkdown-photo-log.md).
+- [Communication interface test log](templates/communication-interface-test-log.md).
+- [Metering acceptance checklist](templates/metering-acceptance-checklist.md).
+- [Punch-list and nonconformance tracker](templates/punch-list-nonconformance-tracker.md).
+
+### Commissioning
+
+- [Commissioning evidence matrix](templates/commissioning-evidence-matrix.md).
+- [Commissioning evidence review examples](templates/commissioning-evidence-review-examples.md).
+- [Commissioning hold-point checklist](templates/commissioning-hold-point-checklist.md).
+- [Commissioning shift handover log](templates/commissioning-shift-handover-log.md).
+- [Emergency response drill record](templates/emergency-response-drill-record.md).
+- [Availability test evidence template](templates/availability-test-evidence-template.md).
+- [Environmental condition log](templates/environmental-condition-log.md).
+
+### Energization
+
+- [Energization readiness gate](templates/energization-readiness-gate.md).
+- [Final acceptance signoff pack](templates/final-acceptance-signoff-pack.md).
+
+### Handover
+
+- [Handover document index](templates/handover-document-index.md).
+- [Cyber asset handover checklist](templates/cyber-asset-handover-checklist.md).
 - [Residual-risk acceptance template](templates/residual-risk-acceptance-template.md).
 - [BESS closeout review checklist](templates/closeout-review-checklist.md).
-- [Commissioning hold-point checklist](templates/commissioning-hold-point-checklist.md).
-- [Commissioning evidence review examples](templates/commissioning-evidence-review-examples.md).
-- [Document readiness scoring guide](templates/document-readiness-scoring-guide.md).
 - [BESS closeout owner map](templates/closeout-owner-map.md).
+- [BESS closeout timeline template](templates/closeout-timeline-template.md).
+- [Spare parts readiness checklist](templates/spare-parts-readiness-checklist.md).
 
-- [BESS Closeout Timeline Template](templates/closeout-timeline-template.md).
+### Warranty / O&M
 
-- [Commissioning Shift Handover Log](templates/commissioning-shift-handover-log.md).
-
-- [Warranty Evidence Checklist](templates/warranty-evidence-checklist.md).
-
-- [Fire Safety Interface Review](templates/fire-safety-interface-review.md).
-
-- [Spare Parts Readiness Checklist](templates/spare-parts-readiness-checklist.md).
-
-- [Site Acceptance Risk Register](templates/site-acceptance-risk-register.md).
-
-- [Grid Interconnection Evidence Pack](templates/grid-interconnection-evidence-pack.md).
-
-- [Energization Readiness Gate](templates/energization-readiness-gate.md).
-
-- [O And M Training Record](templates/o-and-m-training-record.md).
-
-- [Defect Aging Summary](templates/defect-aging-summary.md).
-
-- [Supplier Query Log](templates/supplier-query-log.md).
-
-- [Cyber Asset Handover Checklist](templates/cyber-asset-handover-checklist.md).
-
-- [Metering Acceptance Checklist](templates/metering-acceptance-checklist.md).
-
-- [Communication Interface Test Log](templates/communication-interface-test-log.md).
-
-- [Emergency Response Drill Record](templates/emergency-response-drill-record.md).
-
-- [Availability Test Evidence Template](templates/availability-test-evidence-template.md).
-
-- [Environmental Condition Log](templates/environmental-condition-log.md).
-
-- [Relay Settings Review Checklist](templates/relay-settings-review-checklist.md).
-
-- [Site Walkdown Photo Log](templates/site-walkdown-photo-log.md).
-
-- [Final Acceptance Signoff Pack](templates/final-acceptance-signoff-pack.md).
-
-- [Lessons Learned Capture Template](templates/lessons-learned-capture-template.md).
+- [Warranty evidence checklist](templates/warranty-evidence-checklist.md).
+- [O&M training record](templates/o-and-m-training-record.md).
+- [Defect aging summary](templates/defect-aging-summary.md).
+- [Lessons learned capture template](templates/lessons-learned-capture-template.md).
 
 ## Repository Topics
 
 ```text
 bess battery-energy-storage qaqc commissioning fat sat
 renewable-energy utility-scale energy-storage
+```
+
+## Fictional Worked Example
+
+The [lifecycle worked example](examples/lifecycle-worked-example.md) is a
+small, fictional record that demonstrates the existing readiness fields across
+the lifecycle catalogue. It is illustrative only: its fabricated evidence IDs
+are not compliance evidence and must not be used to support a real energization
+or handover decision.
+
+Run the same executable readiness gate used by the passing examples:
+
+```powershell
+python scripts/audit_readiness.py examples/lifecycle-worked-example.md `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-01-15 `
+  --require-source-coverage
 ```
 
 ## Status
