@@ -228,7 +228,7 @@ def extract_completeness_results(
     }
     matches: list[RuleMatch] = []
     violations: list[CompletenessViolation] = []
-    for start_line, block in table_blocks(lines):
+    for start_line, block in table_blocks(lines, strict=True):
         if len(block) < 3:
             continue
         header = table_cells(block[0])

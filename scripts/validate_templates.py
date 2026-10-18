@@ -18,7 +18,9 @@ def table_cells(line: str) -> list[str]:
     return [cell.strip() for cell in line.strip()[1:-1].split("|")]
 
 
-def table_blocks(lines: list[str]) -> list[tuple[int, list[str]]]:
+def table_blocks(
+    lines: list[str], *, strict: bool = False
+) -> list[tuple[int, list[str]]]:
     blocks: list[tuple[int, list[str]]] = []
     index = 0
     while index < len(lines):
@@ -31,6 +33,16 @@ def table_blocks(lines: list[str]) -> list[tuple[int, list[str]]]:
         while index < len(lines) and is_table_row(lines[index]):
             block.append(lines[index])
             index += 1
+        if strict:
+            header = table_cells(block[0])
+            separator = table_cells(block[1]) if len(block) > 1 else []
+            if len(separator) != len(header) or any(
+                not SEPARATOR_CELL.fullmatch(cell) for cell in separator
+            ):
+                raise ValueError(
+                    f"line {start + 2}: table separator must match the header "
+                    "width and use at least three dashes"
+                )
         blocks.append((start + 1, block))
     return blocks
 

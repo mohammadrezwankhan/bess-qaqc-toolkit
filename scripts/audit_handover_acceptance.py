@@ -254,7 +254,7 @@ def extract_handover_records(
     punch_items: list[PunchItem] = []
     residual_risks: list[ResidualRisk] = []
     decisions: list[AcceptanceDecision] = []
-    for start_line, block in table_blocks(lines):
+    for start_line, block in table_blocks(lines, strict=True):
         if len(block) < 3:
             continue
         header = table_cells(block[0])
