@@ -114,7 +114,7 @@ def extract_punch_list_records(path: Path) -> list[PunchListRecord]:
         return []
 
     records: list[PunchListRecord] = []
-    for start_line, block in table_blocks(lines):
+    for start_line, block in table_blocks(lines, strict=True):
         if len(block) < 3:
             continue
         header = table_cells(block[0])

@@ -118,6 +118,7 @@ class CompletenessAuditTests(unittest.TestCase):
             COMPLETE_DOCUMENT.replace(" | Evidence Link", "")
             .replace(" | Test record 17", "")
             .replace(" | Signed report", "")
+            .replace("| --- | --- | --- | --- | --- |", "| --- | --- | --- | --- |")
         )
         policy = load_completeness_policy(self.write_policy())
         _, violations = extract_completeness_results(

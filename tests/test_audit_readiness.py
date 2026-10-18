@@ -308,7 +308,7 @@ class ReadinessGateTests(unittest.TestCase):
         no_deadline = READINESS_DOCUMENT.replace("Target Close Date | ", "").replace(
             "2026-07-31 | ",
             "",
-        )
+        ).replace("| --- | --- | --- | --- | --- |", "| --- | --- | --- | --- |")
         document_path = self.write_document(no_deadline)
         status_path = self.write_policy("status.json", STATUS_POLICY)
         completeness_path = self.write_policy(

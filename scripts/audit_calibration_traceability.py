@@ -152,7 +152,7 @@ def extract_calibration_records(
     )
     measurements: list[MeasurementRecord] = []
     calibrations: list[CalibrationRecord] = []
-    for start_line, block in table_blocks(lines):
+    for start_line, block in table_blocks(lines, strict=True):
         if len(block) < 3:
             continue
         header = table_cells(block[0])

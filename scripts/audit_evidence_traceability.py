@@ -141,7 +141,7 @@ def extract_traceability_records(
     evidence_id_aliases = _normalized_aliases(EVIDENCE_COLUMNS["evidence_id"])
     checks: list[CheckRecord] = []
     evidence: list[EvidenceRecord] = []
-    for start_line, block in table_blocks(lines):
+    for start_line, block in table_blocks(lines, strict=True):
         if len(block) < 3:
             continue
         header = table_cells(block[0])

@@ -109,7 +109,7 @@ def extract_document_revisions(path: Path) -> list[DocumentRevision]:
         return []
 
     records: list[DocumentRevision] = []
-    for start_line, block in table_blocks(lines):
+    for start_line, block in table_blocks(lines, strict=True):
         if len(block) < 3:
             continue
         header = table_cells(block[0])
