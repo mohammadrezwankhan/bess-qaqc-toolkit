@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "repository": "bess-qaqc-toolkit",
+  "preserved_current_commit": "3b78c462c010cf7ee61848dd85becee4784af4cf",
+  "animations": [
+    {
+      "kind": "image",
+      "title": "Original floating-layer SVG",
+      "badge": "Earlier animated media",
+      "description": "Floating isometric tiers, pulsing circuits, and flowing dashed traces from the earlier repository hero.",
+      "format": "Animated SVG",
+      "preview": "media/hero-25d-cbf302005ff1.svg",
+      "preview_sha256": "74bf1216a3e1f33a48d6e7da59d55bfe63e04628ec45a2114181f8f0c16c097a",
+      "motion_identity": "cbf302005ff16758600ba48f87605c7f6128d021de4d4865c66fd458b737e649",
+      "sources": [
+        {
+          "path": "assets/hero-25d.svg",
+          "commit": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+          "sha256": "3ba57bb94d3d92720046aa80d93742f04f9e785b086a99659be8a35e11bb36bb",
+          "blob": "e91c13ee06686f21c050d1df43539484a97b8cb1",
+          "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/assets/hero-25d.svg"
+        },
+        {
+          "path": "assets/hero-25d.svg",
+          "commit": "6472dfe6e68b54e27384b84696d06b9c4cf9e422",
+          "sha256": "c1b4ef84340b797dd9a6afc045724b6722d4cfb03ebfe4fadfc259375bb89f77",
+          "blob": "0b2f3200189b607a49a09a53bd06dcaa217c54af",
+          "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/6472dfe6e68b54e27384b84696d06b9c4cf9e422/assets/hero-25d.svg"
+        }
+      ]
+    },
+    {
+      "kind": "waveform",
+      "title": "Original interactive waveform",
+      "badge": "Previous dashboard animation",
+      "description": "The earlier 2.5D perspective card and its moving waveform, with the original visual formulas and sliders.",
+      "preview": "waveform.html",
+      "preview_sha256": "956d344c5ce862ddf8377128ab417f752ea39871d7ca90c6eb1149dd1d3a6f02",
+      "sources": [
+        {
+          "path": "docs/index.html",
+          "commit": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+          "blob": "7105bfa3a922ccb01328e04fdc89ee2d91f24c2f",
+          "sha256": "d889d02a0bfb14a953e037b010b5f5074554eceee8546284649b2b07bae51acc",
+          "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/docs/index.html"
+        },
+        {
+          "path": "docs/index.html",
+          "commit": "6472dfe6e68b54e27384b84696d06b9c4cf9e422",
+          "blob": "3ad71e115e7aeb23aa4c6498924b19b21db50831",
+          "sha256": "6fa3ca3c0d8f8f0ad28ba6f19b49ea1f1c740e6edbf31df791b846eec6525c34",
+          "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/6472dfe6e68b54e27384b84696d06b9c4cf9e422/docs/index.html"
+        }
+      ]
+    }
+  ],
+  "native_links": [],
+  "historical_source_links": []
+}
