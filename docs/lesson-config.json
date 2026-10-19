@@ -1,0 +1,96 @@
+{
+  "repository": "bess-qaqc-toolkit",
+  "domain": "DOMAIN_A",
+  "title": "BESS QA/QC & Commissioning Toolkit",
+  "version": "2.0.0",
+  "author": "Mohammad Rezwan Khan",
+  "lessons": [
+    {
+      "id": "L01",
+      "title": "Factory Acceptance Testing (FAT) Cell & Container Inspection Matrix",
+      "level": "Beginner",
+      "duration": "30 mins",
+      "config_file": "protocols/fat_inspection_matrix.json",
+      "summary": "Perform automated incoming batch inspection: OCV variance check, internal resistance sigma screening, and enclosure IP55/IP66 seal verification.",
+      "inputs": [
+        "Container shipment serial numbers",
+        "Factory test birth certificates"
+      ],
+      "parameters": {
+        "MaxDeltaOCV_mV": 8.0,
+        "MaxDeltaIR_pct": 5.0,
+        "InsulationResistance_MOhm": 100.0
+      },
+      "checkpoints": [
+        "Generate automated pass/fail non-conformance punch list",
+        "Sign off mechanical and electrical factory sign-off sheets"
+      ]
+    },
+    {
+      "id": "L02",
+      "title": "Site Acceptance Testing (SAT) Insulation, Hi-Pot & E-Stop Verification",
+      "level": "Intermediate",
+      "duration": "45 mins",
+      "config_file": "protocols/sat_safety_trip.json",
+      "summary": "Verify DC bus galvanic isolation, high-potential dielectric withstand (Hi-Pot 2500V DC), gas detection interlocking, and hardwired E-Stop latency.",
+      "inputs": [
+        "Field commissioning test equipment logs",
+        "Fire suppression safety loop signals"
+      ],
+      "parameters": {
+        "HiPotVoltage_VDC": 2500,
+        "HiPotDwellTime_sec": 60,
+        "EStopTripLatency_ms": 45.0
+      },
+      "checkpoints": [
+        "Validate tripping of DC contactors under simulated fault",
+        "Verify NFPA 855 emergency deflagration vent readiness"
+      ]
+    },
+    {
+      "id": "L03",
+      "title": "Capacity Rating, Round-Trip Efficiency (RTE) & Heat Soak Trial",
+      "level": "Advanced",
+      "duration": "60 mins",
+      "config_file": "protocols/capacity_rte_verification.json",
+      "summary": "Execute continuous C/2 charge-discharge cycle at POI (Point of Interconnection) factoring in HVAC and transformer auxiliary consumption.",
+      "inputs": [
+        "Revenue-grade POI energy meter telemetry (kWh_in, kWh_out)",
+        "24-hour ambient temp log"
+      ],
+      "parameters": {
+        "GuaranteedCapacity_MWh": 10.0,
+        "GuaranteedRTE_pct": 86.5,
+        "MaxBatteryTemp_C": 35.0
+      },
+      "checkpoints": [
+        "Calculate AC-to-AC Round-Trip Efficiency accurately",
+        "Quantify auxiliary parasite ratio under high-temperature heat soak"
+      ]
+    },
+    {
+      "id": "L04",
+      "title": "Grid Interconnection Compliance (IEEE 1547 / IEC 62933) Handover Pack",
+      "level": "Production",
+      "duration": "75 mins",
+      "config_file": "protocols/grid_compliance_handover.json",
+      "summary": "Compile audit-ready compliance package: reactive power capability curves (PQ chart), low-voltage ride-through (LVRT) logs, and warranty certificate.",
+      "inputs": [
+        "Inverter dynamic response oscillograms",
+        "Utility interconnection requirement checklist"
+      ],
+      "parameters": {
+        "PowerFactorRange": [
+          -0.9,
+          0.9
+        ],
+        "LVRT_ZeroVoltageDuration_ms": 150,
+        "HarmonicTHD_pct": 3.2
+      },
+      "checkpoints": [
+        "Output formal EPC Handover Document bundle",
+        "Issue Certificate of Readiness for Commercial Operation (COD)"
+      ]
+    }
+  ]
+}
