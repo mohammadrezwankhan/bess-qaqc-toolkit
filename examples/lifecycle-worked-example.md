@@ -1,5 +1,7 @@
 # Fictional BESS Lifecycle Worked Example
 
+![Section 03 · Reproduce / parameters](../docs/visuals/sections/section-03-reproduce.svg)
+
 This is a fictional, illustrative record for a made-up “Northstar BESS Demo”
 project. The values exercise the repository's readiness fields and are not
 compliance evidence, a safety decision, or a substitute for project records.

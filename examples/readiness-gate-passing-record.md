@@ -1,5 +1,7 @@
 # BESS Readiness Gate Example
 
+![Section 03 · Reproduce / parameters](../docs/visuals/sections/section-03-reproduce.svg)
+
 Use this completed record to exercise the combined status, deadline, and
 conditional-completeness controls with the repository example policies.
 

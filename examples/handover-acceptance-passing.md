@@ -1,5 +1,7 @@
 # Handover Acceptance Passing Record
 
+![Section 04 · Verification / output](../docs/visuals/sections/section-04-verification.svg)
+
 Use this completed record to exercise cross-register acceptance checks for closed work, an approved deferral, and a conditional handover decision.
 
 ## Punch-List and Nonconformance Tracker

@@ -1,5 +1,7 @@
 # Calibration Traceability Passing Example
 
+![Section 03 · Reproduce / parameters](../docs/visuals/sections/section-03-reproduce.svg)
+
 This illustrative record links completed commissioning measurements to approved instrument calibrations that were valid on each test date, while retaining a later recalibration period and a planned future test.
 
 ## Measurement Use Register

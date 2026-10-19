@@ -1,5 +1,7 @@
 # Handover Document-Control Passing Example
 
+![Section 03 · Reproduce / parameters](../docs/visuals/sections/section-03-reproduce.svg)
+
 This example preserves complete alphabetic and numeric revision histories for two controlled BESS handover documents.
 
 | Document ID | Document Type | System Area | Owner | Revision | Approval Status | Issue Date | Supersedes Revision | Evidence Link | Closeout Notes |

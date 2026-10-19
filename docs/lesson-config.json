@@ -1,96 +1,315 @@
 {
-  "repository": "bess-qaqc-toolkit",
-  "domain": "DOMAIN_A",
-  "title": "BESS QA/QC & Commissioning Toolkit",
-  "version": "2.0.0",
-  "author": "Mohammad Rezwan Khan",
-  "lessons": [
+  "$schema": "./lesson-config.schema.json",
+  "schema_version": "1.0",
+  "repository": {
+    "owner": "mohammadrezwankhan",
+    "slug": "bess-qaqc-toolkit",
+    "name": "bess-qaqc-toolkit",
+    "title": "BESS Evidence Readiness Lab",
+    "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit",
+    "default_branch": "main",
+    "description": "Arrange BESS FAT, SAT, commissioning and handover evidence with traceable readiness checks and explicit review controls.",
+    "summary": "Markdown templates and Python audit scripts support BESS evidence review across the delivery lifecycle. A synthetic review-capacity exercise complements the real status, deadline, traceability, and acceptance gates.",
+    "audience": "BESS project engineers, quality reviewers, commissioning teams, and learners handling controlled evidence.",
+    "topics": [
+      "bess",
+      "battery-energy-storage",
+      "qaqc",
+      "commissioning",
+      "fat",
+      "sat",
+      "energy-storage",
+      "quality-assurance",
+      "evidence-traceability",
+      "document-control",
+      "acceptance-testing",
+      "python",
+      "engineering-workflow",
+      "utility-scale",
+      "renewable-energy"
+    ],
+    "source_paths": [
+      "README.md",
+      "scripts/audit_readiness.py",
+      "scripts/audit_evidence_traceability.py",
+      "scripts/audit_calibration_traceability.py",
+      "scripts/audit_handover_acceptance.py",
+      "scripts/validate_templates.py",
+      "config/readiness-status-policy.example.json",
+      "config/readiness-completeness-policy.example.json",
+      "examples/lifecycle-worked-example.md",
+      "tests/test_audit_readiness.py"
+    ],
+    "is_fork": false,
+    "upstream": null
+  },
+  "domain": {
+    "id": "A",
+    "name": "Energy systems",
+    "primary": "#00E5FF",
+    "secondary": "#00E676",
+    "surface": "#0A192F",
+    "glow": "rgba(0,229,255,0.35)"
+  },
+  "model": {
+    "title": "Evidence review · synthetic workload planning",
+    "timeUnit": "min",
+    "horizon": 60,
+    "parameters": [
+      {
+        "key": "alertRate",
+        "label": "Incoming findings",
+        "unit": "findings/min",
+        "min": 2,
+        "max": 60,
+        "step": 1,
+        "default": 12,
+        "calibration": "Illustrative input; verified against the declared analytical model, not field measurements."
+      },
+      {
+        "key": "analystCount",
+        "label": "Evidence reviewers",
+        "unit": "people",
+        "min": 1,
+        "max": 12,
+        "step": 1,
+        "default": 2,
+        "calibration": "Illustrative input; verified against the declared analytical model, not field measurements."
+      },
+      {
+        "key": "reviewRate",
+        "label": "Review capacity",
+        "unit": "findings/min/person",
+        "min": 1,
+        "max": 10,
+        "step": 0.5,
+        "default": 4,
+        "calibration": "Illustrative input; verified against the declared analytical model, not field measurements."
+      },
+      {
+        "key": "automationPct",
+        "label": "Assumed clerical triage",
+        "unit": "%",
+        "min": 0,
+        "max": 90,
+        "step": 5,
+        "default": 0,
+        "calibration": "Illustrative input; verified against the declared analytical model, not field measurements."
+      }
+    ],
+    "metrics": [
+      {
+        "key": "backlog",
+        "label": "Unreviewed findings",
+        "unit": "findings",
+        "decimals": 1
+      },
+      {
+        "key": "coveragePct",
+        "label": "Nominal review coverage",
+        "unit": "%",
+        "decimals": 1
+      },
+      {
+        "key": "reviewedAlerts",
+        "label": "Processed findings",
+        "unit": "findings",
+        "decimals": 0
+      },
+      {
+        "key": "workloadPct",
+        "label": "Reviewer utilization",
+        "unit": "%",
+        "decimals": 1
+      }
+    ],
+    "equation": "manual demand = λ(1−a/100); capacity = nμ; backlog = max(0, demand−capacity)t; coverage = 100 · min(1, (λa/100 + capacity)/λ).",
+    "assumptions": [
+      "Synthetic alert counts model staffing and defensive workflow capacity.",
+      "Automatic resolution is assumed correct; precision, recall, false positives, and severity are not modeled.",
+      "All analysts have the same throughput and begin with an empty queue.",
+      "All incoming findings, staff counts, and review rates are fictional and begin with an empty backlog.",
+      "Automatic resolution represents an assumed correct clerical triage fraction, not automated engineering approval.",
+      "A cleared queue cannot substitute for evidence traceability, valid calibration periods, signed residual-risk acceptance, or energization authorization."
+    ],
+    "kind": "security",
+    "introduction": "The count model treats incoming findings as review work. It does not parse project records or apply the toolkit’s acceptance policies; use the native audit commands for those checks.",
+    "calibration_status": "Uncalibrated synthetic teaching proxy"
+  },
+  "modules": [
     {
-      "id": "L01",
-      "title": "Factory Acceptance Testing (FAT) Cell & Container Inspection Matrix",
-      "level": "Beginner",
-      "duration": "30 mins",
-      "config_file": "protocols/fat_inspection_matrix.json",
-      "summary": "Perform automated incoming batch inspection: OCV variance check, internal resistance sigma screening, and enclosure IP55/IP66 seal verification.",
-      "inputs": [
-        "Container shipment serial numbers",
-        "Factory test birth certificates"
+      "id": "module-1",
+      "title": "Separate review workload from acceptance",
+      "objective": "Recognize that counting reviewed items does not establish their evidential sufficiency.",
+      "minutes": 12,
+      "steps": [
+        "Read the fictional lifecycle example and identify owner, deadline, evidence link, and status.",
+        "Apply twelve findings/minute and two reviewers at four/minute, with no automated triage.",
+        "Predict the one-hour backlog and compare coverage with the native status-policy vocabulary."
       ],
-      "parameters": {
-        "MaxDeltaOCV_mV": 8.0,
-        "MaxDeltaIR_pct": 5.0,
-        "InsulationResistance_MOhm": 100.0
+      "preset": {
+        "alertRate": 12,
+        "analystCount": 2,
+        "reviewRate": 4,
+        "automationPct": 0
       },
       "checkpoints": [
-        "Generate automated pass/fail non-conformance punch list",
-        "Sign off mechanical and electrical factory sign-off sheets"
-      ]
+        {
+          "label": "Only two thirds of arrivals can be reviewed",
+          "metric": "coveragePct",
+          "operator": "==",
+          "expected": 66.666667,
+          "tolerance": 0.02,
+          "atTime": 60
+        },
+        {
+          "label": "240 synthetic findings remain",
+          "metric": "backlog",
+          "operator": "==",
+          "expected": 240,
+          "tolerance": 0.02,
+          "atTime": 60
+        }
+      ],
+      "reflection": "Why could every row say Closed while the package still fails evidence, calibration, or handover checks?",
+      "source_paths": [
+        "examples/lifecycle-worked-example.md",
+        "config/readiness-status-policy.example.json"
+      ],
+      "level": "Foundation"
     },
     {
-      "id": "L02",
-      "title": "Site Acceptance Testing (SAT) Insulation, Hi-Pot & E-Stop Verification",
-      "level": "Intermediate",
-      "duration": "45 mins",
-      "config_file": "protocols/sat_safety_trip.json",
-      "summary": "Verify DC bus galvanic isolation, high-potential dielectric withstand (Hi-Pot 2500V DC), gas detection interlocking, and hardwired E-Stop latency.",
-      "inputs": [
-        "Field commissioning test equipment logs",
-        "Fire suppression safety loop signals"
+      "id": "module-2",
+      "title": "Create a capacity plan with named controls",
+      "objective": "Plan review capacity without weakening required evidence fields.",
+      "minutes": 15,
+      "steps": [
+        "Keep the twelve-finding arrival rate and four findings/minute per reviewer.",
+        "Add a third reviewer and predict whether backlog continues growing.",
+        "Read the completeness policy and identify which states require owner, deadline, approval, or evidence."
       ],
-      "parameters": {
-        "HiPotVoltage_VDC": 2500,
-        "HiPotDwellTime_sec": 60,
-        "EStopTripLatency_ms": 45.0
+      "preset": {
+        "alertRate": 12,
+        "analystCount": 3,
+        "reviewRate": 4,
+        "automationPct": 0
       },
       "checkpoints": [
-        "Validate tripping of DC contactors under simulated fault",
-        "Verify NFPA 855 emergency deflagration vent readiness"
-      ]
+        {
+          "label": "Nominal review coverage reaches 100%",
+          "metric": "coveragePct",
+          "operator": "==",
+          "expected": 100,
+          "tolerance": 0.02,
+          "atTime": 60
+        },
+        {
+          "label": "No new review backlog accumulates",
+          "metric": "backlog",
+          "operator": "==",
+          "expected": 0,
+          "tolerance": 0.02,
+          "atTime": 60
+        }
+      ],
+      "reflection": "Which exact artifacts would prove that an accepted deferral is controlled?",
+      "source_paths": [
+        "config/readiness-completeness-policy.example.json",
+        "scripts/audit_readiness.py"
+      ],
+      "level": "Parameter study"
     },
     {
-      "id": "L03",
-      "title": "Capacity Rating, Round-Trip Efficiency (RTE) & Heat Soak Trial",
-      "level": "Advanced",
-      "duration": "60 mins",
-      "config_file": "protocols/capacity_rte_verification.json",
-      "summary": "Execute continuous C/2 charge-discharge cycle at POI (Point of Interconnection) factoring in HVAC and transformer auxiliary consumption.",
-      "inputs": [
-        "Revenue-grade POI energy meter telemetry (kWh_in, kWh_out)",
-        "24-hour ambient temp log"
+      "id": "module-3",
+      "title": "Stress a commissioning evidence surge",
+      "objective": "Keep workload pressure separate from a release decision.",
+      "minutes": 15,
+      "steps": [
+        "Increase arrivals to twenty findings/minute with the same three reviewers.",
+        "Predict the sixty-minute backlog and run the scenario.",
+        "Read the instrument-calibration and evidence-traceability audit entry points; list checks that must remain intact under time pressure."
       ],
-      "parameters": {
-        "GuaranteedCapacity_MWh": 10.0,
-        "GuaranteedRTE_pct": 86.5,
-        "MaxBatteryTemp_C": 35.0
+      "preset": {
+        "alertRate": 20,
+        "analystCount": 3,
+        "reviewRate": 4,
+        "automationPct": 0
       },
       "checkpoints": [
-        "Calculate AC-to-AC Round-Trip Efficiency accurately",
-        "Quantify auxiliary parasite ratio under high-temperature heat soak"
-      ]
+        {
+          "label": "Coverage falls to 60%",
+          "metric": "coveragePct",
+          "operator": "==",
+          "expected": 60,
+          "tolerance": 0.02,
+          "atTime": 60
+        },
+        {
+          "label": "480 findings accumulate in one hour",
+          "metric": "backlog",
+          "operator": "==",
+          "expected": 480,
+          "tolerance": 0.02,
+          "atTime": 60
+        }
+      ],
+      "reflection": "Why should a late evidence package trigger a controlled hold point rather than a lower acceptance threshold?",
+      "source_paths": [
+        "scripts/audit_calibration_traceability.py",
+        "scripts/audit_evidence_traceability.py",
+        "README.md"
+      ],
+      "level": "Stress test"
     },
     {
-      "id": "L04",
-      "title": "Grid Interconnection Compliance (IEEE 1547 / IEC 62933) Handover Pack",
-      "level": "Production",
-      "duration": "75 mins",
-      "config_file": "protocols/grid_compliance_handover.json",
-      "summary": "Compile audit-ready compliance package: reactive power capability curves (PQ chart), low-voltage ride-through (LVRT) logs, and warranty certificate.",
-      "inputs": [
-        "Inverter dynamic response oscillograms",
-        "Utility interconnection requirement checklist"
+      "id": "module-4",
+      "title": "Prepare a controlled handover record",
+      "objective": "Combine workload assumptions with the real policy and traceability evidence required for review.",
+      "minutes": 18,
+      "steps": [
+        "Apply the twenty-finding surge with three reviewers and 40% assumed clerical triage.",
+        "Run and export the count scenario, recording that triage accuracy is assumed.",
+        "Build a handoff outline containing as-of date, policy revision, source coverage, unresolved findings, calibration evidence, and authorized acceptance."
       ],
-      "parameters": {
-        "PowerFactorRange": [
-          -0.9,
-          0.9
-        ],
-        "LVRT_ZeroVoltageDuration_ms": 150,
-        "HarmonicTHD_pct": 3.2
+      "preset": {
+        "alertRate": 20,
+        "analystCount": 3,
+        "reviewRate": 4,
+        "automationPct": 40
       },
       "checkpoints": [
-        "Output formal EPC Handover Document bundle",
-        "Issue Certificate of Readiness for Commercial Operation (COD)"
-      ]
+        {
+          "label": "Nominal capacity balances the incoming work",
+          "metric": "coveragePct",
+          "operator": "==",
+          "expected": 100,
+          "tolerance": 0.02,
+          "atTime": 60
+        },
+        {
+          "label": "1,200 synthetic arrivals are processed",
+          "metric": "reviewedAlerts",
+          "operator": "==",
+          "expected": 1200,
+          "tolerance": 0.02,
+          "atTime": 60
+        }
+      ],
+      "reflection": "Which native audit outputs and human approvals would still be required even when this synthetic count model shows full coverage?",
+      "source_paths": [
+        "scripts/audit_readiness.py",
+        "scripts/audit_handover_acceptance.py",
+        "tests/test_audit_readiness.py"
+      ],
+      "level": "Transfer to source"
     }
-  ]
+  ],
+  "source": {
+    "commit": "b025120d9d317df682d48b4ad3ccb88acf3875e9",
+    "audited_at": "2026-10-19T08:39:24Z",
+    "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/tree/b025120d9d317df682d48b4ad3ccb88acf3875e9",
+    "calibration_status": "synthetic-analytical-fixtures",
+    "scope": "This browser lab is a standalone teaching approximation. Use the linked source for the project implementation."
+  },
+  "dashboard_url": "https://mohammadrezwankhan.github.io/bess-qaqc-toolkit/"
 }

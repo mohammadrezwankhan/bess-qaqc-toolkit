@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "repository": {
+    "name": "bess-qaqc-toolkit",
+    "name_with_owner": "mohammadrezwankhan/bess-qaqc-toolkit",
+    "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit"
+  },
+  "native_source": {
+    "commit": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+    "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/tree/b62d14e117ed5d9ede740b6bf8648df9b8290621",
+    "source_path_override": null
+  },
+  "browser_lab_package_provenance": {
+    "commit": "b025120d9d317df682d48b4ad3ccb88acf3875e9",
+    "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/tree/b025120d9d317df682d48b4ad3ccb88acf3875e9",
+    "scope": "This browser lab is a standalone teaching approximation. Use the linked source for the project implementation.",
+    "calibration_status": "synthetic-analytical-fixtures",
+    "config_path": "docs/lesson-config.json"
+  },
+  "native_catalog_source": "Tracked Markdown in source lesson, example, study-case, concept, model, and documentation paths.",
+  "native_material_count": 8,
+  "reproduction_command_count": 2,
+  "materials": [
+    {
+      "id": "doc-8ec9a00bfd09",
+      "title": "BESS QA/QC Toolkit",
+      "path": "README.md",
+      "line": 1,
+      "source_paths": [
+        "README.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/README.md#L1",
+      "source_revision": "b025120d9d317df682d48b4ad3ccb88acf3875e9",
+      "source_kind": "historical-reconciled-readme",
+      "source_label": "Historical README/source guide at b025120d9d31",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "Templates and checklists for battery energy storage system QA/QC, FAT/SAT",
+      "type": "Native overview",
+      "section": "equations",
+      "tags": [
+        "model"
+      ],
+      "track": null,
+      "lesson_id": null,
+      "source_blob_path": "README.md",
+      "source_blob_sha256": "3ccc04e341fa70d0a1fe515b2c7fc469e8ce6f1faab7327f8fceadc09b69ddd8",
+      "source_blob_retrieval": "git-show",
+      "source_blob_cache": null
+    },
+    {
+      "id": "doc-b7bac421e57c",
+      "title": "BESS Readiness Gate Example",
+      "path": "examples/readiness-gate-passing-record.md",
+      "line": 1,
+      "source_paths": [
+        "examples/readiness-gate-passing-record.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/readiness-gate-passing-record.md#L1",
+      "source_revision": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+      "source_kind": "audited-native-source",
+      "source_label": "Source at b62d14e117ed",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "Use this completed record to exercise the combined status, deadline, and",
+      "type": "Native lesson / example",
+      "section": "reproduce",
+      "tags": [
+        "native-lesson"
+      ],
+      "track": null,
+      "lesson_id": null
+    },
+    {
+      "id": "doc-c7dddaf9b6a9",
+      "title": "Fictional BESS Lifecycle Worked Example",
+      "path": "examples/lifecycle-worked-example.md",
+      "line": 1,
+      "source_paths": [
+        "examples/lifecycle-worked-example.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/lifecycle-worked-example.md#L1",
+      "source_revision": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+      "source_kind": "audited-native-source",
+      "source_label": "Source at b62d14e117ed",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "This is a fictional, illustrative record for a made-up “Northstar BESS Demo”",
+      "type": "Native lesson / example",
+      "section": "reproduce",
+      "tags": [
+        "native-lesson"
+      ],
+      "track": null,
+      "lesson_id": null
+    },
+    {
+      "id": "doc-445503f713bb",
+      "title": "Handover Document-Control Passing Example",
+      "path": "examples/document-control-passing.md",
+      "line": 1,
+      "source_paths": [
+        "examples/document-control-passing.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/document-control-passing.md#L1",
+      "source_revision": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+      "source_kind": "audited-native-source",
+      "source_label": "Source at b62d14e117ed",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "This example preserves complete alphabetic and numeric revision histories for two controlled BESS handover documents.",
+      "type": "Native lesson / example",
+      "section": "reproduce",
+      "tags": [
+        "native-lesson"
+      ],
+      "track": null,
+      "lesson_id": null
+    },
+    {
+      "id": "doc-388d2d848e89",
+      "title": "Punch-List Closeout Passing Record",
+      "path": "examples/punch-list-closeout-passing.md",
+      "line": 1,
+      "source_paths": [
+        "examples/punch-list-closeout-passing.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/punch-list-closeout-passing.md#L1",
+      "source_revision": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+      "source_kind": "audited-native-source",
+      "source_label": "Source at b62d14e117ed",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "This compact example exercises the punch-list closeout gate with closed,",
+      "type": "Native lesson / example",
+      "section": "reproduce",
+      "tags": [
+        "native-lesson"
+      ],
+      "track": null,
+      "lesson_id": null
+    },
+    {
+      "id": "doc-c834eb43b352",
+      "title": "Calibration Traceability Passing Example",
+      "path": "examples/calibration-traceability-passing.md",
+      "line": 1,
+      "source_paths": [
+        "examples/calibration-traceability-passing.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/calibration-traceability-passing.md#L1",
+      "source_revision": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+      "source_kind": "audited-native-source",
+      "source_label": "Source at b62d14e117ed",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "This illustrative record links completed commissioning measurements to approved instrument calibrations that were valid on each test date, while retaining a later recalibration period and a planned future test.",
+      "type": "Native lesson / example",
+      "section": "verification",
+      "tags": [
+        "native-lesson",
+        "verification"
+      ],
+      "track": null,
+      "lesson_id": null
+    },
+    {
+      "id": "doc-80fec53bd8c2",
+      "title": "Commissioning Evidence Traceability Example",
+      "path": "examples/commissioning-evidence-traceability-passing.md",
+      "line": 1,
+      "source_paths": [
+        "examples/commissioning-evidence-traceability-passing.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/commissioning-evidence-traceability-passing.md#L1",
+      "source_revision": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+      "source_kind": "audited-native-source",
+      "source_label": "Source at b62d14e117ed",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "Use this completed record to exercise the evidence-register audit with shared evidence and accepted closeout records.",
+      "type": "Native lesson / example",
+      "section": "verification",
+      "tags": [
+        "native-lesson",
+        "verification"
+      ],
+      "track": null,
+      "lesson_id": null
+    },
+    {
+      "id": "doc-1a8ad45d86f7",
+      "title": "Handover Acceptance Passing Record",
+      "path": "examples/handover-acceptance-passing.md",
+      "line": 1,
+      "source_paths": [
+        "examples/handover-acceptance-passing.md"
+      ],
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/handover-acceptance-passing.md#L1",
+      "source_revision": "b62d14e117ed5d9ede740b6bf8648df9b8290621",
+      "source_kind": "audited-native-source",
+      "source_label": "Source at b62d14e117ed",
+      "catalog_url": null,
+      "native_url": null,
+      "excerpt": "Use this completed record to exercise cross-register acceptance checks for closed work, an approved deferral, and a conditional handover decision.",
+      "type": "Native lesson / example",
+      "section": "verification",
+      "tags": [
+        "native-lesson",
+        "verification"
+      ],
+      "track": null,
+      "lesson_id": null
+    }
+  ],
+  "commands": [
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "label": "Source-defined validation command",
+      "path": ".github/workflows/markdown-maintenance.yml",
+      "line": 41,
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/.github/workflows/markdown-maintenance.yml#L41"
+    },
+    {
+      "command": "python scripts/validate_templates.py",
+      "label": "Source-defined example command",
+      "path": ".github/workflows/markdown-maintenance.yml",
+      "line": 44,
+      "source_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/.github/workflows/markdown-maintenance.yml#L44"
+    }
+  ],
+  "engineering_curriculum_exclusions": [],
+  "visuals": {
+    "mapped_diagrams": [],
+    "section_banners": [
+      "section-01-question.svg",
+      "section-02-equations.svg",
+      "section-03-reproduce.svg",
+      "section-04-verification.svg",
+      "section-05-scope.svg"
+    ]
+  },
+  "native_document_banner_insertions": [
+    {
+      "path": "examples/readiness-gate-passing-record.md",
+      "section": "reproduce",
+      "section_title": "Reproduce / parameters",
+      "banner": "docs/visuals/sections/section-03-reproduce.svg",
+      "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+      "insert_after_heading": "BESS Readiness Gate Example",
+      "heading_line": 1,
+      "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/readiness-gate-passing-record.md#L1",
+      "reason": "The existing heading 'BESS Readiness Gate Example' matches the reproduce / parameters section."
+    },
+    {
+      "path": "examples/lifecycle-worked-example.md",
+      "section": "reproduce",
+      "section_title": "Reproduce / parameters",
+      "banner": "docs/visuals/sections/section-03-reproduce.svg",
+      "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+      "insert_after_heading": "Fictional BESS Lifecycle Worked Example",
+      "heading_line": 1,
+      "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/lifecycle-worked-example.md#L1",
+      "reason": "The existing heading 'Fictional BESS Lifecycle Worked Example' matches the reproduce / parameters section."
+    },
+    {
+      "path": "examples/document-control-passing.md",
+      "section": "reproduce",
+      "section_title": "Reproduce / parameters",
+      "banner": "docs/visuals/sections/section-03-reproduce.svg",
+      "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+      "insert_after_heading": "Handover Document-Control Passing Example",
+      "heading_line": 1,
+      "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/document-control-passing.md#L1",
+      "reason": "The existing heading 'Handover Document-Control Passing Example' matches the reproduce / parameters section."
+    },
+    {
+      "path": "examples/calibration-traceability-passing.md",
+      "section": "reproduce",
+      "section_title": "Reproduce / parameters",
+      "banner": "docs/visuals/sections/section-03-reproduce.svg",
+      "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+      "insert_after_heading": "Calibration Traceability Passing Example",
+      "heading_line": 1,
+      "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/calibration-traceability-passing.md#L1",
+      "reason": "The existing heading 'Calibration Traceability Passing Example' matches the reproduce / parameters section."
+    },
+    {
+      "path": "examples/commissioning-evidence-traceability-passing.md",
+      "section": "verification",
+      "section_title": "Verification / output",
+      "banner": "docs/visuals/sections/section-04-verification.svg",
+      "markdown_relative_banner": "../docs/visuals/sections/section-04-verification.svg",
+      "insert_after_heading": "Commissioning Evidence Traceability Example",
+      "heading_line": 1,
+      "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/commissioning-evidence-traceability-passing.md#L1",
+      "reason": "The existing heading 'Commissioning Evidence Traceability Example' matches the verification / output section."
+    },
+    {
+      "path": "examples/handover-acceptance-passing.md",
+      "section": "verification",
+      "section_title": "Verification / output",
+      "banner": "docs/visuals/sections/section-04-verification.svg",
+      "markdown_relative_banner": "../docs/visuals/sections/section-04-verification.svg",
+      "insert_after_heading": "Handover Acceptance Passing Record",
+      "heading_line": 1,
+      "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/handover-acceptance-passing.md#L1",
+      "reason": "The existing heading 'Handover Acceptance Passing Record' matches the verification / output section."
+    }
+  ],
+  "native_document_banner_audit": {
+    "schema_version": 1,
+    "eligibility_rule": "Tracked indexed Markdown in an examples, tutorials, lessons, studies, study-cases, concepts or notes directory, or whose path/title explicitly names a lesson, tutorial, example, walkthrough, study case or study. Banners are based only on existing semantic heading text, never directory names.",
+    "eligible_document_count": 7,
+    "lesson_document_candidates": 7,
+    "modified_document_count": 6,
+    "banner_insertion_count": 6,
+    "audit_gap_count": 1,
+    "banners": [
+      {
+        "path": "examples/readiness-gate-passing-record.md",
+        "section": "reproduce",
+        "section_title": "Reproduce / parameters",
+        "banner": "docs/visuals/sections/section-03-reproduce.svg",
+        "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+        "insert_after_heading": "BESS Readiness Gate Example",
+        "heading_line": 1,
+        "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/readiness-gate-passing-record.md#L1",
+        "reason": "The existing heading 'BESS Readiness Gate Example' matches the reproduce / parameters section."
+      },
+      {
+        "path": "examples/lifecycle-worked-example.md",
+        "section": "reproduce",
+        "section_title": "Reproduce / parameters",
+        "banner": "docs/visuals/sections/section-03-reproduce.svg",
+        "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+        "insert_after_heading": "Fictional BESS Lifecycle Worked Example",
+        "heading_line": 1,
+        "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/lifecycle-worked-example.md#L1",
+        "reason": "The existing heading 'Fictional BESS Lifecycle Worked Example' matches the reproduce / parameters section."
+      },
+      {
+        "path": "examples/document-control-passing.md",
+        "section": "reproduce",
+        "section_title": "Reproduce / parameters",
+        "banner": "docs/visuals/sections/section-03-reproduce.svg",
+        "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+        "insert_after_heading": "Handover Document-Control Passing Example",
+        "heading_line": 1,
+        "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/document-control-passing.md#L1",
+        "reason": "The existing heading 'Handover Document-Control Passing Example' matches the reproduce / parameters section."
+      },
+      {
+        "path": "examples/calibration-traceability-passing.md",
+        "section": "reproduce",
+        "section_title": "Reproduce / parameters",
+        "banner": "docs/visuals/sections/section-03-reproduce.svg",
+        "markdown_relative_banner": "../docs/visuals/sections/section-03-reproduce.svg",
+        "insert_after_heading": "Calibration Traceability Passing Example",
+        "heading_line": 1,
+        "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/calibration-traceability-passing.md#L1",
+        "reason": "The existing heading 'Calibration Traceability Passing Example' matches the reproduce / parameters section."
+      },
+      {
+        "path": "examples/commissioning-evidence-traceability-passing.md",
+        "section": "verification",
+        "section_title": "Verification / output",
+        "banner": "docs/visuals/sections/section-04-verification.svg",
+        "markdown_relative_banner": "../docs/visuals/sections/section-04-verification.svg",
+        "insert_after_heading": "Commissioning Evidence Traceability Example",
+        "heading_line": 1,
+        "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/commissioning-evidence-traceability-passing.md#L1",
+        "reason": "The existing heading 'Commissioning Evidence Traceability Example' matches the verification / output section."
+      },
+      {
+        "path": "examples/handover-acceptance-passing.md",
+        "section": "verification",
+        "section_title": "Verification / output",
+        "banner": "docs/visuals/sections/section-04-verification.svg",
+        "markdown_relative_banner": "../docs/visuals/sections/section-04-verification.svg",
+        "insert_after_heading": "Handover Acceptance Passing Record",
+        "heading_line": 1,
+        "source_link": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b62d14e117ed5d9ede740b6bf8648df9b8290621/examples/handover-acceptance-passing.md#L1",
+        "reason": "The existing heading 'Handover Acceptance Passing Record' matches the verification / output section."
+      }
+    ],
+    "audit_gaps": [
+      {
+        "path": "examples/punch-list-closeout-passing.md",
+        "reason": "no existing heading matches a five-color section; retained as a source-linked catalog entry"
+      }
+    ],
+    "explicit_exclusions": []
+  },
+  "dashboard": {
+    "browser_lab_is_surrogate": true,
+    "native_execution_in_browser": false,
+    "localStorage_or_existing_dashboard_scripts_preserved": true
+  }
+}

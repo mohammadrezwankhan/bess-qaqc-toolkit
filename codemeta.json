@@ -1,0 +1,29 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": "SoftwareSourceCode",
+  "name": "BESS QA/QC Toolkit",
+  "codeRepository": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit",
+  "url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit",
+  "author": [
+    {
+      "@type": "Person",
+      "familyName": "Khan",
+      "givenName": "Mohammad Rezwan",
+      "@id": "https://orcid.org/0000-0002-1532-0598"
+    }
+  ],
+  "readme": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/HEAD/README.md",
+  "issueTracker": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/issues",
+  "continuousIntegration": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions",
+  "relatedLink": [
+    "https://rezwankhan.tech/",
+    "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/HEAD/CITATION.cff"
+  ],
+  "keywords": [
+    "battery energy storage",
+    "quality assurance",
+    "quality control",
+    "commissioning"
+  ],
+  "license": "https://spdx.org/licenses/MIT.html"
+}

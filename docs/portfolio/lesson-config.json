@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "repository": "mohammadrezwankhan/bess-qaqc-toolkit",
+  "display_name": "BESS Quality & Commissioning",
+  "description": "BESS commissioning templates, policy-driven readiness checks and fictional worked evidence examples.",
+  "domain": "DOMAIN_A",
+  "theme": {
+    "accent": "#00E5FF",
+    "secondary": "#00E676",
+    "surface": "#0A192F",
+    "glow": "rgba(0, 229, 255, 0.35)",
+    "label": "Energy systems",
+    "short": "Energy"
+  },
+  "repo_type": "templates-and-audit-toolkit",
+  "source_revision": "b025120d9d317df682d48b4ad3ccb88acf3875e9",
+  "source_snapshot_date": "2026-10-19",
+  "repo_url": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit",
+  "homepage": "https://mohammadrezwankhan.github.io/bess-qaqc-toolkit/",
+  "upstream": null,
+  "lessons": [
+    {
+      "id": "path-01",
+      "title": "Map lifecycle evidence",
+      "summary": "Read the lifecycle catalogue, supplier tracker and FAT/SAT checklists.",
+      "objective": "Choose a template for the project gate and identify required acceptance evidence.",
+      "checkpoint": "Each proposed gate has an accountable review owner, controlled acceptance criteria and an evidence source; grouping is a navigation aid, not a mandated project sequence.",
+      "level": "Foundation",
+      "tags": [
+        "foundations",
+        "engineering",
+        "commissioning",
+        "evidence"
+      ],
+      "source_paths": [
+        "README.md",
+        "templates/supplier-document-review-tracker.md",
+        "templates/fat-readiness-checklist.md",
+        "templates/sat-readiness-checklist.md"
+      ],
+      "source_urls": [
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/README.md",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/templates/supplier-document-review-tracker.md",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/templates/fat-readiness-checklist.md",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/templates/sat-readiness-checklist.md"
+      ],
+      "parameters": [],
+      "command": null,
+      "native_id": null,
+      "native_route": null,
+      "execution_status": "source-linked guide; no execution by this dashboard"
+    },
+    {
+      "id": "path-02",
+      "title": "Inspect status and completeness policies",
+      "summary": "Read the actual JSON rule files before adapting controlled record fields.",
+      "objective": "Explain allowed states, blocking states, conditional field requirements and missing-value markers.",
+      "checkpoint": "Compare the policy to intended record headings; column-specific rules replace global rules and must not be silently weakened.",
+      "level": "Foundation",
+      "tags": [
+        "foundations",
+        "engineering",
+        "commissioning"
+      ],
+      "source_paths": [
+        "config/readiness-status-policy.example.json",
+        "config/readiness-completeness-policy.example.json",
+        "scripts/summarize_status.py",
+        "scripts/audit_completeness.py"
+      ],
+      "source_urls": [
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/config/readiness-status-policy.example.json",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/config/readiness-completeness-policy.example.json",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/scripts/summarize_status.py",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/scripts/audit_completeness.py"
+      ],
+      "parameters": [
+        {
+          "name": "require_status",
+          "description": "Global fallback requires a status value",
+          "default": true,
+          "unit": "boolean",
+          "source_path": "config/readiness-status-policy.example.json",
+          "definition_basis": "documented_or_source_default"
+        },
+        {
+          "name": "blocking_statuses",
+          "description": "Global example blocking states",
+          "default": [
+            "Blocked",
+            "Failed"
+          ],
+          "unit": "status values",
+          "source_path": "config/readiness-status-policy.example.json",
+          "definition_basis": "documented_or_source_default"
+        },
+        {
+          "name": "missing_values",
+          "description": "Example markers treated as missing",
+          "default": [
+            "TBD",
+            "TBC",
+            "N/A",
+            "NA",
+            "-"
+          ],
+          "unit": "strings",
+          "source_path": "config/readiness-completeness-policy.example.json",
+          "definition_basis": "documented_or_source_default"
+        }
+      ],
+      "command": null,
+      "native_id": null,
+      "native_route": null,
+      "execution_status": "source-linked guide; no execution by this dashboard"
+    },
+    {
+      "id": "path-03",
+      "title": "Trace a fictional readiness gate",
+      "summary": "Read the fictional lifecycle record alongside the combined status/deadline/completeness evaluator.",
+      "objective": "Follow a reproducible review decision without confusing sample records with compliance evidence.",
+      "checkpoint": "Use the documented fixed as-of date; inspect per-control results and source coverage. Expected example status is a documented expectation, not an execution result from this audit.",
+      "level": "Applied",
+      "tags": [
+        "application",
+        "engineering",
+        "commissioning",
+        "evidence"
+      ],
+      "source_paths": [
+        "examples/lifecycle-worked-example.md",
+        "scripts/audit_readiness.py",
+        "tests/test_audit_readiness.py",
+        "README.md"
+      ],
+      "source_urls": [
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/examples/lifecycle-worked-example.md",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/scripts/audit_readiness.py",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/tests/test_audit_readiness.py",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/README.md"
+      ],
+      "parameters": [
+        {
+          "name": "--as-of",
+          "description": "Explicit date against which deadlines are evaluated",
+          "default": "2026-01-15",
+          "unit": "ISO date example",
+          "source_path": "README.md",
+          "definition_basis": "documented_or_source_default"
+        },
+        {
+          "name": "--require-source-coverage",
+          "description": "Require each contributing source to support all three controls",
+          "default": false,
+          "unit": "boolean flag",
+          "source_path": "scripts/audit_readiness.py",
+          "definition_basis": "documented_or_source_default"
+        }
+      ],
+      "command": "python scripts/audit_readiness.py examples/lifecycle-worked-example.md --status-policy config/readiness-status-policy.example.json --completeness-policy config/readiness-completeness-policy.example.json --as-of 2026-01-15 --require-source-coverage",
+      "native_id": null,
+      "native_route": null,
+      "execution_status": "source-linked guide; no execution by this dashboard"
+    },
+    {
+      "id": "path-04",
+      "title": "Review handover acceptance and residual risk",
+      "summary": "Cross-reference punch-list closeout, residual-risk approvals and final acceptance.",
+      "objective": "Track each deferred item to an approved residual-risk record and the release decision.",
+      "checkpoint": "Confirm deferred Source Item IDs resolve uniquely; Critical items cannot be deferred under the example policy and open Critical/Major items block release.",
+      "level": "Applied",
+      "tags": [
+        "application",
+        "engineering",
+        "uncertainty",
+        "commissioning"
+      ],
+      "source_paths": [
+        "templates/residual-risk-acceptance-template.md",
+        "config/handover-acceptance-policy.example.json",
+        "examples/handover-acceptance-passing.md",
+        "scripts/audit_handover_acceptance.py"
+      ],
+      "source_urls": [
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/templates/residual-risk-acceptance-template.md",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/config/handover-acceptance-policy.example.json",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/examples/handover-acceptance-passing.md",
+        "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/b025120d9d317df682d48b4ad3ccb88acf3875e9/scripts/audit_handover_acceptance.py"
+      ],
+      "parameters": [
+        {
+          "name": "blocking_severities",
+          "description": "Example severities that block release when open",
+          "default": [
+            "Critical",
+            "Major"
+          ],
+          "unit": "severity values",
+          "source_path": "config/handover-acceptance-policy.example.json",
+          "definition_basis": "documented_or_source_default"
+        },
+        {
+          "name": "non_deferrable_severities",
+          "description": "Example severities that cannot be deferred",
+          "default": [
+            "Critical"
+          ],
+          "unit": "severity values",
+          "source_path": "config/handover-acceptance-policy.example.json",
+          "definition_basis": "documented_or_source_default"
+        }
+      ],
+      "command": null,
+      "native_id": null,
+      "native_route": null,
+      "execution_status": "source-linked guide; no execution by this dashboard"
+    }
+  ]
+}

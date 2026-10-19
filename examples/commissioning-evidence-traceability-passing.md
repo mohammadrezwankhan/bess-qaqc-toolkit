@@ -1,5 +1,7 @@
 # Commissioning Evidence Traceability Example
 
+![Section 04 · Verification / output](../docs/visuals/sections/section-04-verification.svg)
+
 Use this completed record to exercise the evidence-register audit with shared evidence and accepted closeout records.
 
 | Check ID | Check or Test | Evidence IDs | Acceptance Reference | Owner | Status |

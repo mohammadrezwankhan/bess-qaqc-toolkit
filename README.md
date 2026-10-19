@@ -1,175 +1,558 @@
-<div align="center">
+![BESS Evidence Readiness Lab: original vector system illustration](assets/hero-25d.svg)
 
-<img src="assets/hero-25d.svg" alt="BESS QA/QC & Commissioning Toolkit 2.5D Architecture" width="100%">
+Markdown templates and Python audit scripts support BESS evidence review across the delivery lifecycle. A synthetic review-capacity exercise complements the real status, deadline, traceability, and acceptance gates.
 
-# BESS QA/QC & Commissioning Toolkit
+**[Native-source lesson guide](docs/portfolio/) · [Offline interactive lab](docs/index.html) · [Lesson configuration](docs/lesson-config.json) · [Configuration schema](docs/lesson-config.schema.json)**
 
-**FAT/SAT Protocols, Round-Trip Efficiency & Grid Compliance Handover**
+## Your first interactive result
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-00E5FF.svg?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Interactive Dashboard](https://img.shields.io/badge/Interactive_Dashboard-Live_on_Pages-00E676.svg?style=for-the-badge&logo=githubpages&logoColor=white)](https://mohammadrezwankhan.github.io/bess-qaqc-toolkit/)
-[![Lessons](https://img.shields.io/badge/Lessons_Configured-04_Modules-B388FF.svg?style=for-the-badge)](docs/lesson-config.json)
+1. Download or clone this repository and open `docs/index.html` in a modern browser.
+2. Select **Module 1**, apply its preset, and compare the declared checkpoint with the plotted result.
+3. Change one slider, inspect the model assumptions, then export the configuration or telemetry for your notes.
 
-<p align="center">
-  <a href="https://mohammadrezwankhan.github.io/bess-qaqc-toolkit/"><strong>Explore Live 2.5D Dashboard &rarr;</strong></a> ·
-  <a href="#quickstart">Quickstart</a> ·
-  <a href="#lesson-configuration-matrix">Lesson Labs</a> ·
-  <a href="#verification-benchmarks">Benchmarks</a> ·
-  <a href="#citation">Citation</a>
-</p>
+The browser lab runs offline with no packages, accounts, or live data feeds. Its numbers are deterministic teaching simulations. Each checkpoint states its model time and tolerance; passing it demonstrates agreement with that model, not field calibration or production readiness.
 
-</div>
+## Four-module learning path
 
----
+| Module | Investigation | Approximate time |
+|---|---|---:|
+| 1. Separate review workload from acceptance | Recognize that counting reviewed items does not establish their evidential sufficiency. | 12 min |
+| 2. Create a capacity plan with named controls | Plan review capacity without weakening required evidence fields. | 15 min |
+| 3. Stress a commissioning evidence surge | Keep workload pressure separate from a release decision. | 15 min |
+| 4. Prepare a controlled handover record | Combine workload assumptions with the real policy and traceability evidence required for review. | 18 min |
 
-> [!NOTE]
-> **Industrial & Educational Benchmark:** This repository serves as a flagship, peer-reviewed engineering asset developed by **[Mohammad Rezwan Khan](https://github.com/mohammadrezwankhan)**. All models, simulation scripts, and laboratory configurations are strictly audited for numerical convergence, reproducibility, and industrial standard compliance.
+**Who this is for:** BESS project engineers, quality reviewers, commissioning teams, and learners handling controlled evidence.
 
-> [!TIP]
-> **Interactive 2.5D Dashboard:** Visit the companion interactive dashboard hosted directly on GitHub Pages at **[https://mohammadrezwankhan.github.io/bess-qaqc-toolkit/](https://mohammadrezwankhan.github.io/bess-qaqc-toolkit/)** to adjust excitation parameters, test live frequency/thermal waveforms, and inspect progressive lab modules in real time.
+### Continue into the implementation
 
----
+- [README.md](README.md)
+- [scripts/audit_readiness.py](scripts/audit_readiness.py)
+- [scripts/audit_evidence_traceability.py](scripts/audit_evidence_traceability.py)
+- [scripts/audit_calibration_traceability.py](scripts/audit_calibration_traceability.py)
+- [scripts/audit_handover_acceptance.py](scripts/audit_handover_acceptance.py)
+- [scripts/validate_templates.py](scripts/validate_templates.py)
+- [config/readiness-status-policy.example.json](config/readiness-status-policy.example.json)
 
-## 🏛️ System Architecture & 2.5D Visual Topology
+### Explore or run the source
 
-The repository is structured across three decoupled layers visually depicted in our 2.5D isometric platform:
-
-1. **Layer 01: Physical & Hardware Boundary Layer**
-   - Encapsulates electrochemical, thermal, and circuit hardware properties (cell chemistry, internal impedance, cooling cold-plate hydraulic dimensions, and transformer ratings).
-2. **Layer 02: Computational & Digital Twin Core**
-   - Solves coupled nonlinear differential equations, Kalman filtering state estimation, and model predictive control optimization algorithms with guaranteed mathematical boundedness.
-3. **Layer 03: Telemetry, Dispatch & Interactive API Layer**
-   - Exposes zero-friction CLI runners, interactive web dashboards, automated GitHub Actions regression verification suites, and production JSON configuration manifests.
-
-```
-       ▲  [LAYER 03: TELEMETRY & DISPATCH]   --> Web Dashboard, REST API, Automated CI
-      / \
-     ▲   ▲ [LAYER 02: NUMERICAL CORE]        --> Differential Solvers, EKF, Optimization
-    / \ / \
-   ▲   ▲   ▲ [LAYER 01: HARDWARE BOUNDS]     --> Equivalent Circuit, Thermal Mesh, Grid POI
-```
-
----
-
-## 🚀 Quickstart
-
-Run the full reproduction test suite locally with zero manual setup:
+Python 3.12 for the source-documented local validation path; no third-party runtime dependency.
 
 ```bash
-# Clone the repository
-git clone https://github.com/mohammadrezwankhan/bess-qaqc-toolkit.git
-cd bess-qaqc-toolkit
-
-# Option A: Python Environment
-pip install -r requirements.txt
-python -m unittest discover -s tests -p "*_test.py"
-
-# Option B: Launch Local 2.5D Interactive Dashboard
-cd docs && python -m http.server 8080
-# Open http://localhost:8080 in your browser
+python -m unittest discover -s tests -v
+python scripts/validate_templates.py
+python scripts/audit_readiness.py examples/lifecycle-worked-example.md --status-policy config/readiness-status-policy.example.json --completeness-policy config/readiness-completeness-policy.example.json --as-of 2026-01-15 --require-source-coverage
 ```
 
----
+These commands come from the audited source revision. Runtime requirements and the project's own validation limits are documented below; the standalone browser lab does not execute these commands.
 
-## 📚 Lesson Configuration Matrix
-
-This repository includes a progressive 4-part industrial lab curriculum. Each lesson provides self-contained parameters, test scripts, and automated telemetry checkpoints stored in [`docs/lesson-config.json`](docs/lesson-config.json).
-
-| Lesson ID | Level | Duration | Module Target | Core Objective |
-| :--- | :--- | :--- | :--- | :--- |
-| **`L01`** | `Beginner` | `30 mins` | `protocols/fat_inspection_matrix.json` | Factory Acceptance Testing (FAT) Cell & Container Inspection Matrix |
-| **`L02`** | `Intermediate` | `45 mins` | `protocols/sat_safety_trip.json` | Site Acceptance Testing (SAT) Insulation, Hi-Pot & E-Stop Verification |
-| **`L03`** | `Advanced` | `60 mins` | `protocols/capacity_rte_verification.json` | Capacity Rating, Round-Trip Efficiency (RTE) & Heat Soak Trial |
-| **`L04`** | `Production` | `75 mins` | `protocols/grid_compliance_handover.json` | Grid Interconnection Compliance (IEEE 1547 / IEC 62933) Handover Pack |
-
+The detailed project guide below remains the source for installation, supported features, licences, and scientific limits. The browser equations and laboratory settings do not change the original application or numerical engine.
 
 <details>
-<summary><strong>🔍 Click to expand detailed lesson specifications</strong></summary>
+<summary>Project documentation, installation, attribution, and existing validation</summary>
 
-### L01: Factory Acceptance Testing (FAT) Cell & Container Inspection Matrix
-- **Complexity Level:** `Beginner` | **Estimated Time:** `30 mins`
-- **Target File:** `protocols/fat_inspection_matrix.json`
-- **Objective:** Perform automated incoming batch inspection: OCV variance check, internal resistance sigma screening, and enclosure IP55/IP66 seal verification.
-- **Key Inputs:** Container shipment serial numbers, Factory test birth certificates
-- **Calibrated Parameters:** `{"MaxDeltaOCV_mV": 8.0, "MaxDeltaIR_pct": 5.0, "InsulationResistance_MOhm": 100.0}`
-- **Verification Criteria:**
-  - [x] Generate automated pass/fail non-conformance punch list
-  - [x] Sign off mechanical and electrical factory sign-off sheets
+# BESS QA/QC Toolkit
 
-### L02: Site Acceptance Testing (SAT) Insulation, Hi-Pot & E-Stop Verification
-- **Complexity Level:** `Intermediate` | **Estimated Time:** `45 mins`
-- **Target File:** `protocols/sat_safety_trip.json`
-- **Objective:** Verify DC bus galvanic isolation, high-potential dielectric withstand (Hi-Pot 2500V DC), gas detection interlocking, and hardwired E-Stop latency.
-- **Key Inputs:** Field commissioning test equipment logs, Fire suppression safety loop signals
-- **Calibrated Parameters:** `{"HiPotVoltage_VDC": 2500, "HiPotDwellTime_sec": 60, "EStopTripLatency_ms": 45.0}`
-- **Verification Criteria:**
-  - [x] Validate tripping of DC contactors under simulated fault
-  - [x] Verify NFPA 855 emergency deflagration vent readiness
+[![Markdown maintenance](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml/badge.svg)](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/actions/workflows/markdown-maintenance.yml)
+[![License: MIT](https://img.shields.io/github/license/mohammadrezwankhan/bess-qaqc-toolkit?style=flat-square)](LICENSE)
 
-### L03: Capacity Rating, Round-Trip Efficiency (RTE) & Heat Soak Trial
-- **Complexity Level:** `Advanced` | **Estimated Time:** `60 mins`
-- **Target File:** `protocols/capacity_rte_verification.json`
-- **Objective:** Execute continuous C/2 charge-discharge cycle at POI (Point of Interconnection) factoring in HVAC and transformer auxiliary consumption.
-- **Key Inputs:** Revenue-grade POI energy meter telemetry (kWh_in, kWh_out), 24-hour ambient temp log
-- **Calibrated Parameters:** `{"GuaranteedCapacity_MWh": 10.0, "GuaranteedRTE_pct": 86.5, "MaxBatteryTemp_C": 35.0}`
-- **Verification Criteria:**
-  - [x] Calculate AC-to-AC Round-Trip Efficiency accurately
-  - [x] Quantify auxiliary parasite ratio under high-temperature heat soak
+Templates and checklists for battery energy storage system QA/QC, FAT/SAT
+readiness, supplier evidence review, and commissioning handover.
 
-### L04: Grid Interconnection Compliance (IEEE 1547 / IEC 62933) Handover Pack
-- **Complexity Level:** `Production` | **Estimated Time:** `75 mins`
-- **Target File:** `protocols/grid_compliance_handover.json`
-- **Objective:** Compile audit-ready compliance package: reactive power capability curves (PQ chart), low-voltage ride-through (LVRT) logs, and warranty certificate.
-- **Key Inputs:** Inverter dynamic response oscillograms, Utility interconnection requirement checklist
-- **Calibrated Parameters:** `{"PowerFactorRange": [-0.9, 0.9], "LVRT_ZeroVoltageDuration_ms": 150, "HarmonicTHD_pct": 3.2}`
-- **Verification Criteria:**
-  - [x] Output formal EPC Handover Document bundle
-  - [x] Issue Certificate of Readiness for Commercial Operation (COD)
+## Why This Exists
 
-</details>
+BESS reliability depends on evidence that can be inspected before energization,
+commissioning, and handover. This repository collects practical templates that
+help engineering teams make inspection logic easier to review and reuse.
 
----
+## Documentation Map
 
-## 📊 Verification Benchmarks
+- [Toolkit contents](#toolkit-contents) is the lifecycle-organized template catalog.
+- [Template quality gate](#template-quality-gate) is the shortest local validation path.
+- [Readiness audits](#readiness-status-roll-up) explain the executable review controls.
+- [Fictional worked example](examples/lifecycle-worked-example.md) shows the existing readiness fields with executable audit inputs.
+- [Scope and limitations](#scope-and-limitations) defines how to adapt the toolkit.
+- [Contributing](#contribution-entry-points), [citation metadata](CITATION.cff), and [license](LICENSE) support sharing.
 
-| Metric Benchmark | Reference Baseline | Proposed Framework | Improvement | Verification Status |
-| :--- | :--- | :--- | :--- | :--- |
-| Estimation Error (RMSE) | 3.85% | **0.94%** | **-75.5% Error** | Passed CI Automated Suite |
-| Computational Runtime | 142 ms / step | **18 ms / step** | **7.8x Speedup** | Benchmarked on standard x86 |
-| Memory Footprint | 480 MB | **64 MB** | **-86.6% RAM** | Profiled via memory profiler |
-| Numerical Stability Margin | Divergence @ 10 kHz | **Stable to 100 kHz** | **10x Stability Window** | 100,000 Step Monte Carlo Run |
+## Toolkit Contents
 
----
+The catalogue follows a typical BESS delivery lifecycle. A template may be
+adapted for another gate when the project plan or contract assigns it there;
+the grouping below is a navigation aid, not a required sequence.
 
-## 📜 Citation
+### Design / Supplier Review
 
-If you use this repository, its models, or the accompanying interactive 2.5D curriculum in academic or industrial research, please cite:
+- [Supplier document review tracker](templates/supplier-document-review-tracker.md).
+- [Supplier query log](templates/supplier-query-log.md).
+- [Document readiness scoring guide](templates/document-readiness-scoring-guide.md).
+- [Fire safety interface review](templates/fire-safety-interface-review.md).
+- [Grid interconnection evidence pack](templates/grid-interconnection-evidence-pack.md).
+- [Relay settings review checklist](templates/relay-settings-review-checklist.md).
 
-```bibtex
-@software{khan_bess_qaqc_toolkit,
-  author       = {Mohammad Rezwan Khan},
-  title        = {{BESS QA/QC & Commissioning Toolkit: FAT/SAT Protocols, Round-Trip Efficiency & Grid Compliance Handover}},
-  year         = {2026},
-  publisher    = {GitHub},
-  journal      = {GitHub Repository},
-  howpublished = {\url{https://github.com/mohammadrezwankhan/bess-qaqc-toolkit}}
-}
+### FAT
+
+- [FAT readiness checklist](templates/fat-readiness-checklist.md).
+- [Acceptance evidence wording guide](templates/acceptance-evidence-wording-guide.md).
+- [Instrument calibration traceability register](templates/instrument-calibration-traceability-register.md).
+
+### Site / SAT
+
+- [SAT readiness checklist](templates/sat-readiness-checklist.md).
+- [Site acceptance risk register](templates/site-acceptance-risk-register.md).
+- [Site walkdown photo log](templates/site-walkdown-photo-log.md).
+- [Communication interface test log](templates/communication-interface-test-log.md).
+- [Metering acceptance checklist](templates/metering-acceptance-checklist.md).
+- [Punch-list and nonconformance tracker](templates/punch-list-nonconformance-tracker.md).
+
+### Commissioning
+
+- [Commissioning evidence matrix](templates/commissioning-evidence-matrix.md).
+- [Commissioning evidence review examples](templates/commissioning-evidence-review-examples.md).
+- [Commissioning hold-point checklist](templates/commissioning-hold-point-checklist.md).
+- [Commissioning shift handover log](templates/commissioning-shift-handover-log.md).
+- [Emergency response drill record](templates/emergency-response-drill-record.md).
+- [Availability test evidence template](templates/availability-test-evidence-template.md).
+- [Environmental condition log](templates/environmental-condition-log.md).
+
+### Energization
+
+- [Energization readiness gate](templates/energization-readiness-gate.md).
+- [Final acceptance signoff pack](templates/final-acceptance-signoff-pack.md).
+
+### Handover
+
+- [Handover document index](templates/handover-document-index.md).
+- [Cyber asset handover checklist](templates/cyber-asset-handover-checklist.md).
+- [Residual-risk acceptance template](templates/residual-risk-acceptance-template.md).
+- [BESS closeout review checklist](templates/closeout-review-checklist.md).
+- [BESS closeout owner map](templates/closeout-owner-map.md).
+- [BESS closeout timeline template](templates/closeout-timeline-template.md).
+- [Spare parts readiness checklist](templates/spare-parts-readiness-checklist.md).
+
+### Warranty / O&M
+
+- [Warranty evidence checklist](templates/warranty-evidence-checklist.md).
+- [O&M training record](templates/o-and-m-training-record.md).
+- [Defect aging summary](templates/defect-aging-summary.md).
+- [Lessons learned capture template](templates/lessons-learned-capture-template.md).
+
+## Repository Topics
+
+```text
+bess battery-energy-storage qaqc commissioning fat sat
+renewable-energy utility-scale energy-storage
 ```
 
----
+## Fictional Worked Example
 
-## ⭐ Star History
+The [lifecycle worked example](examples/lifecycle-worked-example.md) is a
+small, fictional record that demonstrates the existing readiness fields across
+the lifecycle catalogue. It is illustrative only: its fabricated evidence IDs
+are not compliance evidence and must not be used to support a real energization
+or handover decision.
 
-Join our growing community of engineers, researchers, and developers pushing open-source energy storage and computational modeling forward:
+Run the same executable readiness gate used by the passing examples:
 
-<div align="center">
-  <a href="https://star-history.com/#mohammadrezwankhan/bess-qaqc-toolkit&Date">
-    <img src="https://api.star-history.com/svg?repos=mohammadrezwankhan/bess-qaqc-toolkit&type=Date" alt="Star History Chart" width="80%">
-  </a>
-</div>
+```powershell
+python scripts/audit_readiness.py examples/lifecycle-worked-example.md `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-01-15 `
+  --require-source-coverage
+```
 
----
+## Status
 
-<p align="center">
-  Distributed under the MIT License. Built with pride by <a href="https://github.com/mohammadrezwankhan"><strong>Mohammad Rezwan Khan</strong></a>.
-</p>
+Draft toolkit. Use the templates as starting points and adapt them to
+project-specific requirements, standards, and contractual obligations.
+
+## Scope and Limitations
+
+The templates and audit scripts are project-neutral starting points. They do not
+replace the governing contract, applicable standards, authority requirements,
+manufacturer instructions, legal review, or a competent engineer's acceptance
+decision. Do not treat a passing example or a clean local audit as evidence that
+a real BESS project is safe, compliant, or ready for energization.
+
+## Template Quality Gate
+
+Every template must start with one title and an explanatory paragraph, then
+provide at least one structurally valid Markdown table. The repository workflow
+checks table separators and column counts in addition to testing links.
+
+Run the same checks locally with Python 3.12:
+
+```powershell
+python -m unittest discover -s tests -v
+python scripts/validate_templates.py
+```
+
+## Readiness Status Roll-Up
+
+After copying and filling project templates, aggregate `Status`, `Review
+Status`, and `Approval Status` columns into a reviewable Markdown report:
+
+```powershell
+python scripts/summarize_status.py project-records `
+  --output project-records\readiness-summary.md
+```
+
+Use JSON for another reporting tool, or make a pipeline fail on one or more
+project-defined blocking states:
+
+```powershell
+python scripts/summarize_status.py project-records --format json
+python scripts/summarize_status.py project-records `
+  --fail-on Blocked --fail-on Failed
+```
+
+The gate compares status names case-insensitively and exits with code `2` when
+a configured state occurs. Status-definition tables are excluded from the
+roll-up. Running the command without a path summarizes the repository templates.
+
+Use a version-controlled status policy to reject missing values, status typos,
+and project-defined blocking states in one reproducible gate:
+
+```powershell
+python scripts/summarize_status.py project-records `
+  --policy config/readiness-status-policy.example.json `
+  --output project-records\readiness-summary.md
+```
+
+The JSON policy defines global `allowed_statuses`, `blocking_statuses`, and the
+Boolean `require_status` fallback. Optional `column_rules` can assign a complete
+replacement rule to headings such as `Approval Status` or `Review Status`, so a
+valid state cannot silently appear in the wrong workflow column. Column names
+match case-insensitively after whitespace normalization.
+
+Policy violations retain the source file, line, item, status, column, and reason
+in Markdown and JSON output; the command exits with code `2` when any violation
+is found. Copy and adapt the [example policy](config/readiness-status-policy.example.json)
+to the controlled vocabularies and release gates for each project. A matching
+column rule replaces rather than merges with the global fallback, keeping each
+column's accepted and blocking states explicit.
+
+## Readiness Deadline Audit
+
+Audit dated owner actions separately from status vocabulary. Supply an explicit
+`--as-of` date so the same project snapshot produces the same deadline states
+in a local review and in CI:
+
+```powershell
+python scripts/audit_deadlines.py project-records `
+  --as-of 2026-07-21 `
+  --output project-records\deadline-audit.md
+```
+
+The report classifies each nonblank row as `overdue`, `due_today`, `upcoming`,
+`missing`, or `closed`, and preserves its source file, line, item, status,
+deadline heading, deadline value, and days to deadline. Use JSON for another
+reporting tool, or fail a pipeline on selected states:
+
+```powershell
+python scripts/audit_deadlines.py project-records `
+  --as-of 2026-07-21 --format json
+python scripts/audit_deadlines.py project-records `
+  --as-of 2026-07-21 `
+  --fail-on overdue --fail-on missing
+```
+
+By default, the audit recognizes `Due Date`, `Target Close Date`, and `Required
+By` columns. `Accepted`, `Approved`, `Closed`, `Complete`, and `Completed` are
+terminal statuses. `TBD`, `TBC`, `N/A`, `NA`, and `-` are controlled missing-date
+markers; other nonblank dates must use `YYYY-MM-DD`.
+
+Repeat `--date-column`, `--terminal-status`, or `--missing-date-value` to replace
+the corresponding default list for a project. Matching is case-insensitive
+after whitespace normalization. Tables with more than one recognized deadline
+column and rows with malformed dates fail instead of choosing silently.
+
+## Conditional Completeness Audit
+
+A valid status and deadline do not prove that a readiness row is controlled.
+Audit the fields required by each workflow state with a version-controlled JSON
+policy:
+
+```powershell
+python scripts/audit_completeness.py project-records `
+  --policy config/readiness-completeness-policy.example.json `
+  --output project-records\completeness-audit.md
+```
+
+Each rule selects rows through one-of matching column names and
+case-insensitive values, then requires one nonmissing value from every
+configured field group. This supports heading variants such as `Owner` or
+`Action Owner`, and `Evidence Link` or `Closeout Evidence`, without treating
+them as different controls.
+
+The example policy covers active closeout actions, accepted deferrals, and
+approved handover documents. It requires the applicable owner, deadline,
+approval, revision, and evidence fields while treating `TBD`, `TBC`, `N/A`,
+`NA`, and `-` as controlled missing values. Copy and adapt the rule values and
+column aliases for each project.
+
+Reports preserve the source file, line, item, matched rule and state, required
+field, candidate columns, observed values, and reason in Markdown or JSON. The
+command exits with code `2` when violations exist and code `1` for malformed or
+ambiguous policies, tables, or a policy that matches no rows. Generated reports
+are excluded from later scans.
+
+## Commissioning Evidence Traceability Audit
+
+Cross-check commissioning rows against their controlled evidence register so a
+valid status cannot hide an unknown, orphaned, duplicated, or unapproved
+evidence record:
+
+```powershell
+python scripts/audit_evidence_traceability.py project-records `
+  --output project-records\evidence-traceability-audit.md
+```
+
+The check table requires a unique `Check ID`, the check or test, one or more
+`Evidence IDs`, an acceptance reference, an owner, and a status. The evidence
+register requires a unique `Evidence ID`, controlled location, revision, and
+approval status. IDs use uppercase hyphenated values ending in digits, such as
+`CHK-001` and `EVD-001`; one evidence record may support multiple checks.
+
+`Ready for verification`, `Closed`, and `Accepted` checks require every linked
+evidence record to be `Approved` or `Accepted`. Repeat `--completed-status` or
+`--accepted-evidence-status` to replace those defaults for a project. Repeat
+`--missing-value` to replace the default `TBD`, `TBC`, `N/A`, `NA`, and `-`
+placeholders. Matching is case-insensitive, while identifiers remain strict.
+
+Markdown and JSON reports preserve source files, line numbers, check coverage,
+register metadata, reverse references, and every finding. The command returns
+`0` for a clean audit, `2` for controlled findings, and `1` for malformed input
+or missing check/register records. The
+[passing example](examples/commissioning-evidence-traceability-passing.md) is
+exercised by the repository workflow.
+
+## Instrument Calibration Traceability Audit
+
+Cross-check completed commissioning measurements against dated instrument
+calibration history so an evidence package cannot rely on a certificate that
+was expired, not yet effective, unapproved, or ambiguous on the test date:
+
+```powershell
+python scripts/audit_calibration_traceability.py project-records `
+  --as-of 2026-07-21 `
+  --output project-records\calibration-traceability-audit.md
+```
+
+The measurement-use table links a unique `Measurement ID` and `Check ID` to one
+or more `Instrument IDs`, an ISO `Test Date`, owner, and status. The calibration
+history retains one row per certificate period with a unique `Calibration ID`,
+instrument, `Valid From`, `Valid Through`, approval status, and controlled
+certificate location. Multiple nonoverlapping periods for one instrument are
+supported so recalibration does not erase historical traceability.
+
+`Complete`, `Completed`, `Accepted`, and `Ready for verification` measurements
+require exactly one calibration period per instrument to cover the test date,
+and that period must be `Approved`, `Valid`, or `Accepted`. Unknown instruments,
+duplicate references and IDs, malformed or reversed dates, coverage gaps, and
+overlapping periods are reported with source file and line number. Overlapping
+certificate periods are flagged even when no completed measurement uses their
+shared date range. Repeat
+`--completed-status`, `--accepted-calibration-status`, or `--missing-value` to
+replace the corresponding defaults for a project.
+When `--as-of` is supplied, a completed measurement dated after the audit date
+is also reported; planned work may still carry a future date.
+
+Markdown and JSON reports preserve measurement coverage, complete calibration
+history, reverse instrument references, and every finding. The command returns
+`0` for a clean audit, `2` for controlled findings, and `1` for malformed input
+or a missing register. The
+[passing calibration example](examples/calibration-traceability-passing.md) is
+exercised by the repository workflow.
+
+## Punch-List Closeout Audit
+
+Gate a punch-list or nonconformance tracker before verification, deferral, or
+handover review:
+
+```powershell
+python scripts/audit_punch_list.py project-records `
+  --as-of 2026-07-21 `
+  --output project-records\punch-list-closeout-audit.md
+```
+
+The audit recognizes the tracker fields for unique ID, severity, finding,
+system area, owner, evidence link, target close date, status, and verification
+or closeout note. It enforces the documented `Critical`, `Major`, and `Minor`
+severity vocabulary and the `Open`, `In progress`, `Ready for verification`,
+`Closed`, and `Deferred` status lifecycle.
+
+Active rows fail when their ISO target date is overdue. Critical rows must be
+terminal and cannot pass as deferred. Verification-ready, closed, and deferred
+rows require controlled evidence; terminal rows also require a closeout note.
+Malformed dates and identifiers, duplicate IDs, missing controlled values, and
+unknown severity or status values remain separate line-level findings.
+
+Markdown and JSON reports preserve source files, row numbers, aggregate status
+and severity counts, days to target, overdue state, and every issue. The command
+returns `0` for a clean audit, `2` for controlled findings, and `1` for malformed
+input or a missing tracker. The
+[passing punch-list example](examples/punch-list-closeout-passing.md) is
+exercised by the repository workflow.
+
+## Handover Document-Control Audit
+
+Audit the controlled revision history behind a handover package so an approved
+document cannot silently replace an earlier issue without a traceable
+supersession chain:
+
+```powershell
+python scripts/audit_document_control.py project-records `
+  --as-of 2026-07-21 `
+  --output project-records\document-control-audit.md
+```
+
+The register retains one row per document revision. Revisions use either
+alphabetic (`Rev A`) or numeric (`Rev 2`) ordering consistently for each
+document. Every later issue must name the immediately preceding revision in
+`Supersedes Revision`, and its ISO issue date must increase. Historical rows
+must be `Superseded` or `Withdrawn`; the latest row must be `Approved`,
+`Accepted`, or `Released` and link to its controlled location.
+
+Unknown statuses, duplicate document/revision pairs, inconsistent document
+metadata, mixed revision schemes, future issue dates, and broken supersession
+chains are reported with source file and line number. Repeat
+`--accepted-status`, `--working-status`, `--obsolete-status`, or
+`--missing-value` to replace the corresponding defaults. The command returns
+`0` for a clean audit, `2` for controlled findings, and `1` for malformed input
+or a missing register. The
+[passing example](examples/document-control-passing.md) is exercised in CI.
+
+## Handover Acceptance Audit
+
+Cross-check punch-list items, residual-risk approvals, and the signed acceptance
+decision before releasing a BESS handover package:
+
+```powershell
+python scripts/audit_handover_acceptance.py project-records `
+  --policy config/handover-acceptance-policy.example.json `
+  --output project-records\handover-acceptance-audit.md
+```
+
+The audit requires each deferred punch-list item to resolve to exactly one
+active, approved residual-risk record through `Source Item ID`. Closed items
+must retain their evidence link and verification note. A conditional acceptance
+must enumerate every active residual-risk ID, while an unconditional acceptance
+cannot retain any active deferral.
+
+The example policy treats open Critical and Major items as release blockers and
+does not permit Critical items to be deferred. Its controlled punch-list and
+risk statuses, release decisions, blocker severities, non-deferrable severities,
+and missing-value markers are all project-configurable. Policy lists are
+validated for duplicates, overlaps, and complete punch-status classification so
+a malformed gate fails instead of silently weakening the decision.
+
+Markdown and JSON reports preserve source files, line numbers, all three
+registers, aggregate counts, and each cross-register finding. The command
+returns `0` for a clean release, `2` for controlled findings, and `1` for a
+malformed policy, table, or incomplete register set. The
+[passing handover example](examples/handover-acceptance-passing.md) is exercised
+by the repository workflow.
+
+## Unified Readiness Gate
+
+Run all three controls as one reproducible release decision when a project
+snapshot is ready for review:
+
+```powershell
+python scripts/audit_readiness.py project-records `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-07-21 `
+  --output project-records\readiness-gate.md
+```
+
+The combined Markdown or JSON report records each policy source, the explicit
+as-of date, selected deadline failure states, source files, per-check result,
+counts, line-level findings, and a matrix showing which source files contributed
+to each control. It returns `0` only when status policy, deadlines, and
+conditional completeness all pass; controlled findings return `2`, while
+malformed inputs or a check with no evaluable rows return `1`.
+
+Source coverage is report-only by default because a mixed project folder may
+intentionally contain specialized records. When every contributing file is
+expected to expose status, deadline, and conditional-completeness rows, enforce
+that contract explicitly:
+
+```powershell
+python scripts/audit_readiness.py project-records `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-07-21 `
+  --require-source-coverage `
+  --format json
+```
+
+Strict coverage creates one finding for every missing source/control pair and
+returns `2`. Generated audit reports are excluded from the matrix, so writing a
+report inside the scanned directory remains safe for repeat runs.
+
+By default, `overdue` and `missing` deadlines fail the combined gate. Repeat
+`--deadline-fail-on` to replace that pair for a project, for example:
+
+```powershell
+python scripts/audit_readiness.py project-records `
+  --status-policy config/readiness-status-policy.example.json `
+  --completeness-policy config/readiness-completeness-policy.example.json `
+  --as-of 2026-07-21 `
+  --deadline-fail-on overdue --deadline-fail-on due_today `
+  --format json
+```
+
+The [passing example](examples/readiness-gate-passing-record.md) is exercised in
+strict coverage mode by the repository workflow and shows the minimum owner,
+deadline, and evidence fields needed by the example policies. Combined reports
+can be written inside the scanned directory without being ingested on the next
+run.
+
+## Contribution Entry Points
+
+- Add project-specific evidence-traceability examples.
+- Add project-specific calibration-history and measurement-use examples.
+- Add project-specific handover acceptance policies and records.
+- Improve punch-list and nonconformance closeout wording.
+- Improve handover document index fields.
+- Add project-specific examples to the acceptance evidence wording guide.
+- Add project-specific residual-risk acceptance examples.
+- Add project-specific closeout review checks.
+- Add project-specific commissioning hold points.
+- Add more accepted/rejected commissioning evidence examples.
+- Add project-specific document readiness scoring examples.
+- Add project-specific closeout owner map examples.
+- Add project-specific examples to the bess closeout timeline template.
+- Add project-specific examples to the commissioning shift handover log.
+- Add project-specific examples to the warranty evidence checklist.
+- Add project-specific examples to the fire safety interface review.
+- Add project-specific examples to the spare parts readiness checklist.
+- Add project-specific examples to the site acceptance risk register.
+- Add project-specific examples to the grid interconnection evidence pack.
+- Add project-specific examples to the energization readiness gate.
+- Add project-specific examples to the o and m training record.
+- Add project-specific examples to the defect aging summary.
+- Add project-specific examples to the supplier query log.
+- Add project-specific examples to the cyber asset handover checklist.
+- Add project-specific examples to the metering acceptance checklist.
+- Add project-specific examples to the communication interface test log.
+- Add project-specific examples to the emergency response drill record.
+- Add project-specific examples to the availability test evidence template.
+- Add project-specific examples to the environmental condition log.
+- Add project-specific examples to the relay settings review checklist.
+- Add project-specific examples to the site walkdown photo log.
+- Add project-specific examples to the final acceptance signoff pack.
+- Add project-specific examples to the lessons learned capture template.
+
+## Citation
+
+If this toolkit supports research, teaching, or a project review, cite the
+machine-readable [CITATION.cff](CITATION.cff) metadata and identify the adapted
+templates, policies, and project context used.
+
+## License
+
+Released under the [MIT License](LICENSE).
+
+</details>
