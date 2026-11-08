@@ -1,3 +1,15 @@
+<!-- repository-presentation:start -->
+
+![BESS QA/QC Toolkit — project overview](https://raw.githubusercontent.com/mohammadrezwankhan/mohammadrezwankhan/main/assets/makeover/social/bess-qaqc-toolkit.png)
+
+Review BESS delivery evidence with reusable Markdown templates and Python checks for readiness, traceability, and handover.
+
+[Template catalog](#toolkit-contents) · [Worked example](#fictional-worked-example) · [Readiness gate](#unified-readiness-gate) · [Audit source](scripts/audit_readiness.py) · [Limits](#scope-and-limitations)
+
+---
+
+<!-- repository-presentation:end -->
+
 ![BESS Evidence Readiness Lab: original vector system illustration](assets/hero-25d.svg)
 
 Markdown templates and Python audit scripts support BESS evidence review across the delivery lifecycle. A synthetic review-capacity exercise complements the real status, deadline, traceability, and acceptance gates.
