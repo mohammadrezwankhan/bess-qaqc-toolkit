@@ -10,7 +10,7 @@ Review BESS delivery evidence with reusable Markdown templates and Python checks
 
 <!-- repository-presentation:end -->
 
-![BESS Evidence Readiness Lab: original vector system illustration](assets/hero-25d.svg)
+![BESS Evidence Readiness Lab: original vector system illustration](assets/brand-uniformity/hero-25d.svg)
 
 Markdown templates and Python audit scripts support BESS evidence review across the delivery lifecycle. A synthetic review-capacity exercise complements the real status, deadline, traceability, and acceptance gates.
 
