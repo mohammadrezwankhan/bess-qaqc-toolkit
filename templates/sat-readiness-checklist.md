@@ -29,3 +29,10 @@ Use this checklist before site acceptance testing for a BESS installation.
 | As-built package prepared | Drawings, test records, manuals, certificates, and punch status | Not started |
 | Operator training complete | Training agenda, attendance, and training material | Not started |
 | O&M documentation delivered | Maintenance schedule, spare parts, emergency response instructions | Not started |
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

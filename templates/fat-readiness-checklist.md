@@ -30,3 +30,10 @@ Use this checklist before factory acceptance testing for a battery energy storag
 | FAT report drafted | Results, deviations, and evidence attachments included | Not started |
 | Punch list created | Owner, due date, severity, and closure evidence defined | Not started |
 | Shipment release decision | Conditional or full release documented | Not started |
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

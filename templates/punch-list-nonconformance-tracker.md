@@ -38,7 +38,9 @@ Use this tracker to manage BESS punch-list items, nonconformances, owner actions
 
 ## Closeout Questions
 
-- Is the corrective action clearly described?
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?
 - Does the evidence prove the issue is fixed, not only acknowledged?
 - Has any affected drawing, test record, asset tag, or procedure been updated?
-- Is there an approved residual-risk owner for deferred items?

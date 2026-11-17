@@ -23,3 +23,10 @@ Add one row per calibration period. Retain prior periods when an instrument is r
 - Use ISO `YYYY-MM-DD` dates and preserve superseded calibration periods.
 - Complete or accepted tests only when every instrument has exactly one approved calibration covering the execution date.
 - Investigate overlapping calibration periods instead of selecting a certificate silently.
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

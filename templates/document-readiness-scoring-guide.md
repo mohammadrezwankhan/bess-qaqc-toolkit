@@ -21,3 +21,10 @@ Use this guide to score handover document readiness before closeout review. Pair
 ## Suggested Use
 
 Add a readiness score column to the handover document index during weekly closeout review. Focus first on safety, protection, grid-interface, and commissioning-test records.
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

@@ -24,3 +24,10 @@ Use this template when a BESS punch-list item or nonconformance is deferred beyo
 - What evidence is required to close the residual-risk item?
 - Does the target close date align with warranty, commercial operation, or grid-owner commitments?
 - Has the residual risk been added to the handover document index?
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?
