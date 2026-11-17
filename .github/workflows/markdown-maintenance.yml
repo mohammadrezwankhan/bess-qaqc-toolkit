@@ -45,7 +45,7 @@ jobs:
         run: python -m unittest discover -s tests -v
 
       - name: Validate template structure
-        run: python scripts/validate_templates.py
+        run: python scripts/validate_templates.py --strict-governance
 
       - name: Audit conditional completeness
         run: >-
