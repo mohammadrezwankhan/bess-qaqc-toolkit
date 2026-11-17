@@ -11,11 +11,40 @@ SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
 
 def is_table_row(line: str) -> bool:
     stripped = line.strip()
-    return stripped.startswith("|") and stripped.endswith("|")
+    if not (stripped.startswith("|") and stripped.endswith("|")):
+        return False
+    slashes = len(stripped[:-1]) - len(stripped[:-1].rstrip("\\"))
+    return slashes % 2 == 0
 
 
 def table_cells(line: str) -> list[str]:
-    return [cell.strip() for cell in line.strip()[1:-1].split("|")]
+    content = line.strip()
+    if content.startswith("|"):
+        content = content[1:]
+    if content.endswith("|"):
+        slashes = len(content[:-1]) - len(content[:-1].rstrip("\\"))
+        if slashes % 2 == 0:
+            content = content[:-1]
+
+    cells: list[str] = []
+    current: list[str] = []
+    escape_count = 0
+    for char in content:
+        if char == "\\":
+            escape_count += 1
+            current.append(char)
+        elif char == "|":
+            if escape_count % 2 == 1:
+                current.append(char)
+            else:
+                cells.append("".join(current).strip())
+                current = []
+            escape_count = 0
+        else:
+            escape_count = 0
+            current.append(char)
+    cells.append("".join(current).strip())
+    return cells
 
 
 def table_blocks(
@@ -47,7 +76,9 @@ def table_blocks(
     return blocks
 
 
-def validate_template(path: Path) -> list[tuple[int, str]]:
+def validate_template(
+    path: Path, *, strict_governance: bool = False
+) -> list[tuple[int, str]]:
     lines = path.read_text(encoding="utf-8").splitlines()
     errors: list[tuple[int, str]] = []
     nonempty = [(index, line) for index, line in enumerate(lines) if line.strip()]
@@ -121,6 +152,60 @@ def validate_template(path: Path) -> list[tuple[int, str]]:
                     )
                 )
 
+    if strict_governance:
+        content_lower = path.read_text(encoding="utf-8").lower()
+        has_audit_defense = any(
+            phrase in content_lower
+            for phrase in (
+                "evidence would",
+                "defend this decision",
+                "challenged later",
+            )
+        )
+        has_impact_class = any(
+            phrase in content_lower
+            for phrase in (
+                "affect safety",
+                "safety, energization",
+                "safety, protection",
+                "safety, reliability",
+            )
+        )
+        has_owner_cadence = any(
+            phrase in content_lower
+            for phrase in (
+                "owns the next action",
+                "reviewed again",
+                "review cadence",
+                "accountable owner",
+            )
+        )
+        has_residual_risk = any(
+            phrase in content_lower
+            for phrase in (
+                "residual risk",
+                "unresolved risk",
+                "accepted risk",
+            )
+        )
+        missing_governance = []
+        if not has_audit_defense:
+            missing_governance.append("audit-defensibility prompt")
+        if not has_impact_class:
+            missing_governance.append("safety/risk impact prompt")
+        if not has_owner_cadence:
+            missing_governance.append("action owner/review prompt")
+        if not has_residual_risk:
+            missing_governance.append("residual-risk disclosure prompt")
+        if missing_governance:
+            errors.append(
+                (
+                    1,
+                    "strict governance requires closeout defensibility prompts: "
+                    + ", ".join(missing_governance),
+                )
+            )
+
     return errors
 
 
@@ -129,6 +214,11 @@ def parse_args() -> argparse.Namespace:
         description="Validate structural conventions in BESS Markdown templates."
     )
     parser.add_argument("paths", nargs="*", type=Path)
+    parser.add_argument(
+        "--strict-governance",
+        action="store_true",
+        help="Enforce mandatory closeout defensibility prompts in templates.",
+    )
     return parser.parse_args()
 
 
@@ -141,7 +231,9 @@ def main() -> int:
 
     error_count = 0
     for path in paths:
-        for line, message in validate_template(path):
+        for line, message in validate_template(
+            path, strict_governance=args.strict_governance
+        ):
             print(f"{path}:{line}: {message}", file=sys.stderr)
             error_count += 1
 

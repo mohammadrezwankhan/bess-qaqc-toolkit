@@ -125,8 +125,11 @@ def extract_status_records(path: Path) -> list[StatusRecord]:
     return records
 
 
-def expand_paths(inputs: Sequence[Path]) -> list[Path]:
+def expand_paths(
+    inputs: Sequence[Path], *, base_boundary: Path | None = None
+) -> list[Path]:
     paths: list[Path] = []
+    resolved_boundary = base_boundary.resolve() if base_boundary else None
     for input_path in inputs:
         if input_path.is_dir():
             paths.extend(sorted(input_path.glob("*.md")))
@@ -139,6 +142,10 @@ def expand_paths(inputs: Sequence[Path]) -> list[Path]:
     seen: set[Path] = set()
     for path in paths:
         resolved = path.resolve()
+        if resolved_boundary and not resolved.is_relative_to(resolved_boundary):
+            raise ValueError(
+                f"input path escapes allowed boundary: {path} (outside {base_boundary})"
+            )
         if resolved not in seen:
             seen.add(resolved)
             unique.append(path)
