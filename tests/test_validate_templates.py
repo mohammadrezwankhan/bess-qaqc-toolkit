@@ -4,7 +4,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.validate_templates import validate_template
+from scripts.validate_templates import (
+    is_table_row,
+    table_cells,
+    validate_template,
+)
 
 
 VALID_TEMPLATE = """# FAT Evidence Log
@@ -68,6 +72,37 @@ Use this template to record controlled FAT evidence.
         self.assertTrue(
             any("at least one Markdown table" in message for _, message in errors)
         )
+
+    def test_table_cells_supports_escaped_pipe(self):
+        line = r"| Item | Inverter AC \| DC check | Open |"
+        cells = table_cells(line)
+        self.assertEqual(len(cells), 3)
+        self.assertEqual(cells[1], r"Inverter AC \| DC check")
+
+    def test_is_table_row_ignores_escaped_pipe(self):
+        line = r"| this is not a table row \|"
+        self.assertFalse(is_table_row(line))
+        valid_row = r"| valid | row |"
+        self.assertTrue(is_table_row(valid_row))
+
+    def test_strict_governance_validation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "template.md"
+            path.write_text(VALID_TEMPLATE, encoding="utf-8")
+            errors = validate_template(path, strict_governance=True)
+            self.assertTrue(any("strict governance requires" in msg for _, msg in errors))
+
+            governed = (
+                VALID_TEMPLATE
+                + "\n## Closeout Prompts\n\n"
+                "- What evidence would defend this decision in a later audit?\n"
+                "- Does the finding affect safety, energization, warranty, grid compliance, or documentation?\n"
+                "- Who owns the next action and when is it reviewed again under the review cadence?\n"
+                "- Which unresolved residual risk should be visible in the final acceptance package?\n"
+            )
+            path.write_text(governed, encoding="utf-8")
+            clean_errors = validate_template(path, strict_governance=True)
+            self.assertEqual(clean_errors, [])
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ from scripts.summarize_status import (
     ColumnStatusPolicy,
     StatusPolicy,
     evaluate_status_policy,
+    expand_paths,
     extract_status_records,
     load_status_policy,
     main,
@@ -320,6 +321,23 @@ class StatusSummaryTests(unittest.TestCase):
         )
         self.assertIn("Protection test: status is blocking", standard_error.getvalue())
         self.assertIn("Status policy gate failed with 2", standard_error.getvalue())
+
+    def test_expand_paths_boundary_enforcement(self):
+        with tempfile.TemporaryDirectory() as base_dir:
+            base_path = Path(base_dir)
+            inside_file = base_path / "inside.md"
+            inside_file.write_text("# Inside\n", encoding="utf-8")
+            with tempfile.TemporaryDirectory() as outside_dir:
+                outside_file = Path(outside_dir) / "outside.md"
+                outside_file.write_text("# Outside\n", encoding="utf-8")
+
+                # Inside path passes
+                res = expand_paths([inside_file], base_boundary=base_path)
+                self.assertEqual(len(res), 1)
+
+                # Outside path is rejected
+                with self.assertRaisesRegex(ValueError, "escapes allowed boundary"):
+                    expand_paths([outside_file], base_boundary=base_path)
 
 
 if __name__ == "__main__":

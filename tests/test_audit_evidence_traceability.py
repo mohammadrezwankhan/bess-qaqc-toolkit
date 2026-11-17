@@ -189,6 +189,15 @@ class EvidenceTraceabilityTests(unittest.TestCase):
         pending = [replace(record, approval_status="Pending") for record in evidence]
         self.assertEqual(audit_traceability(all_open, pending), [])
 
+    def test_invalid_revision_format_is_reported(self):
+        checks, evidence = self.records()
+        bad_evidence = [
+            replace(evidence[0], revision="invalid-rev-format!"),
+            *evidence[1:],
+        ]
+        issues = audit_traceability(checks, bad_evidence)
+        self.assertTrue(any(issue.kind == "invalid_revision" for issue in issues))
+
     def test_custom_completed_and_accepted_statuses_are_case_insensitive(self):
         checks, evidence = self.records()
         custom_check = replace(checks[0], status="VERIFIED")
