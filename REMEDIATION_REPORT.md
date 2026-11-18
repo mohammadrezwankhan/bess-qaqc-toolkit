@@ -40,15 +40,15 @@ All modifications strictly respect the non-negotiable safety boundaries:
 - **Problem:** `table_cells` used `line.strip()[1:-1].split("|")`. When cells contained `\|`, it split the cell, corrupting table dimensions and field values.
 - **Fix:** Implemented an escape-aware character parser that tracks backslash escape counts. `|` preceded by an odd number of backslashes is preserved as part of the cell data, while unescaped `|` acts as the column boundary.
 - **Row Detection:** `is_table_row` now verifies that the closing pipe is not escaped by an odd number of backslashes before accepting the line as a Markdown table row.
-- **Strict Governance Validation:** Added `--strict-governance` option to `validate_template()` and `main()` to verify the presence of:
-  - Audit defensibility prompts ("evidence would", "defend this decision", "challenged later")
+- **Strict Governance Validation:** The `--strict-governance` option checks for question items in the Closeout Questions or Closeout Prompts section:
+  - Audit defensibility prompts
   - Safety/energization/warranty impact prompts
   - Action owner and review cadence prompts
   - Residual-risk disclosure prompts
 
 ### 3.2 Punch-List Closeout & Verification Engine (`scripts/audit_punch_list.py`)
 - **Invariant 4 Implementation:** For any item with `status == "Closed"`:
-  - If `severity == "Critical"`: Closeout note must document independent verification, retest, or authorized engineering sign-off (`VERIFICATION_KEYWORDS`: "witness", "independent", "retest", "sign-off", "signed", "verified", "accepted", "inspected", "approved"). If the note is self-asserted ("completed", "fixed", "done", "resolved"), it is rejected with issue `unverified_critical_closeout`.
+  - If `severity == "Critical"`: Link the authorized verification record and record `Verified by: <independent reviewer>; Result: Passed` in the closeout note. The audit reports `unverified_critical_closeout` for a missing or unsupported verification statement or a reviewer matching the item owner.
   - If `severity` is Major or Minor: Bare self-assertions ("completed", "done", etc.) without context are rejected with `unverified_closeout`.
 - **Severity-Aware Overdue Escalation:** Active overdue items now produce:
   - `overdue_critical_item`: Active critical item overdue (triggers daily commissioning escalation).
@@ -60,7 +60,7 @@ All modifications strictly respect the non-negotiable safety boundaries:
   - `aging_summary`: Counts of overdue critical and major defects, plus maximum days overdue.
 
 ### 3.3 Workspace Security & Path Hardening (`scripts/summarize_status.py`)
-- **Boundary Enforcement:** `expand_paths(inputs, *, base_boundary=None)` now supports validating that resolved paths do not escape the specified boundary root using `path.resolve().is_relative_to(...)`. If an escape is attempted, a clear `ValueError` is raised.
+- **Boundary Enforcement:** The shared record-path resolver checks relative inputs against the current working directory and directory entries against their selected directory. Operators can still specify an absolute record path. A caller-supplied boundary also constrains the selected inputs.
 
 ### 3.4 Evidence Revision Validation (`scripts/audit_evidence_traceability.py`)
 - **Revision Format Enforcement:** Integrated `REVISION_PATTERN` (consistent with `audit_document_control.py`) to ensure all recorded evidence revisions adhere to standard controlled numbering (e.g., `Rev A`, `Rev 0`, `0`, `A`). Invalid entries trigger `invalid_revision`.
