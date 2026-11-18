@@ -32,16 +32,9 @@ TERMINAL_STATUSES = ("Closed", "Deferred")
 EVIDENCE_REQUIRED_STATUSES = ("Ready for verification", "Closed", "Deferred")
 MISSING_VALUES = ("TBD", "TBC", "N/A", "NA", "-")
 
-VERIFICATION_KEYWORDS = (
-    "independent",
-    "witness",
-    "retest",
-    "sign-off",
-    "signed",
-    "verified",
-    "accepted",
-    "inspected",
-    "approved",
+VERIFIED_CLOSEOUT = re.compile(
+    r"Verified by:[ \t]*(?P<verifier>[^;\r\n]+);[ \t]*Result:[ \t]*Passed",
+    re.IGNORECASE,
 )
 SELF_ASSERTION_ONLY = {
     "completed",
@@ -176,6 +169,19 @@ def _parse_date(value: str) -> date | None:
     except ValueError:
         return None
     return parsed if parsed.isoformat() == value else None
+
+
+def _has_independent_verification(record: PunchListRecord) -> bool:
+    verified = VERIFIED_CLOSEOUT.fullmatch(record.closeout_note.strip())
+    if not verified:
+        return False
+    verifier = normalize_heading(verified.group("verifier"))
+    return (
+        not _is_missing(verifier)
+        and verifier not in {"pending", "unknown", "unassigned"}
+        and not (verifier.startswith("<") and verifier.endswith(">"))
+        and verifier != normalize_heading(record.owner)
+    )
 
 
 def audit_punch_list(
@@ -315,16 +321,14 @@ def audit_punch_list(
                 f"{record.status} requires a verification or closeout note",
             )
         elif normalized_status == "closed":
-            note_lower = record.closeout_note.lower().strip()
             if normalized_severity == "critical":
-                has_verification = any(kw in note_lower for kw in VERIFICATION_KEYWORDS)
-                if not has_verification or note_lower in SELF_ASSERTION_ONLY:
+                if not _has_independent_verification(record):
                     add(
                         record,
                         "unverified_critical_closeout",
-                        "closed critical item requires independent verification, retest, or engineering sign-off in closeout note",
+                        "record 'Verified by: <independent reviewer>; Result: Passed' in the closeout note",
                     )
-            elif note_lower in SELF_ASSERTION_ONLY:
+            elif record.closeout_note.strip().casefold() in SELF_ASSERTION_ONLY:
                 add(
                     record,
                     "unverified_closeout",
