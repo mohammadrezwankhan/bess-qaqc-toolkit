@@ -339,6 +339,37 @@ class StatusSummaryTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "escapes allowed boundary"):
                     expand_paths([outside_file], base_boundary=base_path)
 
+    def test_cli_rejects_relative_input_outside_its_workspace(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = root / "workspace"
+            workspace.mkdir()
+            outside = root / "outside.md"
+            outside.write_text(
+                "| Item | Status |\n| --- | --- |\n| Example | Open |\n",
+                encoding="utf-8",
+            )
+            with contextlib.chdir(workspace), contextlib.redirect_stderr(io.StringIO()) as stderr:
+                result = main(["../outside.md"])
+            self.assertEqual(result, 1)
+            self.assertIn("escapes allowed boundary", stderr.getvalue())
+
+    def test_expanding_directory_rejects_a_file_link_outside_it(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = root / "workspace"
+            workspace.mkdir()
+            outside = root / "outside.md"
+            outside.write_text("# Outside\n", encoding="utf-8")
+            try:
+                (workspace / "linked.md").symlink_to(outside)
+            except OSError as error:
+                self.skipTest(f"symbolic links unavailable: {error}")
+            for boundary in (None, root):
+                with self.subTest(boundary=boundary):
+                    with self.assertRaisesRegex(ValueError, "escapes allowed boundary"):
+                        expand_paths([workspace], base_boundary=boundary)
+
 
 if __name__ == "__main__":
     unittest.main()
