@@ -7,6 +7,20 @@ from pathlib import Path
 
 
 SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
+CODE_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
+CLOSEOUT_HEADINGS = {"## closeout questions", "## closeout prompts"}
+CLOSEOUT_QUESTIONS = {
+    "audit-defensibility prompt": r"what evidence would .*(?:audit|challenged later)\?",
+    "safety/risk impact prompt": (
+        r"does the (?:finding|item) affect safety, energization, warranty, "
+        r"grid compliance, or (?:only )?documentation(?: quality)?\?"
+    ),
+    "action owner/review prompt": r"who owns the next action.*when .*review.*\?",
+    "residual-risk disclosure prompt": (
+        r"(?:what|which) (?:unresolved (?:residual )?|residual )risk "
+        r".*final acceptance package\?"
+    ),
+}
 
 
 def is_table_row(line: str) -> bool:
@@ -74,6 +88,41 @@ def table_blocks(
                 )
         blocks.append((start + 1, block))
     return blocks
+
+
+def _strip_html_comments(line: str, in_comment: bool) -> tuple[str, bool]:
+    visible: list[str] = []
+    while line:
+        if in_comment:
+            _, marker, line = line.partition("-->")
+            in_comment = not marker
+        else:
+            text, marker, line = line.partition("<!--")
+            visible.append(text)
+            in_comment = bool(marker)
+    return "".join(visible), in_comment
+
+
+def _closeout_questions(lines: list[str]) -> list[str]:
+    questions: list[str] = []
+    in_closeout = False
+    fence = ""
+    in_comment = False
+    for line in lines:
+        marker = CODE_FENCE.match(line)
+        if fence:
+            if marker and marker[1].startswith(fence) and not marker[2].strip():
+                fence = ""
+            continue
+        if marker and not in_comment:
+            fence = marker[1]
+            continue
+        line, in_comment = _strip_html_comments(line, in_comment)
+        if line.startswith(("# ", "## ")):
+            in_closeout = line.rstrip().casefold() in CLOSEOUT_HEADINGS
+        elif in_closeout and line.startswith(("- ", "* ", "+ ")):
+            questions.append(line[2:].strip().casefold())
+    return questions
 
 
 def validate_template(
@@ -153,50 +202,12 @@ def validate_template(
                 )
 
     if strict_governance:
-        content_lower = path.read_text(encoding="utf-8").lower()
-        has_audit_defense = any(
-            phrase in content_lower
-            for phrase in (
-                "evidence would",
-                "defend this decision",
-                "challenged later",
-            )
-        )
-        has_impact_class = any(
-            phrase in content_lower
-            for phrase in (
-                "affect safety",
-                "safety, energization",
-                "safety, protection",
-                "safety, reliability",
-            )
-        )
-        has_owner_cadence = any(
-            phrase in content_lower
-            for phrase in (
-                "owns the next action",
-                "reviewed again",
-                "review cadence",
-                "accountable owner",
-            )
-        )
-        has_residual_risk = any(
-            phrase in content_lower
-            for phrase in (
-                "residual risk",
-                "unresolved risk",
-                "accepted risk",
-            )
-        )
-        missing_governance = []
-        if not has_audit_defense:
-            missing_governance.append("audit-defensibility prompt")
-        if not has_impact_class:
-            missing_governance.append("safety/risk impact prompt")
-        if not has_owner_cadence:
-            missing_governance.append("action owner/review prompt")
-        if not has_residual_risk:
-            missing_governance.append("residual-risk disclosure prompt")
+        questions = _closeout_questions(lines)
+        missing_governance = [
+            label
+            for label, pattern in CLOSEOUT_QUESTIONS.items()
+            if not any(re.fullmatch(pattern, question) for question in questions)
+        ]
         if missing_governance:
             errors.append(
                 (
