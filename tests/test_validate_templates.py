@@ -95,7 +95,7 @@ Use this template to record controlled FAT evidence.
             governed = (
                 VALID_TEMPLATE
                 + "\n## Closeout Prompts\n\n"
-                "- What evidence would defend this decision in a later audit?\n"
+                "- What evidence would defend this decision in a later audit? <!-- audit note -->\n"
                 "- Does the finding affect safety, energization, warranty, grid compliance, or documentation?\n"
                 "- Who owns the next action and when is it reviewed again under the review cadence?\n"
                 "- Which unresolved residual risk should be visible in the final acceptance package?\n"
@@ -103,6 +103,29 @@ Use this template to record controlled FAT evidence.
             path.write_text(governed, encoding="utf-8")
             clean_errors = validate_template(path, strict_governance=True)
             self.assertEqual(clean_errors, [])
+
+    def test_strict_governance_requires_questions_in_the_closeout_section(self):
+        questions = (
+            "- What evidence would defend this decision in a later audit?\n"
+            "- Does the finding affect safety, energization, warranty, grid compliance, or documentation?\n"
+            "- Who owns the next action, and when is it reviewed?\n"
+            "- What unresolved residual risk must appear in the final acceptance package?\n"
+        )
+        samples = (
+            "\n## Closeout Questions\n\n"
+            "The draft mentions what evidence would defend this decision, effects that "
+            "affect safety, review cadence, and residual risk.\n",
+            "\n## Other Questions\n\n" + questions,
+            "\n```markdown\n## Closeout Questions\n\n" + questions + "```\n",
+            "\n## Closeout Questions\n\nNotes <!--\n" + questions + "-->\n",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "template.md"
+            for content in samples:
+                with self.subTest(content=content):
+                    path.write_text(VALID_TEMPLATE + content, encoding="utf-8")
+                    errors = validate_template(path, strict_governance=True)
+                    self.assertTrue(any("strict governance requires" in msg for _, msg in errors))
 
 
 if __name__ == "__main__":
