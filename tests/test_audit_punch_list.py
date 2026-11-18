@@ -125,7 +125,7 @@ class PunchListAuditTests(unittest.TestCase):
         )
         self.assertIn("unverified_critical_closeout", self.kinds([unverified]))
 
-        # Note without verification keywords fails
+        # Corrective action alone does not record verification
         action_only = replace(
             self.records[0],
             closeout_note="Vendor replaced the cable connector.",
@@ -135,7 +135,7 @@ class PunchListAuditTests(unittest.TestCase):
         # Proper independent witness passes
         verified = replace(
             self.records[0],
-            closeout_note="Independent witness accepted the corrected logic and signed retest.",
+            closeout_note="Verified by: Independent QA reviewer; Result: Passed",
         )
         self.assertEqual(self.kinds([verified]), [])
 
@@ -146,6 +146,19 @@ class PunchListAuditTests(unittest.TestCase):
             closeout_note="completed",
         )
         self.assertIn("unverified_closeout", self.kinds([closed_major]))
+
+    def test_closed_critical_item_requires_success_and_a_distinct_named_verifier(self):
+        for closeout_note in (
+            "Independent verification is still pending.",
+            "Retest failed.",
+            "Verified by: Commissioning manager; Result: Passed",
+            "Verified by: <independent reviewer>; Result: Passed",
+            "Verified by: TBD; Result: Passed",
+            "Verified by: unknown; Result: Passed",
+        ):
+            with self.subTest(closeout_note=closeout_note):
+                record = replace(self.records[0], closeout_note=closeout_note)
+                self.assertIn("unverified_critical_closeout", self.kinds([record]))
 
     def test_overdue_critical_and_major_escalations(self):
         overdue_crit = replace(
