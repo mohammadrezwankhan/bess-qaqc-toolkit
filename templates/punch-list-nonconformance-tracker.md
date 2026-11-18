@@ -28,6 +28,11 @@ Use this tracker to manage BESS punch-list items, nonconformances, owner actions
 | Closed | Independent reviewer accepted the evidence and closeout note. |
 | Deferred | Item is accepted for later closeout with approved residual risk and owner. |
 
+For a closed Critical item, link the approved verification record and enter
+`Verified by: <independent reviewer>; Result: Passed` in the closeout-note
+column. Replace the placeholder with the recorded name or role of a reviewer
+other than the item owner.
+
 ## Review Cadence
 
 - Review critical and major items daily during commissioning windows.
