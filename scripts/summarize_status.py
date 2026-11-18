@@ -125,30 +125,41 @@ def extract_status_records(path: Path) -> list[StatusRecord]:
     return records
 
 
+def _resolve_within(path: Path, boundary: Path) -> Path:
+    resolved = path.resolve()
+    if not resolved.is_relative_to(boundary):
+        raise ValueError(
+            f"input path escapes allowed boundary: {path} (outside {boundary})"
+        )
+    return resolved
+
+
 def expand_paths(
     inputs: Sequence[Path], *, base_boundary: Path | None = None
 ) -> list[Path]:
-    paths: list[Path] = []
-    resolved_boundary = base_boundary.resolve() if base_boundary else None
+    workspace = Path.cwd().resolve()
+    explicit_boundary = base_boundary.resolve() if base_boundary is not None else None
+    unique: list[Path] = []
+    seen: set[Path] = set()
     for input_path in inputs:
-        if input_path.is_dir():
-            paths.extend(sorted(input_path.glob("*.md")))
-        elif input_path.is_file():
-            paths.append(input_path)
+        input_boundary = explicit_boundary or workspace
+        if explicit_boundary is None and input_path.is_absolute():
+            input_boundary = input_path.parent.resolve()
+        resolved_input = _resolve_within(input_path, input_boundary)
+        if resolved_input.is_dir():
+            paths = sorted(input_path.glob("*.md"))
+            entry_boundary = resolved_input
+        elif resolved_input.is_file():
+            paths = [input_path]
+            entry_boundary = input_boundary
         else:
             raise FileNotFoundError(f"input does not exist: {input_path}")
 
-    unique: list[Path] = []
-    seen: set[Path] = set()
-    for path in paths:
-        resolved = path.resolve()
-        if resolved_boundary and not resolved.is_relative_to(resolved_boundary):
-            raise ValueError(
-                f"input path escapes allowed boundary: {path} (outside {base_boundary})"
-            )
-        if resolved not in seen:
-            seen.add(resolved)
-            unique.append(path)
+        for path in paths:
+            resolved = _resolve_within(path, entry_boundary)
+            if resolved not in seen:
+                seen.add(resolved)
+                unique.append(path)
     return unique
 
 
