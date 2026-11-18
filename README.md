@@ -234,6 +234,9 @@ python scripts/summarize_status.py project-records `
 The gate compares status names case-insensitively and exits with code `2` when
 a configured state occurs. Status-definition tables are excluded from the
 roll-up. Running the command without a path summarizes the repository templates.
+Relative record paths must stay within the current working directory. You can
+select an external record or directory by giving its absolute path. Directory
+scans reject Markdown file symlinks that resolve outside the selected directory.
 
 Use a version-controlled status policy to reject missing values, status typos,
 and project-defined blocking states in one reproducible gate:
@@ -410,6 +413,12 @@ severity vocabulary and the `Open`, `In progress`, `Ready for verification`,
 Active rows fail when their ISO target date is overdue. Critical rows must be
 terminal and cannot pass as deferred. Verification-ready, closed, and deferred
 rows require controlled evidence; terminal rows also require a closeout note.
+For a closed critical item, use the evidence link for the approved verification
+record and enter `Verified by: <independent reviewer>; Result: Passed` as the
+closeout note. Replace the placeholder with the reviewer's recorded name or
+role. The reviewer must be different from the item owner.
+The audit checks these recorded fields. It does not authenticate the reviewer
+or inspect the evidence artifact.
 Malformed dates and identifiers, duplicate IDs, missing controlled values, and
 unknown severity or status values remain separate line-level findings.
 
