@@ -36,3 +36,10 @@ Use this sentence shape when evidence quality matters:
 - Keep deviation wording factual and separate from blame.
 - Link related punch-list or nonconformance IDs when acceptance is conditional.
 - Update the handover document index when evidence changes after final review.
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

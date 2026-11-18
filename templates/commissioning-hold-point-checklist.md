@@ -18,3 +18,10 @@ Use this checklist to manage BESS commissioning gates where work should pause un
 - Are blocked, deferred, and accepted-with-risk items separated?
 - Are evidence links stored in a controlled location?
 - Does the handover package show who accepted any remaining residual risk?
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

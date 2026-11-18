@@ -7,15 +7,58 @@ from pathlib import Path
 
 
 SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
+CODE_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
+CLOSEOUT_HEADINGS = {"## closeout questions", "## closeout prompts"}
+CLOSEOUT_QUESTIONS = {
+    "audit-defensibility prompt": r"what evidence would .*(?:audit|challenged later)\?",
+    "safety/risk impact prompt": (
+        r"does the (?:finding|item) affect safety, energization, warranty, "
+        r"grid compliance, or (?:only )?documentation(?: quality)?\?"
+    ),
+    "action owner/review prompt": r"who owns the next action.*when .*review.*\?",
+    "residual-risk disclosure prompt": (
+        r"(?:what|which) (?:unresolved (?:residual )?|residual )risk "
+        r".*final acceptance package\?"
+    ),
+}
 
 
 def is_table_row(line: str) -> bool:
     stripped = line.strip()
-    return stripped.startswith("|") and stripped.endswith("|")
+    if not (stripped.startswith("|") and stripped.endswith("|")):
+        return False
+    slashes = len(stripped[:-1]) - len(stripped[:-1].rstrip("\\"))
+    return slashes % 2 == 0
 
 
 def table_cells(line: str) -> list[str]:
-    return [cell.strip() for cell in line.strip()[1:-1].split("|")]
+    content = line.strip()
+    if content.startswith("|"):
+        content = content[1:]
+    if content.endswith("|"):
+        slashes = len(content[:-1]) - len(content[:-1].rstrip("\\"))
+        if slashes % 2 == 0:
+            content = content[:-1]
+
+    cells: list[str] = []
+    current: list[str] = []
+    escape_count = 0
+    for char in content:
+        if char == "\\":
+            escape_count += 1
+            current.append(char)
+        elif char == "|":
+            if escape_count % 2 == 1:
+                current.append(char)
+            else:
+                cells.append("".join(current).strip())
+                current = []
+            escape_count = 0
+        else:
+            escape_count = 0
+            current.append(char)
+    cells.append("".join(current).strip())
+    return cells
 
 
 def table_blocks(
@@ -47,7 +90,44 @@ def table_blocks(
     return blocks
 
 
-def validate_template(path: Path) -> list[tuple[int, str]]:
+def _strip_html_comments(line: str, in_comment: bool) -> tuple[str, bool]:
+    visible: list[str] = []
+    while line:
+        if in_comment:
+            _, marker, line = line.partition("-->")
+            in_comment = not marker
+        else:
+            text, marker, line = line.partition("<!--")
+            visible.append(text)
+            in_comment = bool(marker)
+    return "".join(visible), in_comment
+
+
+def _closeout_questions(lines: list[str]) -> list[str]:
+    questions: list[str] = []
+    in_closeout = False
+    fence = ""
+    in_comment = False
+    for line in lines:
+        marker = CODE_FENCE.match(line)
+        if fence:
+            if marker and marker[1].startswith(fence) and not marker[2].strip():
+                fence = ""
+            continue
+        if marker and not in_comment:
+            fence = marker[1]
+            continue
+        line, in_comment = _strip_html_comments(line, in_comment)
+        if line.startswith(("# ", "## ")):
+            in_closeout = line.rstrip().casefold() in CLOSEOUT_HEADINGS
+        elif in_closeout and line.startswith(("- ", "* ", "+ ")):
+            questions.append(line[2:].strip().casefold())
+    return questions
+
+
+def validate_template(
+    path: Path, *, strict_governance: bool = False
+) -> list[tuple[int, str]]:
     lines = path.read_text(encoding="utf-8").splitlines()
     errors: list[tuple[int, str]] = []
     nonempty = [(index, line) for index, line in enumerate(lines) if line.strip()]
@@ -121,6 +201,22 @@ def validate_template(path: Path) -> list[tuple[int, str]]:
                     )
                 )
 
+    if strict_governance:
+        questions = _closeout_questions(lines)
+        missing_governance = [
+            label
+            for label, pattern in CLOSEOUT_QUESTIONS.items()
+            if not any(re.fullmatch(pattern, question) for question in questions)
+        ]
+        if missing_governance:
+            errors.append(
+                (
+                    1,
+                    "strict governance requires closeout defensibility prompts: "
+                    + ", ".join(missing_governance),
+                )
+            )
+
     return errors
 
 
@@ -129,6 +225,11 @@ def parse_args() -> argparse.Namespace:
         description="Validate structural conventions in BESS Markdown templates."
     )
     parser.add_argument("paths", nargs="*", type=Path)
+    parser.add_argument(
+        "--strict-governance",
+        action="store_true",
+        help="Enforce mandatory closeout defensibility prompts in templates.",
+    )
     return parser.parse_args()
 
 
@@ -141,7 +242,9 @@ def main() -> int:
 
     error_count = 0
     for path in paths:
-        for line, message in validate_template(path):
+        for line, message in validate_template(
+            path, strict_governance=args.strict_governance
+        ):
             print(f"{path}:{line}: {message}", file=sys.stderr)
             error_count += 1
 

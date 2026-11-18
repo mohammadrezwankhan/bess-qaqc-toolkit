@@ -18,3 +18,10 @@ Use this owner map to clarify who owns evidence, documents, commissioning decisi
 - Assign one accountable owner for each open closeout action before the weekly governance review.
 - Keep residual-risk decisions separate from routine punch-list actions.
 - Record acceptance of deferred work with owner, date, technical rationale, and operations impact.
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

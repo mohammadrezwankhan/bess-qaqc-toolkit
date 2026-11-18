@@ -16,3 +16,10 @@ Use these examples to review whether commissioning evidence is accepted, rejecte
 ## Reviewer Rule
 
 Accepted evidence should prove the acceptance condition. Conditional evidence should name the residual risk, owner, interim control, and target close date. Rejected evidence should state the missing traceability or acceptance gap clearly enough that the submitter can fix it.
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

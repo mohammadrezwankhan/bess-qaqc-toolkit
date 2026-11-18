@@ -12,6 +12,7 @@ from scripts.summarize_status import (
     ColumnStatusPolicy,
     StatusPolicy,
     evaluate_status_policy,
+    expand_paths,
     extract_status_records,
     load_status_policy,
     main,
@@ -320,6 +321,54 @@ class StatusSummaryTests(unittest.TestCase):
         )
         self.assertIn("Protection test: status is blocking", standard_error.getvalue())
         self.assertIn("Status policy gate failed with 2", standard_error.getvalue())
+
+    def test_expand_paths_boundary_enforcement(self):
+        with tempfile.TemporaryDirectory() as base_dir:
+            base_path = Path(base_dir)
+            inside_file = base_path / "inside.md"
+            inside_file.write_text("# Inside\n", encoding="utf-8")
+            with tempfile.TemporaryDirectory() as outside_dir:
+                outside_file = Path(outside_dir) / "outside.md"
+                outside_file.write_text("# Outside\n", encoding="utf-8")
+
+                # Inside path passes
+                res = expand_paths([inside_file], base_boundary=base_path)
+                self.assertEqual(len(res), 1)
+
+                # Outside path is rejected
+                with self.assertRaisesRegex(ValueError, "escapes allowed boundary"):
+                    expand_paths([outside_file], base_boundary=base_path)
+
+    def test_cli_rejects_relative_input_outside_its_workspace(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = root / "workspace"
+            workspace.mkdir()
+            outside = root / "outside.md"
+            outside.write_text(
+                "| Item | Status |\n| --- | --- |\n| Example | Open |\n",
+                encoding="utf-8",
+            )
+            with contextlib.chdir(workspace), contextlib.redirect_stderr(io.StringIO()) as stderr:
+                result = main(["../outside.md"])
+            self.assertEqual(result, 1)
+            self.assertIn("escapes allowed boundary", stderr.getvalue())
+
+    def test_expanding_directory_rejects_a_file_link_outside_it(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = root / "workspace"
+            workspace.mkdir()
+            outside = root / "outside.md"
+            outside.write_text("# Outside\n", encoding="utf-8")
+            try:
+                (workspace / "linked.md").symlink_to(outside)
+            except OSError as error:
+                self.skipTest(f"symbolic links unavailable: {error}")
+            for boundary in (None, root):
+                with self.subTest(boundary=boundary):
+                    with self.assertRaisesRegex(ValueError, "escapes allowed boundary"):
+                        expand_paths([workspace], base_boundary=boundary)
 
 
 if __name__ == "__main__":

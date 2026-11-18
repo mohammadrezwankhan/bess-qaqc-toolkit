@@ -19,3 +19,10 @@ Use this checklist before commissioning handover, commercial operation, or final
 - Does the handover package include the latest approved revisions rather than draft or field-markup copies?
 - Are operations staff aware of any interim controls or post-handover obligations?
 - Is the closeout status clear enough for commercial, warranty, and safety review?
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

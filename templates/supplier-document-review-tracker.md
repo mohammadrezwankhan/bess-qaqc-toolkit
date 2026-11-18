@@ -27,3 +27,10 @@ Each review comment should include:
 - Issue or ambiguity.
 - Required correction.
 - Impact on safety, reliability, schedule, or handover evidence.
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

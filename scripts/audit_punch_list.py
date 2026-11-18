@@ -32,6 +32,21 @@ TERMINAL_STATUSES = ("Closed", "Deferred")
 EVIDENCE_REQUIRED_STATUSES = ("Ready for verification", "Closed", "Deferred")
 MISSING_VALUES = ("TBD", "TBC", "N/A", "NA", "-")
 
+VERIFIED_CLOSEOUT = re.compile(
+    r"Verified by:[ \t]*(?P<verifier>[^;\r\n]+);[ \t]*Result:[ \t]*Passed",
+    re.IGNORECASE,
+)
+SELF_ASSERTION_ONLY = {
+    "completed",
+    "done",
+    "fixed",
+    "action complete",
+    "action completed",
+    "complete",
+    "acknowledged",
+    "resolved",
+}
+
 COLUMNS = {
     "item_id": ("ID", "Item ID", "Finding ID", "Nonconformance ID"),
     "severity": ("Severity",),
@@ -156,6 +171,19 @@ def _parse_date(value: str) -> date | None:
     return parsed if parsed.isoformat() == value else None
 
 
+def _has_independent_verification(record: PunchListRecord) -> bool:
+    verified = VERIFIED_CLOSEOUT.fullmatch(record.closeout_note.strip())
+    if not verified:
+        return False
+    verifier = normalize_heading(verified.group("verifier"))
+    return (
+        not _is_missing(verifier)
+        and verifier not in {"pending", "unknown", "unassigned"}
+        and not (verifier.startswith("<") and verifier.endswith(">"))
+        and verifier != normalize_heading(record.owner)
+    )
+
+
 def audit_punch_list(
     records: Sequence[PunchListRecord],
     as_of: date,
@@ -249,11 +277,25 @@ def audit_punch_list(
                 )
         is_terminal = normalized_status in terminal_statuses
         if target_date is not None and not is_terminal and target_date < as_of:
-            add(
-                record,
-                "overdue_item",
-                f"active item is {(as_of - target_date).days} day(s) overdue",
-            )
+            days_overdue = (as_of - target_date).days
+            if normalized_severity == "critical":
+                add(
+                    record,
+                    "overdue_critical_item",
+                    f"active critical item is {days_overdue} day(s) overdue; requires daily escalation",
+                )
+            elif normalized_severity == "major":
+                add(
+                    record,
+                    "overdue_major_item",
+                    f"active major item is {days_overdue} day(s) overdue; requires commissioning review escalation",
+                )
+            else:
+                add(
+                    record,
+                    "overdue_item",
+                    f"active item is {days_overdue} day(s) overdue",
+                )
         if normalized_severity == "critical" and not is_terminal:
             add(
                 record,
@@ -278,6 +320,20 @@ def audit_punch_list(
                 "missing_closeout_note",
                 f"{record.status} requires a verification or closeout note",
             )
+        elif normalized_status == "closed":
+            if normalized_severity == "critical":
+                if not _has_independent_verification(record):
+                    add(
+                        record,
+                        "unverified_critical_closeout",
+                        "record 'Verified by: <independent reviewer>; Result: Passed' in the closeout note",
+                    )
+            elif record.closeout_note.strip().casefold() in SELF_ASSERTION_ONLY:
+                add(
+                    record,
+                    "unverified_closeout",
+                    f"closed item requires verification details beyond simple '{record.closeout_note}'",
+                )
 
     return issues
 
@@ -291,23 +347,49 @@ def summarize_punch_list(
     severity_counts = Counter(
         normalize_heading(record.severity) for record in records
     )
+    system_area_counts = Counter(
+        record.system_area for record in records if record.system_area.strip()
+    )
     items: list[dict[str, object]] = []
     terminal = {normalize_heading(value) for value in TERMINAL_STATUSES}
+    overdue_items = []
     for record in records:
         parsed_date = _parse_date(record.target_close_date)
         days_to_target = (parsed_date - as_of).days if parsed_date else None
+        is_overdue = (
+            days_to_target is not None
+            and days_to_target < 0
+            and normalize_heading(record.status) not in terminal
+        )
+        if is_overdue:
+            overdue_items.append((record, abs(days_to_target)))
         item = asdict(record)
         item.update(
             {
                 "days_to_target": days_to_target,
-                "overdue": (
-                    days_to_target is not None
-                    and days_to_target < 0
-                    and normalize_heading(record.status) not in terminal
-                ),
+                "overdue": is_overdue,
             }
         )
         items.append(item)
+
+    recurring_areas = {
+        area: count for area, count in system_area_counts.items() if count > 1
+    }
+    aging_summary = {
+        "overdue_count": len(overdue_items),
+        "overdue_critical_count": sum(
+            1
+            for rec, _ in overdue_items
+            if normalize_heading(rec.severity) == "critical"
+        ),
+        "overdue_major_count": sum(
+            1
+            for rec, _ in overdue_items
+            if normalize_heading(rec.severity) == "major"
+        ),
+        "max_days_overdue": max((days for _, days in overdue_items), default=0),
+    }
+
     return {
         "as_of": as_of.isoformat(),
         "source_files": sorted({record.source for record in records}),
@@ -319,6 +401,9 @@ def summarize_punch_list(
             severity: severity_counts[normalize_heading(severity)]
             for severity in SEVERITIES
         },
+        "system_area_counts": dict(system_area_counts),
+        "aging_summary": aging_summary,
+        "recurring_areas": recurring_areas,
         "issue_count": len(issues),
         "issues": [asdict(issue) for issue in issues],
         "items": items,

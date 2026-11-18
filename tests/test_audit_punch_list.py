@@ -117,6 +117,76 @@ class PunchListAuditTests(unittest.TestCase):
         record = replace(self.records[0], closeout_note="")
         self.assertIn("missing_closeout_note", self.kinds([record]))
 
+    def test_critical_item_closed_requires_independent_verification(self):
+        # Self-assertion only fails
+        unverified = replace(
+            self.records[0],
+            closeout_note="completed",
+        )
+        self.assertIn("unverified_critical_closeout", self.kinds([unverified]))
+
+        # Corrective action alone does not record verification
+        action_only = replace(
+            self.records[0],
+            closeout_note="Vendor replaced the cable connector.",
+        )
+        self.assertIn("unverified_critical_closeout", self.kinds([action_only]))
+
+        # Proper independent witness passes
+        verified = replace(
+            self.records[0],
+            closeout_note="Verified by: Independent QA reviewer; Result: Passed",
+        )
+        self.assertEqual(self.kinds([verified]), [])
+
+    def test_closed_major_item_rejects_bare_self_assertion(self):
+        closed_major = replace(
+            self.records[1],
+            status="Closed",
+            closeout_note="completed",
+        )
+        self.assertIn("unverified_closeout", self.kinds([closed_major]))
+
+    def test_closed_critical_item_requires_success_and_a_distinct_named_verifier(self):
+        for closeout_note in (
+            "Independent verification is still pending.",
+            "Retest failed.",
+            "Verified by: Commissioning manager; Result: Passed",
+            "Verified by: <independent reviewer>; Result: Passed",
+            "Verified by: TBD; Result: Passed",
+            "Verified by: unknown; Result: Passed",
+        ):
+            with self.subTest(closeout_note=closeout_note):
+                record = replace(self.records[0], closeout_note=closeout_note)
+                self.assertIn("unverified_critical_closeout", self.kinds([record]))
+
+    def test_overdue_critical_and_major_escalations(self):
+        overdue_crit = replace(
+            self.records[2],
+            severity="Critical",
+            target_close_date="2026-07-15",
+        )
+        overdue_maj = replace(
+            self.records[2],
+            severity="Major",
+            target_close_date="2026-07-15",
+        )
+        self.assertIn("overdue_critical_item", self.kinds([overdue_crit]))
+        self.assertIn("overdue_major_item", self.kinds([overdue_maj]))
+
+    def test_summary_aggregates_system_areas_and_recurring_trends(self):
+        records = [
+            self.records[0],
+            self.records[1],
+            replace(self.records[2], system_area="Fire safety interface"),
+            self.records[3],
+        ]
+        summary = summarize_punch_list(records, [], AS_OF)
+        self.assertIn("system_area_counts", summary)
+        self.assertEqual(summary["system_area_counts"]["Fire safety interface"], 2)
+        self.assertIn("Fire safety interface", summary["recurring_areas"])
+        self.assertIn("aging_summary", summary)
+
     def test_summary_and_markdown_preserve_closeout_state(self):
         records = [
             replace(self.records[0], severity="critical", status="closed"),

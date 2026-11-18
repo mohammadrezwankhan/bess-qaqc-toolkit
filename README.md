@@ -44,6 +44,10 @@ The browser lab runs offline with no packages, accounts, or live data feeds. Its
 ### Continue into the implementation
 
 - [README.md](README.md)
+- [AUDIT_REPORT.md](AUDIT_REPORT.md)
+- [REMEDIATION_REPORT.md](REMEDIATION_REPORT.md)
+- [TEST_VERIFICATION_REPORT.md](TEST_VERIFICATION_REPORT.md)
+- [SAFETY_AND_RESIDUAL_RISK.md](SAFETY_AND_RESIDUAL_RISK.md)
 - [scripts/audit_readiness.py](scripts/audit_readiness.py)
 - [scripts/audit_evidence_traceability.py](scripts/audit_evidence_traceability.py)
 - [scripts/audit_calibration_traceability.py](scripts/audit_calibration_traceability.py)
@@ -57,7 +61,7 @@ Python 3.12 for the source-documented local validation path; no third-party runt
 
 ```bash
 python -m unittest discover -s tests -v
-python scripts/validate_templates.py
+python scripts/validate_templates.py --strict-governance
 python scripts/audit_readiness.py examples/lifecycle-worked-example.md --status-policy config/readiness-status-policy.example.json --completeness-policy config/readiness-completeness-policy.example.json --as-of 2026-01-15 --require-source-coverage
 ```
 
@@ -88,6 +92,10 @@ help engineering teams make inspection logic easier to review and reuse.
 - [Template quality gate](#template-quality-gate) is the shortest local validation path.
 - [Readiness audits](#readiness-status-roll-up) explain the executable review controls.
 - [Fictional worked example](examples/lifecycle-worked-example.md) shows the existing readiness fields with executable audit inputs.
+- [Audit Report](AUDIT_REPORT.md) details the multi-agent findings and governance evaluations.
+- [Remediation Report](REMEDIATION_REPORT.md) records verified defect resolutions and engine hardening.
+- [Test Verification Report](TEST_VERIFICATION_REPORT.md) summarizes test commands, coverage, and results.
+- [Safety and Residual Risk](SAFETY_AND_RESIDUAL_RISK.md) defines software boundaries and engineering sign-off requirements.
 - [Scope and limitations](#scope-and-limitations) defines how to adapt the toolkit.
 - [Contributing](#contribution-entry-points), [citation metadata](CITATION.cff), and [license](LICENSE) support sharing.
 
@@ -226,6 +234,9 @@ python scripts/summarize_status.py project-records `
 The gate compares status names case-insensitively and exits with code `2` when
 a configured state occurs. Status-definition tables are excluded from the
 roll-up. Running the command without a path summarizes the repository templates.
+Relative record paths must stay within the current working directory. You can
+select an external record or directory by giving its absolute path. Directory
+scans reject Markdown file symlinks that resolve outside the selected directory.
 
 Use a version-controlled status policy to reject missing values, status typos,
 and project-defined blocking states in one reproducible gate:
@@ -402,6 +413,12 @@ severity vocabulary and the `Open`, `In progress`, `Ready for verification`,
 Active rows fail when their ISO target date is overdue. Critical rows must be
 terminal and cannot pass as deferred. Verification-ready, closed, and deferred
 rows require controlled evidence; terminal rows also require a closeout note.
+For a closed critical item, use the evidence link for the approved verification
+record and enter `Verified by: <independent reviewer>; Result: Passed` as the
+closeout note. Replace the placeholder with the reviewer's recorded name or
+role. The reviewer must be different from the item owner.
+The audit checks these recorded fields. It does not authenticate the reviewer
+or inspect the evidence artifact.
 Malformed dates and identifiers, duplicate IDs, missing controlled values, and
 unknown severity or status values remain separate line-level findings.
 

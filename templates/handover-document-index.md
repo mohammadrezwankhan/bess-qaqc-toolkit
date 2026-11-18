@@ -31,3 +31,10 @@ Use this index to track the document package needed for BESS commissioning close
 - Link documents to controlled storage when possible instead of using free-text file names only.
 - Identify any residual-risk item that remains open at handover.
 - Check that document IDs match the project document control system before final acceptance.
+
+## Closeout Questions
+
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?

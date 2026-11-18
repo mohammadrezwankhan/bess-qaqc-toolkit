@@ -46,6 +46,8 @@ Replace each example location with the controlled document-system path and updat
 
 ## Closeout Questions
 
-- Is every required evidence item linked to a responsible owner?
-- Are open deviations categorized by safety, reliability, performance, documentation, or commercial impact?
+- What evidence would defend this decision in a later audit?
+- Does the finding affect safety, energization, warranty, grid compliance, or documentation?
+- Who owns the next action, and when is it reviewed?
+- What unresolved residual risk must appear in the final acceptance package?
 - Can an independent reviewer understand the system state without asking the commissioning team for private context?
