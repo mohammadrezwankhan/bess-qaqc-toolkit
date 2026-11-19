@@ -4,7 +4,7 @@
 
 Review BESS delivery evidence with reusable Markdown templates and Python checks for readiness, traceability, and handover.
 
-[Template catalog](#toolkit-contents) · [Worked example](#fictional-worked-example) · [Readiness gate](#unified-readiness-gate) · [Audit source](scripts/audit_readiness.py) · [Limits](#scope-and-limitations)
+[Documentation handbook](docs/INDEX.md) · [Template catalog](#toolkit-contents) · [Worked example](#fictional-worked-example) · [Readiness gate](#unified-readiness-gate) · [Audit source](scripts/audit_readiness.py) · [Limits](#scope-and-limitations)
 
 ---
 
