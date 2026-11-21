@@ -9,9 +9,11 @@ from pathlib import Path
 from typing import Sequence
 
 try:
+    from scripts.audit_punch_list import closed_item_verification_issue, parse_iso_date
     from scripts.summarize_status import expand_paths, normalize_heading
     from scripts.validate_templates import table_blocks, table_cells
 except ModuleNotFoundError:
+    from audit_punch_list import closed_item_verification_issue, parse_iso_date
     from summarize_status import expand_paths, normalize_heading
     from validate_templates import table_blocks, table_cells
 
@@ -399,6 +401,8 @@ def audit_handover(
         }.items():
             if is_missing(value):
                 add(risk, risk.risk_id, "missing_risk_field", f"{label} is required")
+        if not is_missing(risk.target_close_date) and parse_iso_date(risk.target_close_date) is None:
+            add(risk, risk.risk_id, "invalid_target_close_date", "target close date must be a valid YYYY-MM-DD date")
         if not valid_id(risk.source_item_id):
             add(
                 risk,
@@ -455,6 +459,8 @@ def audit_handover(
         }.items():
             if is_missing(value):
                 add(item, item.item_id, "missing_punch_field", f"{label} is required")
+        if not is_missing(item.target_close_date) and parse_iso_date(item.target_close_date) is None:
+            add(item, item.item_id, "invalid_target_close_date", "target close date must be a valid YYYY-MM-DD date")
         status = normalize_heading(item.status)
         if normalize_heading(item.severity) not in severities:
             add(
@@ -513,10 +519,16 @@ def audit_handover(
                     "missing_closeout_note",
                     "closed item requires a verification or closeout note",
                 )
+            else:
+                issue = closed_item_verification_issue(item.severity, item.closeout_note, item.owner)
+                if issue:
+                    add(item, item.item_id, *issue)
 
     release_records: list[AcceptanceDecision] = []
     for decision in decisions:
         state = normalize_heading(decision.decision)
+        if not is_missing(decision.approval_date) and parse_iso_date(decision.approval_date) is None:
+            add(decision, decision.acceptance_id, "invalid_approval_date", "approval date must be a valid YYYY-MM-DD date")
         if is_missing(decision.decision):
             add(
                 decision,

@@ -470,7 +470,12 @@ python scripts/audit_handover_acceptance.py project-records `
 
 The audit requires each deferred punch-list item to resolve to exactly one
 active, approved residual-risk record through `Source Item ID`. Closed items
-must retain their evidence link and verification note. A conditional acceptance
+must retain their evidence link and verification note. Critical closeouts require
+`Verified by: <independent reviewer>; Result: Passed`, with a reviewer other than
+the item owner. Target close dates and supplied approval dates must be valid
+calendar dates in `YYYY-MM-DD` format. These text fields record declarations.
+Signer authentication and authorization to energize require separate controls.
+A conditional acceptance
 must enumerate every active residual-risk ID, while an unconditional acceptance
 cannot retain any active deferral.
 
