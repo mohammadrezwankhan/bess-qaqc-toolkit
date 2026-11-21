@@ -119,6 +119,40 @@ class HandoverAcceptanceTests(unittest.TestCase):
         risk = replace(self.risks[0], status="Closed")
         self.assertIn("closed_risk_source_not_closed", self.kinds(risks=[risk]))
 
+    def test_closed_critical_item_rejects_self_assertion(self):
+        item = replace(self.punch[0], severity="Critical", closeout_note="completed")
+        self.assertIn("unverified_critical_closeout", self.kinds(punch=[item, *self.punch[1:]]))
+
+    def test_closed_critical_item_rejects_owner_verification(self):
+        item = replace(self.punch[0], severity="Critical", closeout_note="Verified by: Electrical supervisor; Result: Passed")
+        self.assertIn("unverified_critical_closeout", self.kinds(punch=[item, *self.punch[1:]]))
+
+    def test_closed_critical_item_accepts_independent_verification(self):
+        item = replace(self.punch[0], severity="Critical", closeout_note="Verified by: Independent QA reviewer; Result: Passed")
+        self.assertEqual(self.kinds(punch=[item, *self.punch[1:]]), [])
+
+    def test_closed_major_item_rejects_self_assertion(self):
+        item = replace(self.punch[0], severity="Major", closeout_note="completed")
+        self.assertIn("unverified_closeout", self.kinds(punch=[item, *self.punch[1:]]))
+
+    def test_punch_and_risk_dates_require_valid_calendar_dates(self):
+        item = replace(self.punch[0], target_close_date="2026-02-30")
+        risk = replace(self.risks[0], target_close_date="2026-13-15")
+        self.assertEqual(
+            self.kinds(punch=[item, *self.punch[1:]], risks=[risk]),
+            ["invalid_target_close_date", "invalid_target_close_date"],
+        )
+
+    def test_release_approval_date_requires_valid_calendar_date(self):
+        decision = replace(self.decisions[0], approval_date="2026-02-30")
+        self.assertIn("invalid_approval_date", self.kinds(decisions=[decision]))
+
+    def test_pending_approval_date_is_optional_but_must_be_valid_if_present(self):
+        pending = replace(self.decisions[0], decision="Pending", approval_date="")
+        self.assertNotIn("invalid_approval_date", self.kinds(decisions=[pending]))
+        invalid = replace(pending, approval_date="20260228")
+        self.assertIn("invalid_approval_date", self.kinds(decisions=[invalid]))
+
     def test_duplicate_identifiers_are_case_insensitive(self):
         duplicate = replace(self.risks[0], risk_id="rr-001")
         kinds = self.kinds(risks=[*self.risks, duplicate])

@@ -163,7 +163,7 @@ def _is_missing(value: str) -> bool:
     }
 
 
-def _parse_date(value: str) -> date | None:
+def parse_iso_date(value: str) -> date | None:
     try:
         parsed = date.fromisoformat(value)
     except ValueError:
@@ -171,8 +171,8 @@ def _parse_date(value: str) -> date | None:
     return parsed if parsed.isoformat() == value else None
 
 
-def _has_independent_verification(record: PunchListRecord) -> bool:
-    verified = VERIFIED_CLOSEOUT.fullmatch(record.closeout_note.strip())
+def _has_independent_verification(closeout_note: str, owner: str) -> bool:
+    verified = VERIFIED_CLOSEOUT.fullmatch(closeout_note.strip())
     if not verified:
         return False
     verifier = normalize_heading(verified.group("verifier"))
@@ -180,8 +180,25 @@ def _has_independent_verification(record: PunchListRecord) -> bool:
         not _is_missing(verifier)
         and verifier not in {"pending", "unknown", "unassigned"}
         and not (verifier.startswith("<") and verifier.endswith(">"))
-        and verifier != normalize_heading(record.owner)
+        and verifier != normalize_heading(owner)
     )
+
+
+def closed_item_verification_issue(
+    severity: str, closeout_note: str, owner: str
+) -> tuple[str, str] | None:
+    if normalize_heading(severity) == "critical":
+        if not _has_independent_verification(closeout_note, owner):
+            return (
+                "unverified_critical_closeout",
+                "record 'Verified by: <independent reviewer>; Result: Passed' in the closeout note",
+            )
+    elif closeout_note.strip().casefold() in SELF_ASSERTION_ONLY:
+        return (
+            "unverified_closeout",
+            f"closed item requires verification details beyond simple '{closeout_note}'",
+        )
+    return None
 
 
 def audit_punch_list(
@@ -268,7 +285,7 @@ def audit_punch_list(
 
         target_date = None
         if not _is_missing(record.target_close_date):
-            target_date = _parse_date(record.target_close_date)
+            target_date = parse_iso_date(record.target_close_date)
             if target_date is None:
                 add(
                     record,
@@ -321,19 +338,11 @@ def audit_punch_list(
                 f"{record.status} requires a verification or closeout note",
             )
         elif normalized_status == "closed":
-            if normalized_severity == "critical":
-                if not _has_independent_verification(record):
-                    add(
-                        record,
-                        "unverified_critical_closeout",
-                        "record 'Verified by: <independent reviewer>; Result: Passed' in the closeout note",
-                    )
-            elif record.closeout_note.strip().casefold() in SELF_ASSERTION_ONLY:
-                add(
-                    record,
-                    "unverified_closeout",
-                    f"closed item requires verification details beyond simple '{record.closeout_note}'",
-                )
+            issue = closed_item_verification_issue(
+                record.severity, record.closeout_note, record.owner
+            )
+            if issue:
+                add(record, *issue)
 
     return issues
 
@@ -354,7 +363,7 @@ def summarize_punch_list(
     terminal = {normalize_heading(value) for value in TERMINAL_STATUSES}
     overdue_items = []
     for record in records:
-        parsed_date = _parse_date(record.target_close_date)
+        parsed_date = parse_iso_date(record.target_close_date)
         days_to_target = (parsed_date - as_of).days if parsed_date else None
         is_overdue = (
             days_to_target is not None
@@ -494,7 +503,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
-        as_of = _parse_date(args.as_of)
+        as_of = parse_iso_date(args.as_of)
         if as_of is None:
             raise ValueError("--as-of must use YYYY-MM-DD")
         inputs = args.paths or [Path("examples/punch-list-closeout-passing.md")]
