@@ -82,6 +82,68 @@ class HandoverAcceptanceTests(unittest.TestCase):
         decision = replace(self.decisions[0], decision="Accepted", residual_risk_ids=())
         self.assertIn("acceptance_blocker", self.kinds(punch=[item], risks=[], decisions=[decision]))
 
+    def test_audit_rejects_direct_policy_missing_critical_safety_membership(self):
+        item = replace(self.punch[0], severity="Critical", status="Open")
+        decision = replace(self.decisions[0], decision="Accepted", residual_risk_ids=())
+        for field in (
+            "severities",
+            "blocking_severities",
+            "non_deferrable_severities",
+        ):
+            with self.subTest(field=field):
+                policy = replace(self.policy, **{field: ("Major",)})
+                with self.assertRaisesRegex(
+                    ValueError, f"policy {field} must include Critical"
+                ):
+                    audit_handover([item], [], [decision], policy)
+
+    def test_audit_rejects_direct_policy_missing_critical_deferral_protection(self):
+        item = replace(self.punch[1], severity="Critical")
+        policy = replace(self.policy, non_deferrable_severities=("Major",))
+        with self.assertRaisesRegex(
+            ValueError, "policy non_deferrable_severities must include Critical"
+        ):
+            audit_handover(
+                [self.punch[0], item, self.punch[2]],
+                self.risks,
+                self.decisions,
+                policy,
+            )
+
+    def test_summary_rejects_direct_policy_missing_critical_safety_membership(self):
+        for field in (
+            "severities",
+            "blocking_severities",
+            "non_deferrable_severities",
+        ):
+            with self.subTest(field=field):
+                policy = replace(self.policy, **{field: ("Major",)})
+                with self.assertRaisesRegex(
+                    ValueError, f"policy {field} must include Critical"
+                ):
+                    summarize_handover(
+                        self.punch, self.risks, self.decisions, [], policy
+                    )
+
+    def test_direct_critical_only_rules_preserve_custom_major_behavior(self):
+        policy = replace(
+            self.policy,
+            blocking_severities=("CRITICAL",),
+            non_deferrable_severities=("critical",),
+        )
+        major_open = replace(
+            self.punch[2], severity="Major", status="Open"
+        )
+        major_deferred = replace(self.punch[1], severity="Major")
+        issues = audit_handover(
+            [self.punch[0], major_deferred, major_open],
+            self.risks,
+            self.decisions,
+            policy,
+        )
+        self.assertNotIn("acceptance_blocker", [issue.kind for issue in issues])
+        self.assertNotIn("non_deferrable_item", [issue.kind for issue in issues])
+
     def test_unknown_severity_cannot_bypass_release_blocker(self):
         punch = [
             replace(item, severity="Majro") if item.item_id == "PL-003" else item
