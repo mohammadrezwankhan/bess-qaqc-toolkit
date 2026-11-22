@@ -7,11 +7,11 @@ The original findings below were assessed at `af44c932684dfd120dea05d150cefcc3e4
 | ID | Failure mode observed at the assessed revision | Current implementation status |
 |---|---|---|
 | BESS-F01 | Readiness coverage derives from recognized records; an unrecognized selected file can disappear | Fixed: every selected non-generated file is represented in the matrix; strict mode fails for missing source/control pairs. Generated reports are listed as explicit exclusions. |
-| BESS-F02 | Handover approval dates require content but not calendar syntax | Open: review dates independently; propose explicit date validation. |
-| BESS-F03 | Handover does not invoke the punch auditor's independent-verifier rule | Open: run both relevant auditors; specify composition without weakening either. |
+| BESS-F02 | Handover approval dates require content but not calendar syntax | Fixed in [PR #99](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/pull/99). Supplied approval dates must be real ISO calendar dates. |
+| BESS-F03 | Handover does not invoke the punch auditor's independent-verifier rule | Fixed in [PR #99](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/pull/99). Handover applies the shared independent-verifier checks to Critical closeouts. |
 | BESS-F04 | Pipe-table scan can see table-like content in fences/comments | Fixed for fenced code and HTML comments; the parser remains a small pipe-table reader, not a complete CommonMark implementation. |
 | BESS-F05 | Some template vocabulary exceeds the example status policy | Fixed for included template table values and the supplier review-value list; configured blocking states are unchanged. |
-| BESS-F06 | Lychee excludes the new handbook and several root docs | Partial: an offline relative-link check covers selected handbook pages in the existing job; other handbook/root docs and remote handbook URLs remain outside that scope. |
+| BESS-F06 | Lychee excludes the new handbook and several root docs | The existing link-check job validates local links in every root and handbook Markdown file. Its manual run also checks public URLs with bounded retries, concurrency and runtime. |
 | BESS-F07 | Browser capacity percentages can be confused with evidence acceptance | Open: retain synthetic labels; require empirical provenance for operational claims. |
 | BESS-F08 | JSON outputs lack a declared versioned compatibility contract | Partial: combined readiness JSON has schema version 1; standalone audit JSON outputs remain outside this contract. |
 | BESS-F09 | Nine generic browser model branches are exported but not selected | Open: document units/assumptions and avoid native validated-BESS claims. |
