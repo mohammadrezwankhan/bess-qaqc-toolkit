@@ -9,6 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from scripts.audit_handover_acceptance import (
+    HandoverPolicy,
     audit_handover,
     extract_handover_records,
     load_handover_policy,
@@ -343,6 +344,84 @@ class HandoverAcceptanceTests(unittest.TestCase):
             )
         self.assertEqual(exit_code, 1)
         self.assertIn("no punch-list rows found", standard_error.getvalue())
+
+    def test_policy_requires_canonical_decisions(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+
+            # Accepted moved to pending
+            mutated = {
+                **original,
+                "release_decisions": ["Conditionally accepted"],
+                "pending_decisions": ["Accepted", "Pending", "Rejected"],
+            }
+            path.write_text(json.dumps(mutated), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "release_decisions must include Accepted"):
+                load_handover_policy(path)
+
+            # Conditionally accepted omitted from release_decisions
+            mutated = {
+                **original,
+                "release_decisions": ["Accepted", "Special release"],
+                "conditional_decisions": ["Special release"],
+            }
+            path.write_text(json.dumps(mutated), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "must include Conditionally accepted"):
+                load_handover_policy(path)
+
+            # Pending placed in release_decisions
+            mutated = {
+                **original,
+                "release_decisions": ["Accepted", "Conditionally accepted", "Pending"],
+                "pending_decisions": ["Rejected"],
+            }
+            path.write_text(json.dumps(mutated), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "release_decisions cannot include Pending"):
+                load_handover_policy(path)
+
+    def test_policy_requires_canonical_punch_statuses(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+
+            # Open omitted from open_punch_statuses and placed in closed_punch_statuses
+            mutated = {
+                **original,
+                "open_punch_statuses": ["In progress", "Ready for verification"],
+                "closed_punch_statuses": ["Closed", "Open"],
+            }
+            path.write_text(json.dumps(mutated), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "open_punch_statuses must include Open"):
+                load_handover_policy(path)
+
+            # Deferred placed in open_punch_statuses
+            mutated = {
+                **original,
+                "open_punch_statuses": ["Open", "In progress", "Ready for verification", "Deferred"],
+                "deferred_punch_statuses": ["Hold"],
+                "punch_statuses": ["Open", "In progress", "Ready for verification", "Deferred", "Closed", "Hold"],
+            }
+            path.write_text(json.dumps(mutated), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "deferred_punch_statuses must include Deferred"):
+                load_handover_policy(path)
+
+    def test_direct_handover_policy_rejects_reclassified_semantics(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        mutated = {
+            **original,
+            "release_decisions": ["Conditionally accepted"],
+            "pending_decisions": ["Accepted", "Pending", "Rejected"],
+        }
+        policy_obj = HandoverPolicy(**{k: tuple(v) for k, v in mutated.items()})
+        with self.assertRaisesRegex(ValueError, "release_decisions must include Accepted"):
+            audit_handover(self.punch, self.risks, self.decisions, policy_obj)
+
+    def test_open_critical_item_always_blocks_accepted_handover(self):
+        item = replace(self.punch[0], severity="Critical", status="Open")
+        decision = replace(self.decisions[0], decision="Accepted", residual_risk_ids=())
+        issues = self.kinds(punch=[item, *self.punch[1:]], decisions=[decision])
+        self.assertIn("acceptance_blocker", issues)
 
 
 if __name__ == "__main__":

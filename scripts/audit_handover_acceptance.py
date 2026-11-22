@@ -210,7 +210,9 @@ def load_handover_policy(path: Path) -> HandoverPolicy:
     if release & pending:
         raise ValueError("release and pending decisions must not overlap")
 
-    return HandoverPolicy(**values)
+    policy = HandoverPolicy(**values)
+    _validate_critical_policy(policy)
+    return policy
 
 
 def _normalized_aliases(values: Sequence[str]) -> set[str]:
@@ -322,7 +324,7 @@ def _normalized(values: Sequence[str]) -> set[str]:
 
 
 def _validate_critical_policy(policy: HandoverPolicy) -> None:
-    """Reject policies that weaken mandatory Critical severity handling."""
+    """Reject policies that weaken mandatory Critical severity handling or canonical status/decision classifications."""
 
     for field in (
         "severities",
@@ -331,6 +333,42 @@ def _validate_critical_policy(policy: HandoverPolicy) -> None:
     ):
         if "critical" not in _normalized(getattr(policy, field)):
             raise ValueError(f"policy {field} must include Critical")
+
+    open_statuses = _normalized(policy.open_punch_statuses)
+    deferred_statuses = _normalized(policy.deferred_punch_statuses)
+    closed_statuses = _normalized(policy.closed_punch_statuses)
+    if "open" not in open_statuses:
+        raise ValueError("policy open_punch_statuses must include Open")
+    if "deferred" not in deferred_statuses:
+        raise ValueError("policy deferred_punch_statuses must include Deferred")
+    if "closed" not in closed_statuses:
+        raise ValueError("policy closed_punch_statuses must include Closed")
+    if "open" in deferred_statuses or "open" in closed_statuses:
+        raise ValueError("canonical Open status cannot be classified as deferred or closed")
+    if "deferred" in open_statuses or "deferred" in closed_statuses:
+        raise ValueError("canonical Deferred status cannot be classified as open or closed")
+    if "closed" in open_statuses or "closed" in deferred_statuses:
+        raise ValueError("canonical Closed status cannot be classified as open or deferred")
+
+    release = _normalized(policy.release_decisions)
+    conditional = _normalized(policy.conditional_decisions)
+    pending = _normalized(policy.pending_decisions)
+    if "accepted" not in release:
+        raise ValueError("policy release_decisions must include Accepted")
+    if "conditionally accepted" not in release:
+        raise ValueError("policy release_decisions must include Conditionally accepted")
+    if "conditionally accepted" not in conditional:
+        raise ValueError("policy conditional_decisions must include Conditionally accepted")
+    if "accepted" in pending or "conditionally accepted" in pending:
+        raise ValueError("policy pending_decisions cannot include Accepted or Conditionally accepted")
+    if not conditional <= release:
+        raise ValueError("conditional decisions must also be release decisions")
+    if release & pending:
+        raise ValueError("release and pending decisions must not overlap")
+    if "pending" in release:
+        raise ValueError("policy release_decisions cannot include Pending")
+    if "rejected" in release:
+        raise ValueError("policy release_decisions cannot include Rejected")
 
 
 def audit_handover(
@@ -628,10 +666,13 @@ def audit_handover(
                 "unconditional acceptance cannot have active residual risks",
             )
 
-        if state in release_decisions:
+        if state in release_decisions or state in ("accepted", "conditionally accepted"):
             for item in punch_items:
                 if (
-                    normalize_heading(item.status) in open_statuses
+                    (
+                        normalize_heading(item.status) in open_statuses
+                        or normalize_heading(item.status) == "open"
+                    )
                     and (
                         normalize_heading(item.severity) in blocking_severities
                         or normalize_heading(item.severity) == "critical"
