@@ -321,6 +321,18 @@ def _normalized(values: Sequence[str]) -> set[str]:
     return {normalize_heading(value) for value in values}
 
 
+def _validate_critical_policy(policy: HandoverPolicy) -> None:
+    """Reject policies that weaken mandatory Critical severity handling."""
+
+    for field in (
+        "severities",
+        "blocking_severities",
+        "non_deferrable_severities",
+    ):
+        if "critical" not in _normalized(getattr(policy, field)):
+            raise ValueError(f"policy {field} must include Critical")
+
+
 def audit_handover(
     punch_items: Sequence[PunchItem],
     residual_risks: Sequence[ResidualRisk],
@@ -329,6 +341,7 @@ def audit_handover(
 ) -> list[HandoverIssue]:
     """Return cross-register integrity and release-control findings."""
 
+    _validate_critical_policy(policy)
     issues: list[HandoverIssue] = []
     missing_values = _normalized(policy.missing_values)
     severities = _normalized(policy.severities)
@@ -502,7 +515,8 @@ def audit_handover(
                     "multiple_active_risks",
                     "deferred item has more than one active residual-risk record",
                 )
-            if normalize_heading(item.severity) in non_deferrable:
+            severity = normalize_heading(item.severity)
+            if severity in non_deferrable or severity == "critical":
                 add(
                     item,
                     item.item_id,
@@ -618,7 +632,10 @@ def audit_handover(
             for item in punch_items:
                 if (
                     normalize_heading(item.status) in open_statuses
-                    and normalize_heading(item.severity) in blocking_severities
+                    and (
+                        normalize_heading(item.severity) in blocking_severities
+                        or normalize_heading(item.severity) == "critical"
+                    )
                 ):
                     add(
                         decision,
@@ -645,6 +662,7 @@ def summarize_handover(
     issues: Sequence[HandoverIssue],
     policy: HandoverPolicy,
 ) -> dict[str, object]:
+    _validate_critical_policy(policy)
     deferred = _normalized(policy.deferred_punch_statuses)
     active = _normalized(policy.accepted_risk_statuses)
     return {
