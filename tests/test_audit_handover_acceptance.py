@@ -417,6 +417,46 @@ class HandoverAcceptanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "release_decisions must include Accepted"):
             audit_handover(self.punch, self.risks, self.decisions, policy_obj)
 
+    def test_policy_classification_rules_apply_to_every_entry_point(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        mutations = (
+            (
+                {"closed_punch_statuses": ["Closed", "In progress"]},
+                "classifications overlap",
+            ),
+            (
+                {"punch_statuses": [*original["punch_statuses"], "Waiting"]},
+                "exactly one classification",
+            ),
+            (
+                {"blocking_severities": ["Critical", "Unknown"]},
+                "contains an unknown severity",
+            ),
+            (
+                {"closed_risk_statuses": original["accepted_risk_statuses"]},
+                "risk statuses must not overlap",
+            ),
+            (
+                {"conditional_decisions": ["Conditionally accepted", "Accepted"]},
+                "Accepted cannot be conditional",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            for changes, message in mutations:
+                document = {**original, **changes}
+                path.write_text(json.dumps(document), encoding="utf-8")
+                policy = replace(self.policy, **{key: tuple(value) for key, value in changes.items()})
+                for entry, invoke in (
+                    ("loader", lambda: load_handover_policy(path)),
+                    ("audit", lambda: audit_handover([], [], [], policy)),
+                    ("summary", lambda: summarize_handover([], [], [], [], policy)),
+                ):
+                    with self.subTest(changes=changes, entry=entry):
+                        with self.assertRaisesRegex(ValueError, message):
+                            invoke()
+
+
     def test_open_critical_item_always_blocks_accepted_handover(self):
         item = replace(self.punch[0], severity="Critical", status="Open")
         decision = replace(self.decisions[0], decision="Accepted", residual_risk_ids=())
