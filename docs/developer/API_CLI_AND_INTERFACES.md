@@ -54,14 +54,37 @@ The supplier tracker’s six review values are all accepted by its `Review Statu
 rule. Its example rule deliberately has an empty `blocking_statuses` list; a
 project must decide whether review states block its own gate. [Supplier tracker](../../templates/supplier-document-review-tracker.md) · [Example policy](../../config/readiness-status-policy.example.json) · [Vocabulary regression test](../../tests/test_summarize_status.py)
 
+### CLI JSON report contracts
+
 `audit_readiness.py --format json` emits `schema_version: 1`. Its
-[version 1 JSON Schema](../../config/readiness-report-v1.schema.json) fixes the
-required top-level fields, field types, policy/date metadata, selected input
-manifest, check summaries, and source-coverage matrix. Unknown additive fields
-are permitted. Existing v1 field names, types, and meanings remain stable;
-removing or changing one requires a new `schema_version`. This is a
-command-specific contract, not a compatibility promise for the other standalone
-audit JSON outputs or a packaged SDK.
+[version 1 JSON Schema](../../config/readiness-report-v1.schema.json) defines
+the required report fields, field types, policy/date metadata, selected input
+manifest, check summaries, and source-coverage matrix.
+
+The other eight JSON-emitting CLIs retain their existing unversioned payloads.
+Their version is external to the payload and appears in each versioned schema
+file below; this preserves existing consumer keys and values without adding an
+in-band `schema_version` field.
+
+| CLI | Version 1 schema |
+| --- | --- |
+| `summarize_status.py` | [status-summary-v1.schema.json](../../config/status-summary-v1.schema.json) |
+| `audit_deadlines.py` | [deadline-audit-v1.schema.json](../../config/deadline-audit-v1.schema.json) |
+| `audit_completeness.py` | [completeness-audit-v1.schema.json](../../config/completeness-audit-v1.schema.json) |
+| `audit_evidence_traceability.py` | [evidence-traceability-v1.schema.json](../../config/evidence-traceability-v1.schema.json) |
+| `audit_calibration_traceability.py` | [calibration-traceability-v1.schema.json](../../config/calibration-traceability-v1.schema.json) |
+| `audit_punch_list.py` | [punch-list-audit-v1.schema.json](../../config/punch-list-audit-v1.schema.json) |
+| `audit_handover_acceptance.py` | [handover-acceptance-v1.schema.json](../../config/handover-acceptance-v1.schema.json) |
+| `audit_document_control.py` | [document-control-v1.schema.json](../../config/document-control-v1.schema.json) |
+
+Each schema requires the current fields and their types while permitting
+additive properties, including on nested report records. Removing, renaming,
+retyping, or changing the meaning of an existing field requires a new schema
+version. The focused contract test runs all nine JSON CLIs on passing examples
+and checks their runtime output against the corresponding schemas:
+[`tests/test_cli_json_contracts.py`](../../tests/test_cli_json_contracts.py).
+These report contracts do not establish a packaged Python SDK or operational
+acceptance policy.
 
 In a readiness report, `selected_files` lists selected non-generated inputs;
 `source_files` lists files with recognized records. `checks.source_coverage`

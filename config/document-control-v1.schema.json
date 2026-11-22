@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mohammadrezwankhan:bess-qaqc-toolkit:document-control-v1",
+  "title": "scripts/audit_document_control.py JSON handover document-control audit, schema version 1",
+  "description": "Version 1 documents the existing CLI payload without changing it. All current fields are required; additional properties are permitted for compatible additions.",
+  "type": "object",
+  "required": [
+    "as_of",
+    "source_files",
+    "document_count",
+    "revision_count",
+    "status_category_counts",
+    "issue_count",
+    "issues",
+    "revisions"
+  ],
+  "properties": {
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "document_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "revision_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status_category_counts": {
+      "type": "object",
+      "required": [
+        "accepted",
+        "working",
+        "obsolete",
+        "unknown"
+      ],
+      "properties": {
+        "accepted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "working": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "obsolete": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "issue_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "document_id",
+          "revision",
+          "kind",
+          "detail"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "document_id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "document_id",
+          "document_type",
+          "system_area",
+          "owner",
+          "revision",
+          "approval_status",
+          "issue_date",
+          "supersedes_revision",
+          "evidence_link",
+          "closeout_notes",
+          "status_category"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "document_id": {
+            "type": "string"
+          },
+          "document_type": {
+            "type": "string"
+          },
+          "system_area": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "string"
+          },
+          "approval_status": {
+            "type": "string"
+          },
+          "issue_date": {
+            "type": "string"
+          },
+          "supersedes_revision": {
+            "type": "string"
+          },
+          "evidence_link": {
+            "type": "string"
+          },
+          "closeout_notes": {
+            "type": "string"
+          },
+          "status_category": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

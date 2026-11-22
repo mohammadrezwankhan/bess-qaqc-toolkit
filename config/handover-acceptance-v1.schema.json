@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mohammadrezwankhan:bess-qaqc-toolkit:handover-acceptance-v1",
+  "title": "scripts/audit_handover_acceptance.py JSON handover acceptance audit, schema version 1",
+  "description": "Version 1 documents the existing CLI payload without changing it. All current fields are required; additional properties are permitted for compatible additions.",
+  "type": "object",
+  "required": [
+    "source_files",
+    "punch_item_count",
+    "deferred_item_count",
+    "residual_risk_count",
+    "active_residual_risk_count",
+    "acceptance_decision_count",
+    "issue_count",
+    "punch_items",
+    "residual_risks",
+    "acceptance_decisions",
+    "issues"
+  ],
+  "properties": {
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "punch_item_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "deferred_item_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "residual_risk_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "active_residual_risk_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "acceptance_decision_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "issue_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "punch_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "item_id",
+          "severity",
+          "finding",
+          "owner",
+          "evidence_link",
+          "target_close_date",
+          "status",
+          "closeout_note"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "finding": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "evidence_link": {
+            "type": "string"
+          },
+          "target_close_date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "closeout_note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "residual_risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "risk_id",
+          "source_item_id",
+          "description",
+          "interim_control",
+          "owner",
+          "approval",
+          "target_close_date",
+          "status",
+          "closeout_evidence"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "risk_id": {
+            "type": "string"
+          },
+          "source_item_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "interim_control": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "approval": {
+            "type": "string"
+          },
+          "target_close_date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "closeout_evidence": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "acceptance_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "acceptance_id",
+          "decision",
+          "residual_risk_ids",
+          "approved_by",
+          "approval_date",
+          "evidence_location"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "acceptance_id": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string"
+          },
+          "residual_risk_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "approved_by": {
+            "type": "string"
+          },
+          "approval_date": {
+            "type": "string"
+          },
+          "evidence_location": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "record_id",
+          "kind",
+          "detail"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

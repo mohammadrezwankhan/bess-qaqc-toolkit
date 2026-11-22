@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mohammadrezwankhan:bess-qaqc-toolkit:completeness-audit-v1",
+  "title": "scripts/audit_completeness.py JSON completeness audit, schema version 1",
+  "description": "Version 1 documents the existing CLI payload without changing it. All current fields are required; additional properties are permitted for compatible additions.",
+  "type": "object",
+  "required": [
+    "policy_source",
+    "source_files",
+    "evaluated_row_count",
+    "violation_count",
+    "rule_counts",
+    "violations"
+  ],
+  "properties": {
+    "policy_source": {
+      "type": "string"
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evaluated_row_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "violation_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rule_counts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule",
+          "evaluated_rows",
+          "violations"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string"
+          },
+          "evaluated_rows": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "violations": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "item",
+          "rule",
+          "match_column",
+          "match_value",
+          "field",
+          "columns",
+          "values",
+          "reason"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "item": {
+            "type": "string"
+          },
+          "rule": {
+            "type": "string"
+          },
+          "match_column": {
+            "type": "string"
+          },
+          "match_value": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mohammadrezwankhan:bess-qaqc-toolkit:deadline-audit-v1",
+  "title": "scripts/audit_deadlines.py JSON deadline audit, schema version 1",
+  "description": "Version 1 documents the existing CLI payload without changing it. All current fields are required; additional properties are permitted for compatible additions.",
+  "type": "object",
+  "required": [
+    "as_of",
+    "source_files",
+    "row_count",
+    "state_counts",
+    "items"
+  ],
+  "properties": {
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "row_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "state_counts": {
+      "type": "object",
+      "required": [
+        "overdue",
+        "due_today",
+        "upcoming",
+        "missing",
+        "closed"
+      ],
+      "properties": {
+        "overdue": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "due_today": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "upcoming": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "closed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "item",
+          "status",
+          "status_column",
+          "deadline",
+          "deadline_column",
+          "state",
+          "days_to_deadline"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "item": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "status_column": {
+            "type": "string"
+          },
+          "deadline": {
+            "type": "string"
+          },
+          "deadline_column": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "days_to_deadline": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
