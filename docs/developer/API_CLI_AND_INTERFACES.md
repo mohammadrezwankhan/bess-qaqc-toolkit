@@ -57,7 +57,7 @@ project must decide whether review states block its own gate. [Supplier tracker]
 ### CLI JSON report contracts
 
 `audit_readiness.py --format json` emits `schema_version: 1`. Its
-[version 1 JSON Schema](../../config/readiness-report-v1.schema.json) defines
+[version 1 JSON Schema](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/readiness-report-v1.schema.json) defines
 the required report fields, field types, policy/date metadata, selected input
 manifest, check summaries, and source-coverage matrix.
 
@@ -68,14 +68,14 @@ in-band `schema_version` field.
 
 | CLI | Version 1 schema |
 | --- | --- |
-| `summarize_status.py` | [status-summary-v1.schema.json](../../config/status-summary-v1.schema.json) |
-| `audit_deadlines.py` | [deadline-audit-v1.schema.json](../../config/deadline-audit-v1.schema.json) |
-| `audit_completeness.py` | [completeness-audit-v1.schema.json](../../config/completeness-audit-v1.schema.json) |
-| `audit_evidence_traceability.py` | [evidence-traceability-v1.schema.json](../../config/evidence-traceability-v1.schema.json) |
-| `audit_calibration_traceability.py` | [calibration-traceability-v1.schema.json](../../config/calibration-traceability-v1.schema.json) |
-| `audit_punch_list.py` | [punch-list-audit-v1.schema.json](../../config/punch-list-audit-v1.schema.json) |
-| `audit_handover_acceptance.py` | [handover-acceptance-v1.schema.json](../../config/handover-acceptance-v1.schema.json) |
-| `audit_document_control.py` | [document-control-v1.schema.json](../../config/document-control-v1.schema.json) |
+| `summarize_status.py` | [status-summary-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/status-summary-v1.schema.json) |
+| `audit_deadlines.py` | [deadline-audit-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/deadline-audit-v1.schema.json) |
+| `audit_completeness.py` | [completeness-audit-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/completeness-audit-v1.schema.json) |
+| `audit_evidence_traceability.py` | [evidence-traceability-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/evidence-traceability-v1.schema.json) |
+| `audit_calibration_traceability.py` | [calibration-traceability-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/calibration-traceability-v1.schema.json) |
+| `audit_punch_list.py` | [punch-list-audit-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/punch-list-audit-v1.schema.json) |
+| `audit_handover_acceptance.py` | [handover-acceptance-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/handover-acceptance-v1.schema.json) |
+| `audit_document_control.py` | [document-control-v1.schema.json](https://raw.githubusercontent.com/mohammadrezwankhan/bess-qaqc-toolkit/8c25b54c64273b64f75b3c29309ee432bc973e6e/config/document-control-v1.schema.json) |
 
 Each schema requires the current fields and their types while permitting
 additive properties, including on nested report records. Removing, renaming,
