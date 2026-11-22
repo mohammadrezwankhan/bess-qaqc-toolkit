@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/main/config/readiness-report-v1.schema.json",
+  "$id": "urn:mohammadrezwankhan:bess-qaqc-toolkit:readiness-report-v1",
   "title": "BESS combined readiness report, schema version 1",
   "description": "Stable JSON contract for scripts/audit_readiness.py. Additional fields are permitted for compatible additions.",
   "type": "object",
