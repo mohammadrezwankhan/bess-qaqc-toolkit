@@ -97,6 +97,69 @@ class HandoverAcceptanceTests(unittest.TestCase):
                 ):
                     audit_handover([item], [], [decision], policy)
 
+    def test_direct_policy_cannot_reclassify_canonical_decisions(self):
+        policies = (
+            replace(
+                self.policy,
+                release_decisions=("Conditionally accepted",),
+                pending_decisions=("Pending", "Rejected", "Accepted"),
+            ),
+            replace(
+                self.policy,
+                release_decisions=(
+                    "Accepted",
+                    "Conditionally accepted",
+                    "Approved with controls",
+                ),
+                conditional_decisions=("Approved with controls",),
+            ),
+            replace(
+                self.policy,
+                conditional_decisions=("Conditionally accepted", "Accepted"),
+            ),
+        )
+        messages = (
+            "policy release_decisions must include Accepted",
+            "policy conditional_decisions must include Conditionally accepted",
+            "canonical decision Accepted cannot be classified as conditional",
+        )
+        for policy, message in zip(policies, messages):
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(ValueError, message):
+                    audit_handover(self.punch, self.risks, self.decisions, policy)
+
+    def test_direct_policy_cannot_reclassify_canonical_punch_statuses(self):
+        policies = (
+            replace(
+                self.policy,
+                punch_statuses=(
+                    "In progress",
+                    "Ready for verification",
+                    "Closed",
+                    "Deferred",
+                ),
+            ),
+            replace(
+                self.policy,
+                open_punch_statuses=("In progress", "Ready for verification"),
+                closed_punch_statuses=("Closed", "Open"),
+            ),
+            replace(
+                self.policy,
+                deferred_punch_statuses=("Deferred follow-up",),
+                closed_punch_statuses=("Closed", "Deferred"),
+            ),
+        )
+        messages = (
+            "policy punch_statuses must include Open",
+            "policy open_punch_statuses must include Open",
+            "policy deferred_punch_statuses must include Deferred",
+        )
+        for policy, message in zip(policies, messages):
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(ValueError, message):
+                    audit_handover(self.punch, self.risks, self.decisions, policy)
+
     def test_audit_rejects_direct_policy_missing_critical_deferral_protection(self):
         item = replace(self.punch[1], severity="Critical")
         policy = replace(self.policy, non_deferrable_severities=("Major",))
@@ -263,6 +326,112 @@ class HandoverAcceptanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "classifications overlap"):
             load_handover_policy(path)
 
+    def test_policy_cannot_reclassify_canonical_decisions(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        mutations = (
+            (
+                {
+                    **original,
+                    "release_decisions": ["Conditionally accepted"],
+                    "pending_decisions": ["Pending", "Rejected", "Accepted"],
+                },
+                "policy release_decisions must include Accepted",
+            ),
+            (
+                {
+                    **original,
+                    "release_decisions": [
+                        "Accepted",
+                        "Conditionally accepted",
+                        "Approved with controls",
+                    ],
+                    "conditional_decisions": ["Approved with controls"],
+                },
+                "policy conditional_decisions must include Conditionally accepted",
+            ),
+            (
+                {
+                    **original,
+                    "conditional_decisions": [
+                        "Conditionally accepted",
+                        "Accepted",
+                    ],
+                },
+                "canonical decision Accepted cannot be classified as conditional",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            for document, message in mutations:
+                with self.subTest(message=message):
+                    path.write_text(json.dumps(document), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, message):
+                        load_handover_policy(path)
+
+    def test_policy_cannot_reclassify_canonical_punch_statuses(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        mutations = (
+            (
+                {
+                    **original,
+                    "open_punch_statuses": ["In progress", "Ready for verification"],
+                    "closed_punch_statuses": ["Closed", "Open"],
+                },
+                "policy open_punch_statuses must include Open",
+            ),
+            (
+                {
+                    **original,
+                    "punch_statuses": [
+                        *original["punch_statuses"],
+                        "Deferred follow-up",
+                    ],
+                    "deferred_punch_statuses": ["Deferred follow-up"],
+                    "closed_punch_statuses": ["Closed", "Deferred"],
+                },
+                "policy deferred_punch_statuses must include Deferred",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            for document, message in mutations:
+                with self.subTest(message=message):
+                    path.write_text(json.dumps(document), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, message):
+                        load_handover_policy(path)
+
+    def test_cli_rejects_accepted_open_critical_with_reclassified_policy(self):
+        document = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        document["release_decisions"].remove("Accepted")
+        document["pending_decisions"].append("Accepted")
+        record = EXAMPLE_PATH.read_text(encoding="utf-8")
+        record = record.replace("| PL-003 | Minor |", "| PL-003 | Critical |")
+        record = record.replace("| 2026-07-25 | In progress |", "| 2026-07-25 | Open |")
+        record = record.replace("| ACC-001 | Conditionally accepted |", "| ACC-001 | Accepted |")
+        with tempfile.TemporaryDirectory() as directory:
+            policy_path = Path(directory) / "policy.json"
+            record_path = Path(directory) / "record.md"
+            policy_path.write_text(json.dumps(document), encoding="utf-8")
+            record_path.write_text(record, encoding="utf-8")
+            standard_error = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                standard_error
+            ):
+                exit_code = main(
+                    [
+                        str(record_path),
+                        "--policy",
+                        str(policy_path),
+                        "--format",
+                        "json",
+                    ]
+                )
+        self.assertEqual(exit_code, 1)
+        self.assertIn(
+            "policy release_decisions must include Accepted",
+            standard_error.getvalue(),
+        )
+
     def test_policy_requires_critical_in_each_safety_list(self):
         original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
         with tempfile.TemporaryDirectory() as directory:
@@ -280,12 +449,26 @@ class HandoverAcceptanceTests(unittest.TestCase):
 
     def test_policy_allows_custom_major_severity_rules(self):
         document = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
-        document.update(blocking_severities=["CRITICAL"], non_deferrable_severities=["critical"])
+        document.update(
+            blocking_severities=["CRITICAL"],
+            non_deferrable_severities=["critical"],
+            punch_statuses=[*document["punch_statuses"], "Under review"],
+            open_punch_statuses=[*document["open_punch_statuses"], "Under review"],
+            release_decisions=[*document["release_decisions"], "Approved"],
+            conditional_decisions=[
+                *document["conditional_decisions"],
+                "Approved with controls",
+            ],
+        )
+        document["release_decisions"].append("Approved with controls")
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "policy.json"
             path.write_text(json.dumps(document), encoding="utf-8")
             policy = load_handover_policy(path)
         self.assertEqual(policy.blocking_severities, ("CRITICAL",))
+        self.assertIn("Under review", policy.open_punch_statuses)
+        self.assertIn("Approved", policy.release_decisions)
+        self.assertIn("Approved with controls", policy.conditional_decisions)
 
     def test_cli_emits_json_for_passing_record(self):
         standard_output = io.StringIO()
