@@ -7,6 +7,10 @@ on:
       - "**.md"
       - "scripts/**/*.py"
       - "tests/**/*.py"
+      - "docs/telemetry-export.js"
+      - "docs/index.html"
+      - "docs/lesson-config.json"
+      - "tests/test_dashboard_export.js"
       - "config/*.json"
       - ".github/workflows/markdown-maintenance.yml"
   push:
@@ -16,6 +20,10 @@ on:
       - "**.md"
       - "scripts/**/*.py"
       - "tests/**/*.py"
+      - "docs/telemetry-export.js"
+      - "docs/index.html"
+      - "docs/lesson-config.json"
+      - "tests/test_dashboard_export.js"
       - "config/*.json"
       - ".github/workflows/markdown-maintenance.yml"
 
@@ -40,6 +48,9 @@ jobs:
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
+
+      - name: Verify the synthetic telemetry CSV and sidecar
+        run: node tests/test_dashboard_export.js
 
       - name: Test toolkit scripts
         run: python -m unittest discover -s tests -v
