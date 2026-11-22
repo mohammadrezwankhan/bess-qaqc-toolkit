@@ -77,6 +77,11 @@ class HandoverAcceptanceTests(unittest.TestCase):
         ]
         self.assertIn("acceptance_blocker", self.kinds(punch=punch))
 
+    def test_accepted_decision_rejects_open_critical_item(self):
+        item = replace(self.punch[0], severity="Critical", status="Open")
+        decision = replace(self.decisions[0], decision="Accepted", residual_risk_ids=())
+        self.assertIn("acceptance_blocker", self.kinds(punch=[item], risks=[], decisions=[decision]))
+
     def test_unknown_severity_cannot_bypass_release_blocker(self):
         punch = [
             replace(item, severity="Majro") if item.item_id == "PL-003" else item
@@ -195,6 +200,30 @@ class HandoverAcceptanceTests(unittest.TestCase):
         path.write_text(json.dumps(document), encoding="utf-8")
         with self.assertRaisesRegex(ValueError, "classifications overlap"):
             load_handover_policy(path)
+
+    def test_policy_requires_critical_in_each_safety_list(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            for field in ("severities", "blocking_severities", "non_deferrable_severities"):
+                with self.subTest(field=field):
+                    document = {**original, field: ["Major"]}
+                    path.write_text(json.dumps(document), encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, f"{field} must include Critical"):
+                        load_handover_policy(path)
+            document = {**original, "blocking_severities": ["Major"], "non_deferrable_severities": ["Major"]}
+            path.write_text(json.dumps(document), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "must include Critical"):
+                load_handover_policy(path)
+
+    def test_policy_allows_custom_major_severity_rules(self):
+        document = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        document.update(blocking_severities=["CRITICAL"], non_deferrable_severities=["critical"])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            path.write_text(json.dumps(document), encoding="utf-8")
+            policy = load_handover_policy(path)
+        self.assertEqual(policy.blocking_severities, ("CRITICAL",))
 
     def test_cli_emits_json_for_passing_record(self):
         standard_output = io.StringIO()

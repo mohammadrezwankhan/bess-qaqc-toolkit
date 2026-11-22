@@ -475,6 +475,9 @@ must retain their evidence link and verification note. Critical closeouts requir
 the item owner. Target close dates and supplied approval dates must be valid
 calendar dates in `YYYY-MM-DD` format. These text fields record declarations.
 Signer authentication and authorization to energize require separate controls.
+Custom policies must include Critical in `severities`, `blocking_severities`,
+and `non_deferrable_severities`. The loader rejects omissions before evaluating
+the records. Projects can configure how Major and Minor items are handled.
 A conditional acceptance
 must enumerate every active residual-risk ID, while an unconditional acceptance
 cannot retain any active deferral.
