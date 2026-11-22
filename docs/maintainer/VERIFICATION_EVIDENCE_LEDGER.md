@@ -144,7 +144,7 @@ The specific assertion inventory is maintained in the operational review record.
 
 Three narrowly scoped diagnostics reproduced existing behavior at this source revision:
 
-1. A readiness input containing one valid record file and one file with no recognized tables passed optional source coverage while reporting only the recognized source.
+1. At the analyzed source revision, a readiness input containing one valid record file and one file with no recognized tables passed optional source coverage while reporting only the recognized source. The current regression fixture verifies that selected non-generated files now appear in the matrix; strict coverage makes each missing control a finding.
 2. An otherwise passing handover record with a nonblank invalid approval date produced no handover findings.
 3. A closed Critical item with generic nonblank closeout notes in the handover fixture produced no handover findings; that auditor does not call the dedicated punch verifier predicate.
 

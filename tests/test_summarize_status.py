@@ -80,6 +80,31 @@ class StatusSummaryTests(unittest.TestCase):
         )
         self.assertEqual(extract_status_records(generated_path), [])
 
+    def test_status_extractor_ignores_fenced_and_commented_tables(self):
+        content = """# Readiness
+
+```markdown
+| Item | Status |
+| --- | --- |
+| Example | Blocked |
+```
+
+<!--
+| Item | Status |
+| --- | --- |
+| Commented example | Blocked |
+-->
+
+| Item | Status |
+| --- | --- |
+| Actual record | Open |
+"""
+
+        records = extract_status_records(self.write_document(content))
+
+        self.assertEqual([record.item for record in records], ["Actual record"])
+        self.assertEqual([record.status for record in records], ["Open"])
+
     def test_rejects_inconsistent_status_table_width(self):
         content = STATUS_DOCUMENT.replace(
             "| Protection test | Commissioning | Blocked |",
@@ -110,6 +135,56 @@ class StatusSummaryTests(unittest.TestCase):
             {rule.column for rule in policy.column_rules},
             {"Approval Status", "Review Status"},
         )
+
+    def test_supplier_review_status_vocabulary_matches_example_policy(self):
+        template = Path("templates/supplier-document-review-tracker.md").read_text(
+            encoding="utf-8"
+        )
+        in_vocabulary = False
+        documented_statuses = []
+        for line in template.splitlines():
+            if line.strip() == "## Review Status Values":
+                in_vocabulary = True
+                continue
+            if in_vocabulary and line.startswith("## "):
+                break
+            if in_vocabulary and line.startswith("- `") and line.endswith("`"):
+                documented_statuses.append(line[3:-1])
+
+        policy = load_status_policy(Path("config/readiness-status-policy.example.json"))
+        review_rule = next(
+            rule for rule in policy.column_rules if rule.column == "Review Status"
+        )
+        allowed = {status.casefold() for status in review_rule.allowed_statuses}
+
+        self.assertTrue(documented_statuses)
+        self.assertEqual(review_rule.blocking_statuses, ())
+        self.assertFalse(
+            [
+                status
+                for status in documented_statuses
+                if status.casefold() not in allowed
+            ]
+        )
+
+    def test_template_status_table_values_fit_the_example_policy(self):
+        policy = load_status_policy(Path("config/readiness-status-policy.example.json"))
+        column_rules = {
+            " ".join(rule.column.casefold().split()): rule
+            for rule in policy.column_rules
+        }
+        violations = []
+        for path in sorted(Path("templates").glob("*.md")):
+            for record in extract_status_records(path):
+                if record.status == BLANK_STATUS:
+                    continue
+                column = " ".join(record.column.casefold().split())
+                rule = column_rules.get(column, policy)
+                allowed = {status.casefold() for status in rule.allowed_statuses}
+                if allowed and record.status.casefold() not in allowed:
+                    violations.append((path.name, record.column, record.status))
+
+        self.assertEqual(violations, [])
 
     def test_policy_finds_blank_unknown_and_blocking_rows(self):
         records = extract_status_records(self.write_document())

@@ -17,7 +17,7 @@ This repository supplies project-neutral Markdown templates, Python record valid
 
 ## Input assumptions and parser limits
 
-The table reader is a small Markdown pipe-table parser. It understands escaped pipe handling used by the repository but is not a full CommonMark renderer. The shared table scan does not generally discard code fences or HTML comments. The governance-question checker has separate fence/comment handling, so that behavior must not be generalized to all table auditors. Keep executable input tables distinct from explanatory code examples and inspect selected records. [scripts/validate_templates.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/validate_templates.py#L34-L61) [scripts/validate_templates.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/validate_templates.py#L64-L90) [scripts/validate_templates.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/validate_templates.py#L106-L125)
+The table reader is a small Markdown pipe-table parser. It understands escaped pipes and skips fenced code and HTML comments but is not a full CommonMark renderer. Other Markdown structures outside its grammar may still require human inspection. [scripts/validate_templates.py](../../scripts/validate_templates.py)
 
 Directory arguments select immediate `*.md` files; they do not recursively traverse a project archive. Relative paths are checked against the working-directory boundary. An explicit absolute path selects the external location the caller chose, subject to resolution and symlink checks. These controls do not protect an output destination from accidental overwrite; choose a separate report directory. [scripts/summarize_status.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/summarize_status.py#L137-L163) [scripts/audit_readiness.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_readiness.py#L460-L506)
 
@@ -25,9 +25,9 @@ The selection must contain the intended register schema and policy vocabulary. A
 
 ## Specific implementation limits observed at the source snapshot
 
-### L1 — Optional readiness source coverage is record-derived
+### L1 — Historical selected-source coverage omission
 
-The source coverage set is formed from recognized status, deadline, and completeness results. An extra selected Markdown file that produces no recognized records need not enter that set. A local diagnostic pairing a passing record with an unrecognized file reproduced a passing readiness result with only one reported source. This is a scope limitation, not a claim that the file was analyzed. Maintain an input manifest and inspect recognized records; a future behavior change is proposed in the [roadmap](../../ROADMAP.md). [scripts/audit_readiness.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_readiness.py#L78-L113) [scripts/audit_readiness.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_readiness.py#L116-L240)
+At source snapshot `af44c932684dfd120dea05d150cefcc3e47539a0`, coverage rows came only from recognized records. A local diagnostic pairing a passing record with an unrecognized file reproduced an omitted source. The current implementation records each selected non-generated Markdown input and shows uncovered controls; strict coverage fails on its gaps. The historical reproduction does not mean the file was analyzed at that earlier revision. See the current [API contract](../developer/API_CLI_AND_INTERFACES.md) and [roadmap](../../ROADMAP.md). [scripts/audit_readiness.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_readiness.py#L78-L113) [scripts/audit_readiness.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_readiness.py#L116-L240)
 
 ### L2 — Handover approval dates have presence checks
 
@@ -37,7 +37,7 @@ The handover auditor requires recorded approval fields for applicable decisions 
 
 The handover auditor requires nonblank closeout notes and evidence for closed items. It does not invoke the punch-list auditor's stricter critical-item verification rule. A closed Critical item with a generic nonblank note in the handover fixture produced no handover finding in the local diagnostic. Run the dedicated punch-list audit and review the record, rather than interpreting a handover result as proof that all punch rules executed. [scripts/audit_handover_acceptance.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_handover_acceptance.py#L317-L621) [scripts/audit_punch_list.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_punch_list.py#L174-L184)
 
-These three observations qualify the scope of current behavior. Historical audit reports remain preserved as dated reports; broad statements there should be read alongside these current command-specific limits. The documentation change does not alter validator behavior or weaken any project acceptance gate.
+These historical observations qualify the earlier source snapshot. Historical audit reports remain preserved as dated reports; broad statements there should be read alongside these current command-specific limits. The current parser changes remain limited to excluding fenced code and HTML comments, and do not claim full Markdown parsing or replace project review.
 
 ## Workload model assumptions
 

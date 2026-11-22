@@ -27,7 +27,7 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 
 ## BESS-R01 — Make selected-source coverage explicit
 
-**Status:** proposed. **Window:** Now: 2026-11-19–2026-12-31. **Suggested owner:** Toolkit maintainer with project assurance reviewer.
+**Status:** Implemented in the issue #101 candidate; PR checks pending. **Window:** Now: 2026-11-19–2026-12-31. **Suggested owner:** Toolkit maintainer with project assurance reviewer.
 
 **Effort:** 2–4 focused engineering days. **Confidence:** High on reproduced gap; medium on compatibility effort.
 
@@ -36,6 +36,8 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 **Dependencies:** No planned item prerequisite.
 
 **Risk / assumption:** Rejecting previously ignored files may change callers' outcomes. Decide whether explicit exclusion is permitted and how it is reported.
+
+**Implemented contract:** Positional Markdown paths form the selected-input manifest. Every selected non-generated file gets a coverage row; generated reports are listed as explicit exclusions. Default coverage remains report-only, and `--require-source-coverage` fails on each missing source/control pair. Existing `source_files` and `source_count` meanings are retained; `selected_files` and `coverage_count` expose the full selection and matrix.
 
 **Acceptance criteria:**
 
@@ -67,7 +69,7 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 
 ## BESS-R03 — Cover the handbook in documentation CI
 
-**Status:** proposed. **Window:** Now: 2026-11-19–2026-12-31. **Suggested owner:** Documentation maintainer and repository integration owner.
+**Status:** Partial in the issue #101 candidate; broader handbook/root coverage remains proposed. **Window:** Now: 2026-11-19–2026-12-31. **Suggested owner:** Documentation maintainer and repository integration owner.
 
 **Effort:** 1–2 focused engineering days. **Confidence:** High.
 
@@ -76,6 +78,8 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 **Dependencies:** No planned item prerequisite.
 
 **Risk / assumption:** Network link checks can be nondeterministic; preserve local/remote distinctions and all existing job contexts, pins and gates.
+
+**Implemented scope:** The existing job runs a second Lychee invocation in offline mode for the handbook index and selected API, architecture, troubleshooting, assumptions, failure-mode, maintenance, and CI playbook pages. Other handbook/root documents and remote URLs in handbook pages remain outside that scope.
 
 **Acceptance criteria:**
 
@@ -87,7 +91,7 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 
 ## BESS-R04 — Map template and policy vocabulary deliberately
 
-**Status:** proposed. **Window:** Next quarter: 2027-01-01–2027-03-31. **Suggested owner:** Project assurance reviewer and documentation maintainer.
+**Status:** Partial in the issue #101 candidate; the broader all-template matrix remains open. **Window:** Next quarter: 2027-01-01–2027-03-31. **Suggested owner:** Project assurance reviewer and documentation maintainer.
 
 **Effort:** 2–4 focused review days. **Confidence:** High on observed mismatch; medium on project-specific vocabulary.
 
@@ -96,6 +100,8 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 **Dependencies:** No planned item prerequisite.
 
 **Risk / assumption:** A universal allowlist could weaken project controls. Distinguish editorial legends from enforceable project policy.
+
+**Implemented scope:** Example-policy allowlists now include populated template-table values plus every supplier tracker review value. The existing blocking-state sets were not broadened. Template-specific vocabulary and project release semantics still require owner review.
 
 **Acceptance criteria:**
 
@@ -107,7 +113,7 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 
 ## BESS-R05 — Define a versioned machine-readable report contract
 
-**Status:** proposed. **Window:** Later: 2027-04-01–2027-06-30. **Suggested owner:** Toolkit maintainer and intended report consumer.
+**Status:** Partial in the issue #101 candidate; broader command coverage and consumer review remain open. **Window:** Later: 2027-04-01–2027-06-30. **Suggested owner:** Toolkit maintainer and intended report consumer.
 
 **Effort:** 4–8 focused engineering days. **Confidence:** Medium; consumer requirements unconfirmed.
 
@@ -116,6 +122,8 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 **Dependencies:** BESS-R01, BESS-R02.
 
 **Risk / assumption:** External consumers and compatibility commitments are not yet established. Avoid declaring stability before their needs are known.
+
+**Implemented scope:** The combined readiness report emits `schema_version: 1` and has a JSON Schema covering its stable top-level contract, source selection, policy/date metadata, checks and coverage. Standalone audit JSON outputs do not yet share that contract; no external consumer migration has been established.
 
 **Acceptance criteria:**
 
@@ -127,7 +135,7 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 
 ## BESS-R06 — Specify and test the accepted record-table grammar
 
-**Status:** proposed. **Window:** Later: 2027-04-01–2027-06-30. **Suggested owner:** Toolkit maintainer.
+**Status:** Implemented for fenced code and HTML comments in the issue #101 candidate; the reader remains intentionally smaller than CommonMark. **Window:** Later: 2027-04-01–2027-06-30. **Suggested owner:** Toolkit maintainer.
 
 **Effort:** 3–5 focused engineering days. **Confidence:** Medium.
 
@@ -136,6 +144,8 @@ P1 items reduce ambiguity in what inputs and gates were actually checked or keep
 **Dependencies:** BESS-R04.
 
 **Risk / assumption:** Switching parser behavior may alter recognition of existing records; do not add a general Markdown dependency without need and review.
+
+**Implemented scope:** Shared table scanning removes fenced regions and HTML comments before parsing while preserving source line numbers. Escaped-pipe and strict row/separator behavior remain in place.
 
 **Acceptance criteria:**
 

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from scripts.validate_templates import (
     is_table_row,
+    table_blocks,
     table_cells,
     validate_template,
 )
@@ -84,6 +85,66 @@ Use this template to record controlled FAT evidence.
         self.assertFalse(is_table_row(line))
         valid_row = r"| valid | row |"
         self.assertTrue(is_table_row(valid_row))
+
+    def test_table_blocks_ignore_fenced_code_and_html_comments(self):
+        lines = """# Records
+
+```markdown
+| Item | Status |
+| --- | --- |
+| Example in fence | Blocked |
+```
+
+<!--
+| Item | Status |
+| --- | --- |
+| Example in comment | Blocked |
+-->
+
+| Item | Status |
+| --- | --- |
+| Actual record | Open |
+""".splitlines()
+
+        blocks = table_blocks(lines, strict=True)
+
+        self.assertEqual(len(blocks), 1)
+        self.assertEqual(blocks[0][0], 15)
+        self.assertIn("Actual record", blocks[0][1][-1])
+
+    def test_table_blocks_respect_fence_character(self):
+        lines = """~~~text
+```
+| Item | Status |
+| --- | --- |
+| Still in fence | Blocked |
+~~~
+| Item | Status |
+| --- | --- |
+| Visible | Open |
+""".splitlines()
+
+        blocks = table_blocks(lines, strict=True)
+
+        self.assertEqual(len(blocks), 1)
+        self.assertIn("Visible", blocks[0][1][-1])
+
+    def test_table_blocks_require_closing_fence_to_match_opening_length(self):
+        lines = """````text
+```
+| Item | Status |
+| --- | --- |
+| Still in fence | Blocked |
+````
+| Item | Status |
+| --- | --- |
+| Visible | Open |
+""".splitlines()
+
+        blocks = table_blocks(lines, strict=True)
+
+        self.assertEqual(len(blocks), 1)
+        self.assertIn("Visible", blocks[0][1][-1])
 
     def test_strict_governance_validation(self):
         with tempfile.TemporaryDirectory() as directory:

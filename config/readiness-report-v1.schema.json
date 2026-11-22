@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mohammadrezwankhan:bess-qaqc-toolkit:readiness-report-v1",
+  "title": "BESS combined readiness report, schema version 1",
+  "description": "Stable JSON contract for scripts/audit_readiness.py. Additional fields are permitted for compatible additions.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "gate",
+    "configuration",
+    "source_files",
+    "selected_files",
+    "checks"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "gate": {
+      "type": "object",
+      "required": ["result", "finding_count", "failed_checks"],
+      "properties": {
+        "result": { "enum": ["pass", "fail"] },
+        "finding_count": { "type": "integer", "minimum": 0 },
+        "failed_checks": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "configuration": {
+      "type": "object",
+      "required": [
+        "as_of",
+        "status_policy_source",
+        "completeness_policy_source",
+        "deadline_fail_states",
+        "date_columns",
+        "terminal_statuses",
+        "missing_date_values",
+        "require_source_coverage"
+      ],
+      "properties": {
+        "as_of": { "type": "string", "format": "date" },
+        "status_policy_source": { "type": "string" },
+        "completeness_policy_source": { "type": "string" },
+        "deadline_fail_states": { "type": "array", "items": { "type": "string" } },
+        "date_columns": { "type": "array", "items": { "type": "string" } },
+        "terminal_statuses": { "type": "array", "items": { "type": "string" } },
+        "missing_date_values": { "type": "array", "items": { "type": "string" } },
+        "require_source_coverage": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "source_files": { "type": "array", "items": { "type": "string" } },
+    "selected_files": { "type": "array", "items": { "type": "string" } },
+    "checks": {
+      "type": "object",
+      "required": [
+        "status_policy",
+        "deadlines",
+        "conditional_completeness",
+        "source_coverage"
+      ],
+      "properties": {
+        "status_policy": { "$ref": "#/$defs/controlCheck" },
+        "deadlines": { "$ref": "#/$defs/controlCheck" },
+        "conditional_completeness": { "$ref": "#/$defs/controlCheck" },
+        "source_coverage": {
+          "type": "object",
+          "required": [
+            "result",
+            "required",
+            "selection_policy",
+            "source_files",
+            "selected_files",
+            "excluded_generated_files",
+            "source_count",
+            "coverage_count",
+            "gap_count",
+            "finding_count",
+            "gaps",
+            "coverage"
+          ],
+          "properties": {
+            "result": { "enum": ["pass", "fail"] },
+            "required": { "type": "boolean" },
+            "selection_policy": { "const": "selected-inputs-excluding-generated-reports" },
+            "source_files": { "type": "array", "items": { "type": "string" } },
+            "selected_files": { "type": "array", "items": { "type": "string" } },
+            "excluded_generated_files": { "type": "array", "items": { "type": "string" } },
+            "source_count": { "type": "integer", "minimum": 0 },
+            "coverage_count": { "type": "integer", "minimum": 0 },
+            "gap_count": { "type": "integer", "minimum": 0 },
+            "finding_count": { "type": "integer", "minimum": 0 },
+            "gaps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["source", "check"],
+                "properties": {
+                  "source": { "type": "string" },
+                  "check": {
+                    "enum": ["status_policy", "deadlines", "conditional_completeness"]
+                  }
+                },
+                "additionalProperties": true
+              }
+            },
+            "coverage": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "source",
+                  "status_policy",
+                  "deadlines",
+                  "conditional_completeness",
+                  "missing_checks"
+                ],
+                "properties": {
+                  "source": { "type": "string" },
+                  "status_policy": { "type": "boolean" },
+                  "deadlines": { "type": "boolean" },
+                  "conditional_completeness": { "type": "boolean" },
+                  "missing_checks": {
+                    "type": "array",
+                    "items": {
+                      "enum": ["status_policy", "deadlines", "conditional_completeness"]
+                    }
+                  }
+                },
+                "additionalProperties": true
+              }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "controlCheck": {
+      "type": "object",
+      "required": ["result", "finding_count"],
+      "properties": {
+        "result": { "enum": ["pass", "fail"] },
+        "finding_count": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    }
+  }
+}

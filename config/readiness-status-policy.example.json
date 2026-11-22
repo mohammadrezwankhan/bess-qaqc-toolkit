@@ -9,6 +9,7 @@
     "Closed",
     "Accepted for deferred closeout",
     "Open",
+    "Planned",
     "Blocked",
     "Failed"
   ],
@@ -19,6 +20,7 @@
       "allowed_statuses": [
         "Not started",
         "Draft",
+        "Pending review",
         "Under review",
         "Pending approval",
         "Approved",
@@ -28,7 +30,15 @@
       "require_status": true
     },
     "Review Status": {
-      "allowed_statuses": ["Not started", "Under review", "Approved", "Closed"],
+      "allowed_statuses": [
+        "Not started",
+        "Under review",
+        "Revise and resubmit",
+        "Approved with comments",
+        "Approved",
+        "Superseded",
+        "Closed"
+      ],
       "blocking_statuses": [],
       "require_status": true
     }

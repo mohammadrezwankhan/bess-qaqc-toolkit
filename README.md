@@ -250,8 +250,11 @@ python scripts/summarize_status.py project-records `
 The JSON policy defines global `allowed_statuses`, `blocking_statuses`, and the
 Boolean `require_status` fallback. Optional `column_rules` can assign a complete
 replacement rule to headings such as `Approval Status` or `Review Status`, so a
-valid state cannot silently appear in the wrong workflow column. Column names
-match case-insensitively after whitespace normalization.
+valid state cannot silently appear in the wrong workflow column. The example
+policy includes the values documented by the supplier tracker, commissioning
+matrix, and calibration register. Its `Review Status` rule has no blocking
+states; a project must choose its own release semantics. Column names match
+case-insensitively after whitespace normalization.
 
 Policy violations retain the source file, line, item, status, column, and reason
 in Markdown and JSON output; the command exits with code `2` when any violation
@@ -517,9 +520,10 @@ conditional completeness all pass; controlled findings return `2`, while
 malformed inputs or a check with no evaluable rows return `1`.
 
 Source coverage is report-only by default because a mixed project folder may
-intentionally contain specialized records. When every contributing file is
-expected to expose status, deadline, and conditional-completeness rows, enforce
-that contract explicitly:
+intentionally contain specialized records. Every selected, non-generated
+Markdown input appears in the coverage matrix, even when none of the controls
+recognizes a row in it. When every selected file is expected to expose status,
+deadline, and conditional-completeness rows, enforce that contract explicitly:
 
 ```powershell
 python scripts/audit_readiness.py project-records `
@@ -531,8 +535,17 @@ python scripts/audit_readiness.py project-records `
 ```
 
 Strict coverage creates one finding for every missing source/control pair and
-returns `2`. Generated audit reports are excluded from the matrix, so writing a
-report inside the scanned directory remains safe for repeat runs.
+returns `2`. Files whose first line starts with the standard generated-report
+marker are listed as excluded inputs and omitted from coverage, so writing a
+report inside the scanned directory remains safe for repeat runs. Other
+unrecognized selected files stay visible and receive three coverage gaps.
+
+`audit_readiness.py --format json` emits `schema_version: 1` and follows the
+[readiness report v1 schema](config/readiness-report-v1.schema.json). Consumers
+should check that version and accept additive fields. Existing v1 field names,
+types, and meanings remain stable; incompatible changes require a new schema
+version. Standalone audit JSON reports are not covered by this readiness
+contract.
 
 By default, `overdue` and `missing` deadlines fail the combined gate. Repeat
 `--deadline-fail-on` to replace that pair for a project, for example:

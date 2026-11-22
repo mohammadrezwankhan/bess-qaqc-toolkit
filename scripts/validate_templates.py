@@ -64,17 +64,18 @@ def table_cells(line: str) -> list[str]:
 def table_blocks(
     lines: list[str], *, strict: bool = False
 ) -> list[tuple[int, list[str]]]:
+    visible_lines = _visible_markdown_lines(lines)
     blocks: list[tuple[int, list[str]]] = []
     index = 0
-    while index < len(lines):
-        if not is_table_row(lines[index]):
+    while index < len(visible_lines):
+        if not is_table_row(visible_lines[index]):
             index += 1
             continue
 
         start = index
         block: list[str] = []
-        while index < len(lines) and is_table_row(lines[index]):
-            block.append(lines[index])
+        while index < len(visible_lines) and is_table_row(visible_lines[index]):
+            block.append(visible_lines[index])
             index += 1
         if strict:
             header = table_cells(block[0])
@@ -101,6 +102,38 @@ def _strip_html_comments(line: str, in_comment: bool) -> tuple[str, bool]:
             visible.append(text)
             in_comment = bool(marker)
     return "".join(visible), in_comment
+
+
+def _visible_markdown_lines(lines: list[str]) -> list[str]:
+    """Blank fenced code and HTML comments without changing source line numbers."""
+
+    visible_lines: list[str] = []
+    fence_character = ""
+    fence_length = 0
+    in_comment = False
+    for line in lines:
+        if fence_character:
+            marker = CODE_FENCE.match(line)
+            if (
+                marker
+                and marker[1][0] == fence_character
+                and len(marker[1]) >= fence_length
+                and not marker[2].strip()
+            ):
+                fence_character = ""
+                fence_length = 0
+            visible_lines.append("")
+            continue
+
+        line, in_comment = _strip_html_comments(line, in_comment)
+        marker = CODE_FENCE.match(line)
+        if marker:
+            fence_character = marker[1][0]
+            fence_length = len(marker[1])
+            visible_lines.append("")
+        else:
+            visible_lines.append(line)
+    return visible_lines
 
 
 def _closeout_questions(lines: list[str]) -> list[str]:

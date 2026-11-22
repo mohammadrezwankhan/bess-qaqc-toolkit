@@ -53,4 +53,4 @@ The [roadmap](../../ROADMAP.md) covers 2026-11-19 through 2027-11-18. Roles, dat
 
 ## Decisions still needed
 
-Assign a recovery deputy and a verified sensitive-disclosure channel; decide the input/gate composition contract; decide whether JSON output should carry a supported schema/version contract; and approve any use of measured project data for future validation. Record those decisions explicitly rather than filling the gaps with implied ownership.
+Assign a recovery deputy and a verified sensitive-disclosure channel; decide the input/gate composition contract; decide whether the remaining standalone JSON reports need their own supported schema/version contracts; and approve any use of measured project data for future validation. The combined readiness report has a versioned schema. Record other decisions explicitly rather than filling the gaps with implied ownership.
