@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:mohammadrezwankhan:bess-qaqc-toolkit:punch-list-audit-v1",
+  "title": "scripts/audit_punch_list.py JSON punch-list audit, schema version 1",
+  "description": "Version 1 documents the existing CLI payload without changing it. All current fields are required; additional properties are permitted for compatible additions.",
+  "type": "object",
+  "required": [
+    "as_of",
+    "source_files",
+    "item_count",
+    "status_counts",
+    "severity_counts",
+    "system_area_counts",
+    "aging_summary",
+    "recurring_areas",
+    "issue_count",
+    "issues",
+    "items"
+  ],
+  "properties": {
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "item_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "status_counts": {
+      "type": "object",
+      "required": [
+        "Open",
+        "In progress",
+        "Ready for verification",
+        "Closed",
+        "Deferred"
+      ],
+      "properties": {
+        "Open": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "In progress": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "Ready for verification": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "Closed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "Deferred": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "severity_counts": {
+      "type": "object",
+      "required": [
+        "Critical",
+        "Major",
+        "Minor"
+      ],
+      "properties": {
+        "Critical": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "Major": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "Minor": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "system_area_counts": {
+      "type": "object",
+      "required": [],
+      "properties": {},
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "aging_summary": {
+      "type": "object",
+      "required": [
+        "overdue_count",
+        "overdue_critical_count",
+        "overdue_major_count",
+        "max_days_overdue"
+      ],
+      "properties": {
+        "overdue_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overdue_critical_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overdue_major_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_days_overdue": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "recurring_areas": {
+      "type": "object",
+      "required": [],
+      "properties": {},
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "issue_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "item_id",
+          "kind",
+          "detail"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "line",
+          "item_id",
+          "severity",
+          "finding",
+          "system_area",
+          "owner",
+          "evidence_link",
+          "target_close_date",
+          "status",
+          "closeout_note",
+          "days_to_target",
+          "overdue"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "item_id": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string"
+          },
+          "finding": {
+            "type": "string"
+          },
+          "system_area": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "evidence_link": {
+            "type": "string"
+          },
+          "target_close_date": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "closeout_note": {
+            "type": "string"
+          },
+          "days_to_target": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "overdue": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

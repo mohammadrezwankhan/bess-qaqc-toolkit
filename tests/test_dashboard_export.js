@@ -96,7 +96,7 @@ const fullOutput = buildTelemetryExport({
   series: fullSeries
 });
 assert.equal(fullOutput.csv.split('\r\n').length, 243, 'the complete 241-sample model remains one header plus 241 rows');
-assert.equal(crypto.createHash('sha256').update(fullOutput.csv, 'utf8').digest('hex'), 'd7312e007935f8f3daa85445dea55cbda1f61c2f62f270a23634424c49348ab7', 'the default export bytes remain backwards compatible');
+assert.equal(crypto.createHash('sha256').update(fullOutput.csv, 'utf8').digest('hex'), 'd7312e007935f8f3daa85445dea55cbda1f61c2f62f270a23634424c49348ab7', 'the fourth-module preset bytes remain backwards compatible');
 
 const buildForInputs = currentParams => buildTelemetryExport({
   fileName: `${config.repository.slug}-synthetic-telemetry.csv`,
