@@ -182,9 +182,14 @@ def load_handover_policy(path: Path) -> HandoverPolicy:
         raise ValueError("every punch status must have exactly one classification")
 
     severities = {normalize_heading(value) for value in values["severities"]}
+    if "critical" not in severities:
+        raise ValueError("policy severities must include Critical")
     for field in ("blocking_severities", "non_deferrable_severities"):
-        if not {normalize_heading(value) for value in values[field]} <= severities:
+        configured = {normalize_heading(value) for value in values[field]}
+        if not configured <= severities:
             raise ValueError(f"policy {field} contains an unknown severity")
+        if "critical" not in configured:
+            raise ValueError(f"policy {field} must include Critical")
 
     accepted_risks = {
         normalize_heading(value) for value in values["accepted_risk_statuses"]
