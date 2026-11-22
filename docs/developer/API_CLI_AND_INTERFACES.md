@@ -39,9 +39,38 @@ Recognized headings are normalized case-insensitively with collapsed whitespace.
 
 Sources: [scripts/summarize_status.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/summarize_status.py#L207-L276), [scripts/audit_completeness.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_completeness.py#L89-L201), [scripts/audit_handover_acceptance.py](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/scripts/audit_handover_acceptance.py#L132-L206).
 
-Example policies are project-neutral examples, not one universal vocabulary. For instance the supplier tracker documents `Revise and resubmit`, `Approved with comments` and `Superseded`, while the example `Review Status` rule permits only four named states. Establish a controlled policy deliberately. [templates/supplier-document-review-tracker.md](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/templates/supplier-document-review-tracker.md#L13-L20) [config/readiness-status-policy.example.json](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/blob/af44c932684dfd120dea05d150cefcc3e47539a0/config/readiness-status-policy.example.json#L25-L35)
+The example policy is project-neutral, not one universal vocabulary. Its
+allowlists include the status values present in the included template tables
+and the supplier review-value list. Allowlisting means only that a value is
+recognized; blocking behavior is configured separately.
 
-Reports retain source paths and line numbers. Their dictionaries are constructed by the public `summarize_*`/`evaluate_readiness` functions below; there is no separate versioned JSON-report schema. Consumers should pin a revision and test the fields they depend on.
+| Column rule | Additional documented example values | Example blocking values |
+| --- | --- | --- |
+| `Status` (global) | `Planned` | `Blocked`, `Failed` |
+| `Approval Status` | `Pending review` | `Rejected` |
+| `Review Status` | `Revise and resubmit`, `Approved with comments`, `Superseded` | None |
+
+The supplier tracker’s six review values are all accepted by its `Review Status`
+rule. Its example rule deliberately has an empty `blocking_statuses` list; a
+project must decide whether review states block its own gate. [Supplier tracker](../../templates/supplier-document-review-tracker.md) · [Example policy](../../config/readiness-status-policy.example.json) · [Vocabulary regression test](../../tests/test_summarize_status.py)
+
+`audit_readiness.py --format json` emits `schema_version: 1`. Its
+[version 1 JSON Schema](../../config/readiness-report-v1.schema.json) fixes the
+required top-level fields, field types, policy/date metadata, selected input
+manifest, check summaries, and source-coverage matrix. Unknown additive fields
+are permitted. Existing v1 field names, types, and meanings remain stable;
+removing or changing one requires a new `schema_version`. This is a
+command-specific contract, not a compatibility promise for the other standalone
+audit JSON outputs or a packaged SDK.
+
+In a readiness report, `selected_files` lists selected non-generated inputs;
+`source_files` lists files with recognized records. `checks.source_coverage`
+also lists `excluded_generated_files` and produces a row for each selected input,
+including files with no recognized rows. `source_count` retains the count of
+recognized source files; the additive `coverage_count` counts all matrix rows.
+`--require-source-coverage` makes each missing source/control pair a finding.
+Generated reports are excluded by their first-line marker and are reported
+explicitly as exclusions.
 
 ## Browser interface
 

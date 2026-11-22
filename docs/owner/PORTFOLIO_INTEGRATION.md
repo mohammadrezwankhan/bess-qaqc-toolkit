@@ -35,7 +35,7 @@ The public [owner profile repository](https://github.com/mohammadrezwankhan/moha
 |---|---|---|
 | Controlled evidence references | Check/evidence/instrument/document identifiers | Agree schemas, uniqueness scope and provenance ownership |
 | Readiness outcome | Selected Boolean predicates and issue summaries | Preserve input manifest, policy, date and separate gate identities |
-| JSON audit output | CLI-generated structures | Define versioning and compatibility; no existing stable API promise is inferred |
+| JSON audit output | CLI-generated structures | Combined readiness has schema v1; define separate contracts before relying on other CLI JSON reports |
 | Calendar semantics | ISO dates, signed due-day difference, inclusive calibration periods | Preserve timezone/date interpretation and assessment-date source |
 | Synthetic workload quantities | Findings/minute, people, count, percentage | Retain fictional provenance and distinguish rates from accepted evidence |
 | Source evidence | Commit permalink plus line range | Keep revision identity through copied or aggregated reports |

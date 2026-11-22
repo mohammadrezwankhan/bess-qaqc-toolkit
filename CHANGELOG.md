@@ -15,6 +15,16 @@ This file distinguishes unreleased documentation work from observed source histo
 
 This entry does not announce application fixes, a tagged release, a merged PR or a deployed candidate. Native scripts, templates, policies, models, fixtures, tests and workflows are unchanged by the documentation package.
 
+### Engineering corrections prepared for issue #101
+
+- Include every selected non-generated Markdown input in combined readiness coverage; report generated inputs as exclusions and keep strict coverage opt-in.
+- Ignore fenced-code and HTML-comment table examples in the shared record-table scanner.
+- Align the example status policy with included template-table and supplier tracker values without changing its blocking lists.
+- Version the combined readiness JSON report with schema version 1 and a checked-in JSON Schema; standalone report formats remain outside that contract.
+- Add offline relative-link checks for selected handbook pages within the existing Markdown maintenance job.
+
+These are candidate changes. They have not been merged or deployed; remote PR-check outcomes belong to the reviewed PR revision.
+
 ## Verified source history, not tagged releases
 
 ### 2026-11-18 — Source snapshot used by this handbook

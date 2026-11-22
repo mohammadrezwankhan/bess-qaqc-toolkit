@@ -170,6 +170,64 @@ class ReadinessGateTests(unittest.TestCase):
         )
         self.assertEqual(strict_report["checks"]["source_coverage"]["source_count"], 1)
         self.assertEqual(strict_report["checks"]["source_coverage"]["gap_count"], 0)
+        excluded = strict_report["checks"]["source_coverage"][
+            "excluded_generated_files"
+        ]
+        self.assertEqual(len(excluded), 1)
+        self.assertTrue(excluded[0].endswith("additional-1.md"))
+        self.assertNotIn(excluded[0], strict_report["selected_files"])
+
+    def test_selected_unrecognized_source_is_visible_in_coverage(self):
+        report = self.evaluate(
+            additional_documents=("# Unclassified Input\n\nNo recognized records.\n",)
+        )
+
+        coverage = report["checks"]["source_coverage"]
+        unrecognized = next(
+            row
+            for row in coverage["coverage"]
+            if row["source"].endswith("additional-1.md")
+        )
+        self.assertEqual(report["gate"]["result"], "pass")
+        self.assertEqual(coverage["source_count"], 1)
+        self.assertEqual(coverage["coverage_count"], 2)
+        self.assertEqual(unrecognized["missing_checks"], [
+            "status_policy",
+            "deadlines",
+            "conditional_completeness",
+        ])
+        self.assertIn(unrecognized["source"], report["selected_files"])
+
+    def test_required_source_coverage_fails_for_unrecognized_selected_source(self):
+        report = self.evaluate(
+            additional_documents=("# Unclassified Input\n\nNo recognized records.\n",),
+            require_source_coverage=True,
+        )
+
+        coverage = report["checks"]["source_coverage"]
+        self.assertEqual(report["gate"]["failed_checks"], ["source_coverage"])
+        self.assertEqual(coverage["finding_count"], 3)
+        self.assertEqual(coverage["gap_count"], 3)
+
+    def test_json_report_declares_readiness_contract_version(self):
+        report = self.evaluate()
+
+        self.assertEqual(report["schema_version"], 1)
+        self.assertIn("selected_files", report)
+        schema_path = Path("config/readiness-report-v1.schema.json")
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 1)
+        self.assertTrue(
+            {
+                "schema_version",
+                "gate",
+                "configuration",
+                "source_files",
+                "selected_files",
+                "checks",
+            }
+            <= set(schema["required"])
+        )
 
     def test_source_coverage_reports_partial_file_without_failing_by_default(self):
         report = self.evaluate(additional_documents=(STATUS_ONLY_DOCUMENT,))

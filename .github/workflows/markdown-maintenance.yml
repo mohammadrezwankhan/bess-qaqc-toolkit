@@ -102,3 +102,17 @@ jobs:
             --verbose --no-progress README.md CONTRIBUTING.md
             examples/*.md templates/*.md
           fail: true
+
+      # The pinned action above installs lychee and adds its path for this step.
+      - name: Check selected handbook links offline
+        shell: bash
+        run: >-
+          lychee --offline --verbose --no-progress
+          docs/INDEX.md
+          docs/developer/API_CLI_AND_INTERFACES.md
+          docs/developer/ARCHITECTURE.md
+          docs/developer/TROUBLESHOOTING.md
+          docs/math-and-physics/ASSUMPTIONS_AND_LIMITS.md
+          docs/maintainer/FAILURE_MODES_AND_TECH_DEBT.md
+          docs/maintainer/DOCS_MAINTENANCE_RUNBOOK.md
+          docs/maintainer/CI_CD_AND_RELEASE_PLAYBOOK.md
