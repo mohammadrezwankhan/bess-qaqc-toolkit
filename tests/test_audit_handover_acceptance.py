@@ -47,6 +47,22 @@ class HandoverAcceptanceTests(unittest.TestCase):
     def test_passing_example_has_no_issues(self):
         self.assertEqual(self.kinds(), [])
 
+    def test_custom_missing_markers_keep_standard_release_placeholders(self):
+        policy = replace(self.policy, missing_values=("Not recorded",))
+        for approver in ("tBd", "Not recorded"):
+            with self.subTest(approver=approver):
+                decision = replace(
+                    self.decisions[0], approved_by=approver, evidence_location="-"
+                )
+                issues = audit_handover(self.punch, self.risks, [decision], policy)
+                self.assertEqual(
+                    {issue.detail for issue in issues if issue.kind == "missing_acceptance_field"},
+                    {
+                        "approved by is required for a release decision",
+                        "evidence location is required for a release decision",
+                    },
+                )
+
     def test_deferred_item_requires_accepted_residual_risk(self):
         self.assertIn("unapproved_deferral", self.kinds(risks=[]))
 
@@ -304,6 +320,26 @@ class HandoverAcceptanceTests(unittest.TestCase):
         report = json.loads(standard_output.getvalue())
         self.assertEqual(report["issue_count"], 0)
 
+    def test_cli_requires_a_release_decision(self):
+        example = EXAMPLE_PATH.read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "handover.md"
+            for decision in ("Pending", "Rejected"):
+                with self.subTest(decision=decision):
+                    path.write_text(
+                        example.replace("Conditionally accepted", decision),
+                        encoding="utf-8",
+                    )
+                    stdout, stderr = io.StringIO(), io.StringIO()
+                    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                        result = main([str(path), "--format", "json"])
+                    self.assertEqual(result, 2, stderr.getvalue())
+                    report = json.loads(stdout.getvalue())
+                    self.assertEqual(report["acceptance_decision_count"], 1)
+                    self.assertEqual([issue["kind"] for issue in report["issues"]], [
+                        "missing_release_decision",
+                    ])
+
     def test_cli_writes_failure_report_and_returns_two(self):
         document = EXAMPLE_PATH.read_text(encoding="utf-8").replace(
             "| PL-003 | Minor |", "| PL-003 | Major |"
@@ -416,6 +452,117 @@ class HandoverAcceptanceTests(unittest.TestCase):
         policy_obj = HandoverPolicy(**{k: tuple(v) for k, v in mutated.items()})
         with self.assertRaisesRegex(ValueError, "release_decisions must include Accepted"):
             audit_handover(self.punch, self.risks, self.decisions, policy_obj)
+
+    def test_documented_open_statuses_cannot_be_reclassified(self):
+        document = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            for status in ("In progress", "Ready for verification"):
+                for category in ("closed_punch_statuses", "deferred_punch_statuses"):
+                    changes = {
+                        "open_punch_statuses": [
+                            value for value in document["open_punch_statuses"] if value != status
+                        ],
+                        category: [*document[category], status],
+                    }
+                    path.write_text(json.dumps({**document, **changes}), encoding="utf-8")
+                    policy = replace(self.policy, **{key: tuple(value) for key, value in changes.items()})
+                    for entry, invoke in (
+                        ("loader", lambda: load_handover_policy(path)),
+                        ("audit", lambda: audit_handover(self.punch, self.risks, self.decisions, policy)),
+                        ("summary", lambda: summarize_handover([], [], [], [], policy)),
+                    ):
+                        with self.subTest(status=status, category=category, entry=entry):
+                            with self.assertRaisesRegex(ValueError, f"{status} must be an open punch status"):
+                                invoke()
+
+    def test_policy_allows_site_open_alias_without_optional_default_statuses(self):
+        policy = replace(
+            self.policy,
+            punch_statuses=("Open", "Awaiting witness", "Closed", "Deferred"),
+            open_punch_statuses=("Open", "Awaiting witness"),
+        )
+        punch = [
+            replace(item, severity="Critical", status="Awaiting witness")
+            if item.item_id == "PL-003" else item for item in self.punch
+        ]
+        issues = audit_handover(punch, self.risks, self.decisions, policy)
+        self.assertEqual([issue.kind for issue in issues], ["acceptance_blocker"])
+
+    def test_policy_classification_rules_apply_to_every_entry_point(self):
+        original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        mutations = (
+            (
+                {"closed_punch_statuses": ["Closed", "In progress"]},
+                "classifications overlap",
+            ),
+            (
+                {"punch_statuses": [*original["punch_statuses"], "Waiting"]},
+                "exactly one classification",
+            ),
+            (
+                {"blocking_severities": ["Critical", "Unknown"]},
+                "contains an unknown severity",
+            ),
+            (
+                {"closed_risk_statuses": original["accepted_risk_statuses"]},
+                "risk statuses must not overlap",
+            ),
+            (
+                {
+                    "accepted_risk_statuses": ["Approved deferral"],
+                    "closed_risk_statuses": ["Closed", "Accepted for deferred closeout"],
+                },
+                "Accepted for deferred closeout must be an active residual-risk status",
+            ),
+            (
+                {
+                    "accepted_risk_statuses": ["Accepted for deferred closeout", "Closed"],
+                    "closed_risk_statuses": ["Verified complete"],
+                },
+                "Closed must be a closed residual-risk status",
+            ),
+            (
+                {"conditional_decisions": ["Conditionally accepted", "Accepted"]},
+                "Accepted cannot be conditional",
+            ),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            for changes, message in mutations:
+                document = {**original, **changes}
+                path.write_text(json.dumps(document), encoding="utf-8")
+                policy = replace(self.policy, **{key: tuple(value) for key, value in changes.items()})
+                for entry, invoke in (
+                    ("loader", lambda: load_handover_policy(path)),
+                    ("audit", lambda: audit_handover([], [], [], policy)),
+                    ("summary", lambda: summarize_handover([], [], [], [], policy)),
+                ):
+                    with self.subTest(changes=changes, entry=entry):
+                        with self.assertRaisesRegex(ValueError, message):
+                            invoke()
+
+
+    def test_policy_allows_site_risk_status_aliases(self):
+        policy = replace(
+            self.policy,
+            accepted_risk_statuses=("Approved deferral",),
+            closed_risk_statuses=("Verified complete",),
+        )
+        risk = replace(self.risks[0], status="Approved deferral")
+        self.assertEqual(audit_handover(self.punch, [risk], self.decisions, policy), [])
+
+        closed_item = replace(
+            self.punch[1],
+            status="Closed",
+            closeout_note="Verified by: Independent QA reviewer; Result: Passed",
+        )
+        decision = replace(self.decisions[0], decision="Accepted", residual_risk_ids=())
+        closed_risk = replace(risk, status="Verified complete")
+        self.assertEqual(
+            audit_handover([self.punch[0], closed_item, self.punch[2]], [closed_risk], [decision], policy),
+            [],
+        )
 
     def test_open_critical_item_always_blocks_accepted_handover(self):
         item = replace(self.punch[0], severity="Critical", status="Open")
