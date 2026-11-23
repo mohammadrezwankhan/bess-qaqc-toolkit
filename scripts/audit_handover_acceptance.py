@@ -263,33 +263,32 @@ def extract_handover_records(
     punch_items: list[PunchItem] = []
     residual_risks: list[ResidualRisk] = []
     decisions: list[AcceptanceDecision] = []
+    register_schemas = (
+        ("punch", PUNCH_COLUMNS, {"severity", "finding"}),
+        ("risk", RISK_COLUMNS, {"source_item_id", "interim_control"}),
+        ("acceptance", ACCEPTANCE_COLUMNS, {"acceptance_id", "decision"}),
+    )
     for start_line, block in table_blocks(lines, strict=True):
         if len(block) < 3:
             continue
         header = table_cells(block[0])
         normalized = {normalize_heading(value) for value in header}
         signatures = []
-        if "severity" in normalized and normalized.intersection(
-            _normalized_aliases(PUNCH_COLUMNS["finding"])
-        ):
-            signatures.append("punch")
-        if "interim control" in normalized and normalized.intersection(
-            _normalized_aliases(RISK_COLUMNS["source_item_id"])
-        ):
-            signatures.append("risk")
-        if {"acceptance id", "decision"} <= normalized:
-            signatures.append("acceptance")
+        for table_type, aliases, identifying_fields in register_schemas:
+            fields = {
+                field
+                for field, headings in aliases.items()
+                if normalized.intersection(_normalized_aliases(headings))
+            }
+            # An almost-complete register may have lost an identifying heading.
+            if identifying_fields <= fields or len(fields) >= len(aliases) - 1:
+                signatures.append((table_type, aliases))
         if not signatures:
             continue
         context = f"{path}:{start_line}"
         if len(signatures) > 1:
             raise ValueError(f"{context}: handover table type is ambiguous")
-        table_type = signatures[0]
-        aliases = {
-            "punch": PUNCH_COLUMNS,
-            "risk": RISK_COLUMNS,
-            "acceptance": ACCEPTANCE_COLUMNS,
-        }[table_type]
+        table_type, aliases = signatures[0]
         indices = _column_indices(header, aliases, context)
         for offset, row in enumerate(block[2:], start=2):
             line = start_line + offset

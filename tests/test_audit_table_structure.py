@@ -108,5 +108,31 @@ class AuditTableStructureTests(unittest.TestCase):
         self.assertIn("PL-099", summary["issues"][0]["detail"])
 
 
+    def test_handover_rejects_incomplete_supplementary_registers(self):
+        example = HANDOVER_EXAMPLE.read_text(encoding="utf-8").splitlines()
+        for signature, column, field in (
+            ("| ID | Severity |", "Finding or Nonconformance", "finding"),
+            ("| ID | Source Item ID |", "Interim Control", "interim_control"),
+            ("| Acceptance ID |", "Decision", "decision"),
+        ):
+            with self.subTest(column=column):
+                start = next(i for i, line in enumerate(example) if line.startswith(signature))
+                cells = [line.strip("|").split("|") for line in example[start:start + 3]]
+                missing = [cell.strip() for cell in cells[0]].index(column)
+                for row in cells:
+                    del row[missing]
+                incomplete = "\n".join("|" + "|".join(row) + "|" for row in cells)
+                self.path.write_text(incomplete + "\n", encoding="utf-8")
+
+                with contextlib.redirect_stdout(io.StringIO()) as stdout:
+                    with contextlib.redirect_stderr(io.StringIO()) as stderr:
+                        result = handover_main(
+                            [str(HANDOVER_EXAMPLE), str(self.path), "--format", "json"]
+                        )
+                self.assertEqual(result, 1, stderr.getvalue())
+                self.assertIn(f"missing required column for {field}", stderr.getvalue())
+                self.assertEqual(stdout.getvalue(), "")
+
+
 if __name__ == "__main__":
     unittest.main()
