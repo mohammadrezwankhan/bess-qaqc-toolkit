@@ -417,6 +417,42 @@ class HandoverAcceptanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "release_decisions must include Accepted"):
             audit_handover(self.punch, self.risks, self.decisions, policy_obj)
 
+    def test_documented_open_statuses_cannot_be_reclassified(self):
+        document = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "policy.json"
+            for status in ("In progress", "Ready for verification"):
+                for category in ("closed_punch_statuses", "deferred_punch_statuses"):
+                    changes = {
+                        "open_punch_statuses": [
+                            value for value in document["open_punch_statuses"] if value != status
+                        ],
+                        category: [*document[category], status],
+                    }
+                    path.write_text(json.dumps({**document, **changes}), encoding="utf-8")
+                    policy = replace(self.policy, **{key: tuple(value) for key, value in changes.items()})
+                    for entry, invoke in (
+                        ("loader", lambda: load_handover_policy(path)),
+                        ("audit", lambda: audit_handover(self.punch, self.risks, self.decisions, policy)),
+                        ("summary", lambda: summarize_handover([], [], [], [], policy)),
+                    ):
+                        with self.subTest(status=status, category=category, entry=entry):
+                            with self.assertRaisesRegex(ValueError, f"{status} must be an open punch status"):
+                                invoke()
+
+    def test_policy_allows_site_open_alias_without_optional_default_statuses(self):
+        policy = replace(
+            self.policy,
+            punch_statuses=("Open", "Awaiting witness", "Closed", "Deferred"),
+            open_punch_statuses=("Open", "Awaiting witness"),
+        )
+        punch = [
+            replace(item, severity="Critical", status="Awaiting witness")
+            if item.item_id == "PL-003" else item for item in self.punch
+        ]
+        issues = audit_handover(punch, self.risks, self.decisions, policy)
+        self.assertEqual([issue.kind for issue in issues], ["acceptance_blocker"])
+
     def test_policy_classification_rules_apply_to_every_entry_point(self):
         original = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
         mutations = (

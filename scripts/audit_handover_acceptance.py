@@ -303,6 +303,10 @@ def _validate_policy(policy: HandoverPolicy) -> None:
     ):
         if canonical.lower() not in classifications[field]:
             raise ValueError(f"policy {field} must include {canonical}")
+    non_open_statuses = punch_statuses - classifications["open_punch_statuses"]
+    for status in ("In progress", "Ready for verification"):
+        if normalize_heading(status) in non_open_statuses:
+            raise ValueError(f"policy {status} must be an open punch status")
 
     severities = _normalized(policy.severities)
     if "critical" not in severities:
