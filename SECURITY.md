@@ -10,7 +10,7 @@ No supported-version window, security response SLA, dedicated security email or 
 
 For a **non-sensitive reproducible software defect**, use the [repository issue tracker](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/issues), including the source revision, command, Python version, expected/actual result and a synthetic minimal fixture.
 
-For a **sensitive vulnerability or exposed information**, first check the repository's [Security area](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/security) for an owner-enabled private reporting method. Its availability has not been established by this document. If no verified private channel is available, request one from the maintainer using a non-sensitive message and withhold exploit details, credentials, client records and personal information from public issues. Do not assume a public issue or an unverified email address is private.
+For a **sensitive vulnerability or exposed information**, open [GitHub Security Advisories](https://github.com/mohammadrezwankhan/bess-qaqc-toolkit/security/advisories) and select **Report a vulnerability**. If no verified private channel is available, request one from the maintainer using a non-sensitive message and withhold exploit details, credentials, client records and personal information from public issues. Do not assume a public issue or an unverified email address is private.
 
 Repository access and account/signing recovery remain with the authorized owner. This document records no guaranteed response time or acceptance of a report.
 
@@ -32,4 +32,4 @@ The known record-validation gaps are documented in [failure modes](docs/maintain
 
 ## Maintainer follow-up
 
-An owner should establish a verified sensitive-disclosure channel and assign recovery responsibility before promising support. Record any approved channel and support policy with its actual effective date. The [owner runbook](docs/owner/BUS_FACTOR_RECOVERY_RUNBOOK.md) identifies the current recovery gaps.
+An owner should assign recovery responsibility before promising support. Record any approved channel and support policy with its actual effective date. The [owner runbook](docs/owner/BUS_FACTOR_RECOVERY_RUNBOOK.md) identifies the current recovery gaps.
