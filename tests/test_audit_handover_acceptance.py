@@ -320,6 +320,26 @@ class HandoverAcceptanceTests(unittest.TestCase):
         report = json.loads(standard_output.getvalue())
         self.assertEqual(report["issue_count"], 0)
 
+    def test_cli_requires_a_release_decision(self):
+        example = EXAMPLE_PATH.read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "handover.md"
+            for decision in ("Pending", "Rejected"):
+                with self.subTest(decision=decision):
+                    path.write_text(
+                        example.replace("Conditionally accepted", decision),
+                        encoding="utf-8",
+                    )
+                    stdout, stderr = io.StringIO(), io.StringIO()
+                    with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                        result = main([str(path), "--format", "json"])
+                    self.assertEqual(result, 2, stderr.getvalue())
+                    report = json.loads(stdout.getvalue())
+                    self.assertEqual(report["acceptance_decision_count"], 1)
+                    self.assertEqual([issue["kind"] for issue in report["issues"]], [
+                        "missing_release_decision",
+                    ])
+
     def test_cli_writes_failure_report_and_returns_two(self):
         document = EXAMPLE_PATH.read_text(encoding="utf-8").replace(
             "| PL-003 | Minor |", "| PL-003 | Major |"

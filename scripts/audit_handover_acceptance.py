@@ -829,6 +829,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not decisions:
             raise ValueError("no acceptance-decision rows found")
         issues = audit_handover(punch_items, residual_risks, decisions, policy)
+        release_decisions = _normalized(policy.release_decisions)
+        if not any(normalize_heading(record.decision) in release_decisions for record in decisions):
+            first_decision = decisions[0]
+            issues.append(
+                HandoverIssue(
+                    first_decision.source,
+                    first_decision.line,
+                    first_decision.acceptance_id,
+                    "missing_release_decision",
+                    "handover requires a release decision under the selected policy",
+                )
+            )
     except (json.JSONDecodeError, OSError, ValueError) as error:
         print(f"Handover acceptance audit failed: {error}", file=sys.stderr)
         return 1
