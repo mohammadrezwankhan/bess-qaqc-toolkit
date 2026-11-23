@@ -2,6 +2,7 @@
 
 import contextlib
 import io
+import json
 import tempfile
 import unittest
 from datetime import date
@@ -13,6 +14,7 @@ from scripts.audit_deadlines import extract_deadline_records
 from scripts.audit_document_control import extract_document_revisions
 from scripts.audit_evidence_traceability import extract_traceability_records
 from scripts.audit_handover_acceptance import extract_handover_records
+from scripts.audit_handover_acceptance import main as handover_main
 from scripts.audit_punch_list import extract_punch_list_records
 from scripts.summarize_status import extract_status_records, main
 
@@ -25,6 +27,7 @@ Two items require review.
 | Outstanding protection test | Open |
 | Reviewed drawing | Closed |
 """
+HANDOVER_EXAMPLE = Path(__file__).resolve().parents[1] / "examples/handover-acceptance-passing.md"
 
 
 class AuditTableStructureTests(unittest.TestCase):
@@ -72,6 +75,37 @@ class AuditTableStructureTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "separator"):
             extract_status_records(self.path)
+
+    def test_handover_registers_accept_declared_heading_aliases(self):
+        text = HANDOVER_EXAMPLE.read_text(encoding="utf-8")
+        expected = extract_handover_records(HANDOVER_EXAMPLE)
+        for canonical, alias in (
+            ("Finding or Nonconformance", "Finding"),
+            ("Source Item ID", "Source Punch ID"),
+        ):
+            with self.subTest(heading=alias):
+                self.path.write_text(
+                    text.replace(f"| {canonical} |", f"| {alias} |"), encoding="utf-8"
+                )
+                actual = extract_handover_records(self.path)
+                self.assertEqual([len(rows) for rows in actual], [len(rows) for rows in expected])
+
+    def test_handover_audits_supplementary_punch_table_with_finding_alias(self):
+        self.path.write_text(
+            "| ID | Severity | Finding | Owner | Evidence Link | Target Close Date | Status | Closeout Note |\n"
+            "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+            "| PL-099 | Critical | Open commissioning check | Reviewer | DMS/PL-099.pdf | 2026-07-25 | Open | Pending review |\n",
+            encoding="utf-8",
+        )
+        output = io.StringIO()
+        error = io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(error):
+            result = handover_main([str(HANDOVER_EXAMPLE), str(self.path), "--format", "json"])
+        self.assertEqual(result, 2, error.getvalue())
+        summary = json.loads(output.getvalue())
+        self.assertEqual(summary["punch_item_count"], 4)
+        self.assertEqual([issue["kind"] for issue in summary["issues"]], ["acceptance_blocker"])
+        self.assertIn("PL-099", summary["issues"][0]["detail"])
 
 
 if __name__ == "__main__":

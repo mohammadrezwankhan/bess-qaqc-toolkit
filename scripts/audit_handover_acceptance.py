@@ -269,9 +269,13 @@ def extract_handover_records(
         header = table_cells(block[0])
         normalized = {normalize_heading(value) for value in header}
         signatures = []
-        if {"severity", "finding or nonconformance"} <= normalized:
+        if "severity" in normalized and normalized.intersection(
+            _normalized_aliases(PUNCH_COLUMNS["finding"])
+        ):
             signatures.append("punch")
-        if {"source item id", "interim control"} <= normalized:
+        if "interim control" in normalized and normalized.intersection(
+            _normalized_aliases(RISK_COLUMNS["source_item_id"])
+        ):
             signatures.append("risk")
         if {"acceptance id", "decision"} <= normalized:
             signatures.append("acceptance")
