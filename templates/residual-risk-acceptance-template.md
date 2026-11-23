@@ -11,6 +11,8 @@ Use this template when a BESS punch-list item or nonconformance is deferred beyo
 
 ## Acceptance Rules
 
+- When used in a custom policy, `Accepted for deferred closeout` denotes an
+  active residual risk and `Closed` denotes verified closeout.
 - Use residual-risk acceptance only for items that have an identified owner and interim control.
 - Do not accept deferred work that blocks safety, protection, fire interface, or grid-code compliance unless the responsible authority formally approves the operating restriction.
 - Record the original punch-list or nonconformance ID in `Source Item ID` so reviewers can trace the full decision.
