@@ -473,6 +473,20 @@ class HandoverAcceptanceTests(unittest.TestCase):
                 "risk statuses must not overlap",
             ),
             (
+                {
+                    "accepted_risk_statuses": ["Approved deferral"],
+                    "closed_risk_statuses": ["Closed", "Accepted for deferred closeout"],
+                },
+                "Accepted for deferred closeout must be an active residual-risk status",
+            ),
+            (
+                {
+                    "accepted_risk_statuses": ["Accepted for deferred closeout", "Closed"],
+                    "closed_risk_statuses": ["Verified complete"],
+                },
+                "Closed must be a closed residual-risk status",
+            ),
+            (
                 {"conditional_decisions": ["Conditionally accepted", "Accepted"]},
                 "Accepted cannot be conditional",
             ),
@@ -492,6 +506,27 @@ class HandoverAcceptanceTests(unittest.TestCase):
                         with self.assertRaisesRegex(ValueError, message):
                             invoke()
 
+
+    def test_policy_allows_site_risk_status_aliases(self):
+        policy = replace(
+            self.policy,
+            accepted_risk_statuses=("Approved deferral",),
+            closed_risk_statuses=("Verified complete",),
+        )
+        risk = replace(self.risks[0], status="Approved deferral")
+        self.assertEqual(audit_handover(self.punch, [risk], self.decisions, policy), [])
+
+        closed_item = replace(
+            self.punch[1],
+            status="Closed",
+            closeout_note="Verified by: Independent QA reviewer; Result: Passed",
+        )
+        decision = replace(self.decisions[0], decision="Accepted", residual_risk_ids=())
+        closed_risk = replace(risk, status="Verified complete")
+        self.assertEqual(
+            audit_handover([self.punch[0], closed_item, self.punch[2]], [closed_risk], [decision], policy),
+            [],
+        )
 
     def test_open_critical_item_always_blocks_accepted_handover(self):
         item = replace(self.punch[0], severity="Critical", status="Open")

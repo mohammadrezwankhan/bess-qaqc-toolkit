@@ -318,8 +318,14 @@ def _validate_policy(policy: HandoverPolicy) -> None:
         if "critical" not in configured:
             raise ValueError(f"policy {field} must include Critical")
 
-    if _normalized(policy.accepted_risk_statuses) & _normalized(policy.closed_risk_statuses):
+    accepted_risk_statuses = _normalized(policy.accepted_risk_statuses)
+    closed_risk_statuses = _normalized(policy.closed_risk_statuses)
+    if accepted_risk_statuses & closed_risk_statuses:
         raise ValueError("accepted and closed risk statuses must not overlap")
+    if "accepted for deferred closeout" in closed_risk_statuses:
+        raise ValueError("policy Accepted for deferred closeout must be an active residual-risk status")
+    if "closed" in accepted_risk_statuses:
+        raise ValueError("policy Closed must be a closed residual-risk status")
 
     release = _normalized(policy.release_decisions)
     conditional = _normalized(policy.conditional_decisions)
