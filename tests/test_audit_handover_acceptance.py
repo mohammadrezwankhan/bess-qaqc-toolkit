@@ -47,6 +47,22 @@ class HandoverAcceptanceTests(unittest.TestCase):
     def test_passing_example_has_no_issues(self):
         self.assertEqual(self.kinds(), [])
 
+    def test_custom_missing_markers_keep_standard_release_placeholders(self):
+        policy = replace(self.policy, missing_values=("Not recorded",))
+        for approver in ("tBd", "Not recorded"):
+            with self.subTest(approver=approver):
+                decision = replace(
+                    self.decisions[0], approved_by=approver, evidence_location="-"
+                )
+                issues = audit_handover(self.punch, self.risks, [decision], policy)
+                self.assertEqual(
+                    {issue.detail for issue in issues if issue.kind == "missing_acceptance_field"},
+                    {
+                        "approved by is required for a release decision",
+                        "evidence location is required for a release decision",
+                    },
+                )
+
     def test_deferred_item_requires_accepted_residual_risk(self):
         self.assertIn("unapproved_deferral", self.kinds(risks=[]))
 

@@ -9,11 +9,15 @@ from pathlib import Path
 from typing import Sequence
 
 try:
-    from scripts.audit_punch_list import closed_item_verification_issue, parse_iso_date
+    from scripts.audit_punch_list import (
+        MISSING_VALUES,
+        closed_item_verification_issue,
+        parse_iso_date,
+    )
     from scripts.summarize_status import expand_paths, normalize_heading
     from scripts.validate_templates import table_blocks, table_cells
 except ModuleNotFoundError:
-    from audit_punch_list import closed_item_verification_issue, parse_iso_date
+    from audit_punch_list import MISSING_VALUES, closed_item_verification_issue, parse_iso_date
     from summarize_status import expand_paths, normalize_heading
     from validate_templates import table_blocks, table_cells
 
@@ -358,7 +362,7 @@ def audit_handover(
 
     _validate_policy(policy)
     issues: list[HandoverIssue] = []
-    missing_values = _normalized(policy.missing_values)
+    missing_values = _normalized(MISSING_VALUES) | _normalized(policy.missing_values)
     severities = _normalized(policy.severities)
     punch_statuses = _normalized(policy.punch_statuses)
     open_statuses = _normalized(policy.open_punch_statuses)
