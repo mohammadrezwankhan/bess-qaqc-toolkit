@@ -495,7 +495,8 @@ a malformed gate fails instead of silently weakening the decision.
 Markdown and JSON reports preserve source files, line numbers, all three
 registers, aggregate counts, and each cross-register finding. The command
 returns `0` for a clean release, `2` for controlled findings, and `1` for a
-malformed policy, table, or incomplete register set. The
+malformed policy, table, or incomplete register set. A complete register set
+with only pending or rejected decisions returns `2`. The
 [passing handover example](examples/handover-acceptance-passing.md) is exercised
 by the repository workflow.
 
