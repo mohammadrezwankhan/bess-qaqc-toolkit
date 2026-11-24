@@ -86,6 +86,19 @@ Use this template to record controlled FAT evidence.
         valid_row = r"| valid | row |"
         self.assertTrue(is_table_row(valid_row))
 
+    def test_strict_table_blocks_allow_optional_outer_pipes(self):
+        lines = [
+            "Item | Status",
+            "| --- | ---",
+            r"One \| two | Open",
+            "| Three | Closed |",
+            "## Next section | Notes",
+            "| Another | Register |",
+            "--- | ---",
+            "Four | Pending |",
+        ]
+        self.assertEqual(table_blocks(lines, strict=True), [(1, lines[:4]), (6, lines[5:])])
+
     def test_table_blocks_ignore_fenced_code_and_html_comments(self):
         lines = """# Records
 
