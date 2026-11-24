@@ -69,6 +69,18 @@ class HandoverAcceptanceTests(unittest.TestCase):
                         [("acceptance_blocker", "ACC-001")],
                     )
 
+    def test_cli_rejects_incomplete_table_row_before_critical_record(self):
+        lines = EXAMPLE_PATH.read_text(encoding="utf-8").splitlines()
+        row_index = next(i for i, line in enumerate(lines) if line.startswith("| PL-003 |"))
+        lines.insert(row_index, "Incomplete malformed row")
+        with tempfile.TemporaryDirectory() as directory:
+            register = Path(directory) / "handover.md"
+            register.write_text("\n".join(lines) + "\n", encoding="utf-8")
+            with contextlib.redirect_stderr(io.StringIO()) as stderr:
+                result = main([str(register), "--policy", str(POLICY_PATH)])
+            self.assertEqual(result, 1)
+            self.assertIn("table row has 1 cells; expected 9", stderr.getvalue())
+
     def test_custom_missing_markers_keep_standard_release_placeholders(self):
         policy = replace(self.policy, missing_values=("Not recorded",))
         for approver in ("tBd", "Not recorded"):

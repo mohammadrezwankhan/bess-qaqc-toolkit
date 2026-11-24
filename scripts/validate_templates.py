@@ -11,6 +11,9 @@ CODE_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 TABLE_INTERRUPTION = re.compile(
     r"^ {0,3}(?:#{1,6}(?:[ \t]|$)|>|[-+*][ \t]|\d{1,9}[.)][ \t]|<)"
 )
+THEMATIC_BREAK = re.compile(
+    r"^ {0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})$"
+)
 CLOSEOUT_HEADINGS = {"## closeout questions", "## closeout prompts"}
 CLOSEOUT_QUESTIONS = {
     "audit-defensibility prompt": r"what evidence would .*(?:audit|challenged later)\?",
@@ -84,6 +87,7 @@ def table_blocks(
             has_separator
             and len(separator) > 1
             and not TABLE_INTERRUPTION.match(line)
+            and not THEMATIC_BREAK.match(line)
             and len(table_cells(line)) > 1
         ):
             index += 1
@@ -105,8 +109,9 @@ def table_blocks(
             if not is_table_row(line):
                 if (
                     not strict
+                    or not line.strip()
                     or TABLE_INTERRUPTION.match(line)
-                    or len(table_cells(line)) < 2
+                    or THEMATIC_BREAK.match(line)
                 ):
                     break
             block.append(line)
