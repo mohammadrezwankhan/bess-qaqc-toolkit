@@ -99,6 +99,26 @@ Use this template to record controlled FAT evidence.
         ]
         self.assertEqual(table_blocks(lines, strict=True), [(1, lines[:4]), (6, lines[5:])])
 
+    def test_strict_table_blocks_retain_incomplete_rows_for_width_validation(self):
+        lines = [
+            "Item | Status",
+            "| --- | --- |",
+            r"One \| two | Open",
+            "Incomplete malformed row",
+            "| Three | Closed |",
+        ]
+        self.assertEqual(table_blocks(lines, strict=True), [(1, lines)])
+
+    def test_strict_table_blocks_break_on_thematic_breaks(self):
+        lines = [
+            "Item | Status",
+            "| --- | --- |",
+            "One | Open",
+            "---",
+            "After break | Ignored",
+        ]
+        self.assertEqual(table_blocks(lines, strict=True), [(1, lines[:3])])
+
     def test_table_blocks_ignore_fenced_code_and_html_comments(self):
         lines = """# Records
 
