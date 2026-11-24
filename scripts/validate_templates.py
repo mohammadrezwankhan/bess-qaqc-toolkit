@@ -8,6 +8,9 @@ from pathlib import Path
 
 SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
 CODE_FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
+TABLE_INTERRUPTION = re.compile(
+    r"^ {0,3}(?:#{1,6}(?:[ \t]|$)|>|[-+*][ \t]|\d{1,9}[.)][ \t]|<)"
+)
 CLOSEOUT_HEADINGS = {"## closeout questions", "## closeout prompts"}
 CLOSEOUT_QUESTIONS = {
     "audit-defensibility prompt": r"what evidence would .*(?:audit|challenged later)\?",
@@ -68,25 +71,46 @@ def table_blocks(
     blocks: list[tuple[int, list[str]]] = []
     index = 0
     while index < len(visible_lines):
-        if not is_table_row(visible_lines[index]):
+        line = visible_lines[index]
+        separator = (
+            table_cells(visible_lines[index + 1])
+            if strict and index + 1 < len(visible_lines)
+            else []
+        )
+        has_separator = bool(separator) and all(
+            SEPARATOR_CELL.fullmatch(cell) for cell in separator
+        )
+        if not is_table_row(line) and not (
+            has_separator
+            and len(separator) > 1
+            and not TABLE_INTERRUPTION.match(line)
+            and len(table_cells(line)) > 1
+        ):
             index += 1
             continue
 
         start = index
-        block: list[str] = []
-        while index < len(visible_lines) and is_table_row(visible_lines[index]):
-            block.append(visible_lines[index])
-            index += 1
+        block = [line]
+        index += 1
         if strict:
-            header = table_cells(block[0])
-            separator = table_cells(block[1]) if len(block) > 1 else []
-            if len(separator) != len(header) or any(
-                not SEPARATOR_CELL.fullmatch(cell) for cell in separator
-            ):
+            if not has_separator or len(separator) != len(table_cells(line)):
                 raise ValueError(
                     f"line {start + 2}: table separator must match the header "
                     "width and use at least three dashes"
                 )
+            block.append(visible_lines[index])
+            index += 1
+        while index < len(visible_lines):
+            line = visible_lines[index]
+            if not is_table_row(line):
+                if (
+                    not strict
+                    or TABLE_INTERRUPTION.match(line)
+                    or len(table_cells(line)) < 2
+                ):
+                    break
+            block.append(line)
+            index += 1
         blocks.append((start + 1, block))
     return blocks
 

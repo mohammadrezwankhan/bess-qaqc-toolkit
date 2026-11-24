@@ -47,6 +47,28 @@ class HandoverAcceptanceTests(unittest.TestCase):
     def test_passing_example_has_no_issues(self):
         self.assertEqual(self.kinds(), [])
 
+    def test_cli_checks_open_critical_row_with_optional_outer_pipes(self):
+        lines = EXAMPLE_PATH.read_text(encoding="utf-8").splitlines()
+        row_index = next(i for i, line in enumerate(lines) if line.startswith("| PL-003 |"))
+        critical_row = lines[row_index].replace("| Minor |", "| Critical |").replace(
+            "| In progress |", "| Open |"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            register = Path(directory) / "handover.md"
+            for row in (critical_row[1:], critical_row[:-1], critical_row[1:-1]):
+                with self.subTest(row=row):
+                    lines[row_index] = row.strip()
+                    register.write_text("\n".join(lines) + "\n", encoding="utf-8")
+                    with contextlib.redirect_stdout(io.StringIO()) as output:
+                        with contextlib.redirect_stderr(io.StringIO()):
+                            result = main([str(register), "--policy", str(POLICY_PATH), "--format", "json"])
+                    self.assertEqual(result, 2)
+                    findings = json.loads(output.getvalue())["issues"]
+                    self.assertEqual(
+                        [(item["kind"], item["record_id"]) for item in findings],
+                        [("acceptance_blocker", "ACC-001")],
+                    )
+
     def test_custom_missing_markers_keep_standard_release_placeholders(self):
         policy = replace(self.policy, missing_values=("Not recorded",))
         for approver in ("tBd", "Not recorded"):
